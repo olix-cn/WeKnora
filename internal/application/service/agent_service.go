@@ -601,11 +601,11 @@ func registerProductDocTools(ctx context.Context, toolRegistry *tools.ToolRegist
 	}
 	lib, err := productdocs.Default()
 	if lib == nil {
-		logger.Warnf(ctx, "WeKnora documentation tools withheld: %v", err)
+		logger.Warnf(ctx, "AethCraft documentation tools withheld: %v", err)
 		return
 	}
 	if err != nil {
-		logger.Warnf(ctx, "WeKnora documentation pages left out: %v", err)
+		logger.Warnf(ctx, "AethCraft documentation pages left out: %v", err)
 	}
 	toolRegistry.RegisterTool(tools.NewSearchWeKnoraDocsTool(lib))
 	toolRegistry.RegisterTool(tools.NewReadWeKnoraDocTool(lib))
@@ -1544,7 +1544,7 @@ func (s *agentService) registerTools(
 	return nil
 }
 
-// assistantWriteToolRisk are the direct tools of the WeKnora assistant that
+// assistantWriteToolRisk are the direct tools of the AethCraft assistant that
 // change data outside the operation catalog. Its access level decides which
 // of them ask the user first, as it does for catalog operations.
 var assistantWriteToolRisk = map[string]operations.Risk{

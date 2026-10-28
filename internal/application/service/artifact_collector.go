@@ -68,7 +68,7 @@ type ArtifactCollectorConfig struct {
 
 	// MaxFileBytes is the largest single file that will be persisted.
 	// Files larger than this are logged and skipped so a runaway skill
-	// cannot exhaust the WeKnora process's memory.
+	// cannot exhaust the AethCraft process's memory.
 	MaxFileBytes int64
 }
 

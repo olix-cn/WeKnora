@@ -31,18 +31,18 @@ const (
 	// BuiltinSkillInstallerID is the ID for the built-in skill installer agent
 	BuiltinSkillInstallerID = "builtin-skill-installer"
 	// BuiltinWeKnoraAssistantID is the built-in assistant that manages
-	// WeKnora itself (documents, parsing, Wiki health) for the signed-in user.
+	// AethCraft itself (documents, parsing, Wiki health) for the signed-in user.
 	BuiltinWeKnoraAssistantID = "builtin-weknora-assistant"
 )
 
-// GrantsOperationCatalog reports whether agent may run WeKnora management
+// GrantsOperationCatalog reports whether agent may run AethCraft management
 // operations. Only the built-in assistant does; the ID alone is not enough,
 // since it must come from the built-in registry rather than a stored record.
 func GrantsOperationCatalog(agent *CustomAgent) bool {
 	return agent != nil && agent.IsBuiltin && agent.ID == BuiltinWeKnoraAssistantID
 }
 
-// GrantsProductDocs reports whether agent may read the WeKnora documentation
+// GrantsProductDocs reports whether agent may read the AethCraft documentation
 // bundled with the server. The docs are public, so unlike operations this
 // needs no signed-in user; it is still limited to the built-in assistant.
 func GrantsProductDocs(agent *CustomAgent) bool {
@@ -214,7 +214,7 @@ type CustomAgentConfig struct {
 	MCPAuthWaitTimeout int `yaml:"mcp_auth_wait_timeout,omitempty" json:"mcp_auth_wait_timeout,omitempty"`
 	// AccessLevel is the highest access level a run of this agent gets: how
 	// far it may change data (MCP tools, Wiki writes) without asking. Empty
-	// means auto_write. The WeKnora assistant uses the workspace's assistant
+	// means auto_write. The AethCraft assistant uses the workspace's assistant
 	// ceiling instead.
 	AccessLevel AssistantAccessLevel `yaml:"access_level,omitempty" json:"access_level,omitempty"`
 

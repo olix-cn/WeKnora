@@ -94,7 +94,7 @@ type node struct {
 }
 
 // binaryDocumentTypes maps the extension of an uploaded DingTalk file to the
-// MIME type WeKnora stores it under. Only formats WeKnora can parse are listed;
+// MIME type AethCraft stores it under. Only formats AethCraft can parse are listed;
 // native ALIDOC files have their own online read APIs and are absent on
 // purpose, as are media files that would be pointless to index as text.
 var binaryDocumentTypes = map[string]string{
@@ -128,7 +128,7 @@ func (n node) binaryContentType() (string, bool) {
 }
 
 // isBinaryDocument reports whether the node is an uploaded file this connector
-// can download and hand to WeKnora's own parsers.
+// can download and hand to AethCraft's own parsers.
 func (n node) isBinaryDocument() bool {
 	_, ok := n.binaryContentType()
 	return ok

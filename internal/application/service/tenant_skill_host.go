@@ -236,7 +236,7 @@ func writeHostSkillFiles(dir string, bundle *SkillBundle) error {
 	return nil
 }
 
-// readHostEnvDeclaration mirrors readEnvDeclaration for a file the WeKnora
+// readHostEnvDeclaration mirrors readEnvDeclaration for a file the AethCraft
 // process can read directly.
 func readHostEnvDeclaration(
 	ctx context.Context, skillID, versionDir string, bundle *SkillBundle,
@@ -320,7 +320,7 @@ func buildHostInstallPrompt(versionDir string, bundle *SkillBundle, tools map[st
 	if bundle != nil {
 		skillMD = string(bundle.Files["SKILL.md"])
 	}
-	return fmt.Sprintf(`Install this WeKnora skill on the user's computer.
+	return fmt.Sprintf(`Install this AethCraft skill on the user's computer.
 
 Skill directory: %s
 %s

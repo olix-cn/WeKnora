@@ -5,7 +5,7 @@ import "testing"
 func TestIsStandardTemplateRecognizesProviderScopedName(t *testing.T) {
 	for _, name := range []string{"weknora", "team/weknora", "project-b89e/WeKnora"} {
 		if !isStandardTemplate(name) {
-			t.Fatalf("expected %q to identify the WeKnora standard template", name)
+			t.Fatalf("expected %q to identify the AethCraft standard template", name)
 		}
 	}
 	if isStandardTemplate("weknora-custom") {
@@ -19,7 +19,7 @@ func TestIsStandardTemplateRecognizesProviderScopedName(t *testing.T) {
 func TestIsDesktopTemplateRecognizesProviderScopedName(t *testing.T) {
 	for _, name := range []string{"weknora-desktop", "team/weknora-desktop", "project-b89e/WeKnora-Desktop"} {
 		if !isDesktopTemplate(name) {
-			t.Fatalf("expected %q to identify the WeKnora desktop template", name)
+			t.Fatalf("expected %q to identify the AethCraft desktop template", name)
 		}
 	}
 	if isDesktopTemplate("weknora") {

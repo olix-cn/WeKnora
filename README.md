@@ -2,7 +2,7 @@
   <a href="https://weknora.weixin.qq.com">
     <picture>
       <source media="(prefers-color-scheme: dark)" srcset="./docs/images/readme/hero-en-dark.svg">
-      <img src="./docs/images/readme/hero-en-light.svg" alt="WeKnora: find the answers, and put knowledge to work. Tencent's open-source knowledge management framework for Q&A, tasks and wikis." width="100%">
+      <img src="./docs/images/readme/hero-en-light.svg" alt="AethCraft: find the answers, and put knowledge to work. Tencent's open-source knowledge management framework for Q&A, tasks and wikis." width="100%">
     </picture>
   </a>
 </p>
@@ -40,9 +40,9 @@
 
 ## Overview
 
-[WeKnora](https://weknora.weixin.qq.com) is an open-source, LLM-powered knowledge framework for enterprise document understanding, semantic retrieval and reasoning. It brings a team's documents together so they can be searched, reasoned over and kept up to date.
+[AethCraft](https://weknora.weixin.qq.com) is an open-source, LLM-powered knowledge framework for enterprise document understanding, semantic retrieval and reasoning. It brings a team's documents together so they can be searched, reasoned over and kept up to date.
 
-https://github.com/user-attachments/assets/5722b10d-d04d-49ed-a6cc-635a8c77d91f
+./website-docs/homepage/public/docs/_home/brand/aethcraft-intro.mp4
 
 <p align="center"><sub>1:52 · 1080p · No narration, English on-screen text</sub></p>
 
@@ -79,7 +79,7 @@ Beyond the three modes:
       <img src="./website-docs/homepage/public/docs/_home/brands/tencent-cloud.ico" width="28" height="28" alt=""><br/>
       <sub>CLOUD</sub><br/>
       <b>Tencent Cloud Lighthouse</b><br/>
-      Deploy WeKnora from an application template and run it on your own cloud server.<br/><br/>
+      Deploy AethCraft from an application template and run it on your own cloud server.<br/><br/>
       <a href="https://mc.tencent.com/s69nKCVz">Deploy on Tencent Cloud →</a>
     </td>
     <td width="33%" valign="top">
@@ -135,7 +135,7 @@ docker compose down     # Stop services
 
 ### Upgrading
 
-If you already have WeKnora running and downloaded a newer release:
+If you already have AethCraft running and downloaded a newer release:
 
 ```bash
 # Set WEKNORA_VERSION in .env to the target release (e.g. 0.8.3), or keep latest
@@ -158,7 +158,7 @@ docker compose up -d    # Recreate containers with new images
 All options, hardware requirements and deployment topologies: [Installation guide](https://weknora.weixin.qq.com/docs/01-getting-started/02-installation).
 
 > [!WARNING]
-> WeKnora ships with login authentication, but for production deployments we strongly recommend that you:
+> AethCraft ships with login authentication, but for production deployments we strongly recommend that you:
 > - deploy it in an internal / private network rather than on the public internet;
 > - avoid exposing the service directly to public networks, to prevent information leakage;
 > - configure proper firewall rules and access controls for the deployment environment;
@@ -276,7 +276,7 @@ Full history: [`CHANGELOG.md`](./CHANGELOG.md).
 
 ### Automatic wiki
 
-**Documents organized into a browsable wiki.** With Wiki enabled, WeKnora extracts people, products and concepts from knowledge-base documents into pages with source citations, organized by directory. The knowledge graph shows how pages relate; pages can be edited directly and every change can be rolled back. [Docs →](https://weknora.weixin.qq.com/docs/03-features/14-wiki)
+**Documents organized into a browsable wiki.** With Wiki enabled, AethCraft extracts people, products and concepts from knowledge-base documents into pages with source citations, organized by directory. The knowledge graph shows how pages relate; pages can be edited directly and every change can be rolled back. [Docs →](https://weknora.weixin.qq.com/docs/03-features/14-wiki)
 
 <a href="./docs/images/readme/spotlight-wiki-light.webp">
 <picture>
@@ -301,7 +301,7 @@ Full history: [`CHANGELOG.md`](./CHANGELOG.md).
 <a href="./docs/images/readme/architecture-en-light.svg">
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="./docs/images/readme/architecture-en-dark.svg">
-  <img src="./docs/images/readme/architecture-en-light.svg" alt="WeKnora architecture: clients and channels connect to the WeKnora app, where RAG Q&A, agent reasoning and auto wiki share one knowledge pipeline; the app calls runtime services and stores data in PostgreSQL, Redis and optional stores" width="100%">
+  <img src="./docs/images/readme/architecture-en-light.svg" alt="AethCraft architecture: clients and channels connect to the AethCraft app, where RAG Q&A, agent reasoning and auto wiki share one knowledge pipeline; the app calls runtime services and stores data in PostgreSQL, Redis and optional stores" width="100%">
 </picture>
 </a>
 
@@ -342,11 +342,11 @@ A modular pipeline from document parsing, vectorization and retrieval to LLM inf
 | <img src="./website-docs/homepage/public/docs/_home/brands/browserskill.png" width="22" height="22" alt=""> | [**Local Browser (BrowserSkill)**](https://weknora.weixin.qq.com/docs/05-clients/09-local-browser) | Lets agents operate the user's own Chrome / Edge |
 | <img src="./website-docs/homepage/public/docs/_home/brands/chrome.svg" width="22" height="22" alt=""> | [**Chrome Extension**](https://chromewebstore.google.com/detail/jpemjbopikggjlmikmclgbmkhhopjdgd) | Select text, images, or entire pages in the browser and save them as knowledge entries with one click, without copy-paste or file upload |
 | <img src="./docs/images/readme/icons/phone.svg" width="22" height="22" alt=""> | [**WeChat Mini Program**](./miniprogram/README.md) | Lightweight mobile client: configure API access, select knowledge bases, import URLs, and ask knowledge chat from WeChat |
-| <img src="./docs/images/readme/icons/skills.svg" width="22" height="22" alt=""> | [**ClawHub Skill**](https://clawhub.ai/lyingbug/weknora) | A WeKnora skill on ClawHub for document import, hybrid search and knowledge management via the REST API |
+| <img src="./docs/images/readme/icons/skills.svg" width="22" height="22" alt=""> | [**ClawHub Skill**](https://clawhub.ai/lyingbug/weknora) | An AethCraft skill on ClawHub for document import, hybrid search and knowledge management via the REST API |
 | <img src="./website-docs/homepage/public/docs/_home/brands/deepseek-color.svg" width="22" height="22" alt=""> | [**DeepSeek Harness plugin**](https://www.npmjs.com/package/@wxg-prc-cpg/dsh-weknora) | Gives `dsh` coding agents four read-only tools: search, read document, ask and list knowledge bases |
 | <img src="./docs/images/readme/icons/code.svg" width="22" height="22" alt=""> | [**Website Embed Widget**](https://weknora.weixin.qq.com/docs/03-features/13-embed-channel) | Publishes agents on external sites |
 | <img src="./docs/images/readme/icons/braces.svg" width="22" height="22" alt=""> | [**Go SDK**](https://weknora.weixin.qq.com/docs/05-clients/03-go-sdk) | CRUD for knowledge bases, documents and sessions, plus SSE streaming Q&A |
-| <img src="./website-docs/homepage/public/docs/_home/brands/wechat-dialog.png" width="22" height="22" alt=""> | [**WeChat Dialog Open Platform**](https://chatbot.weixin.qq.com) | Hosted Q&A built on WeKnora: upload knowledge and publish a Q&A service in WeChat without writing code |
+| <img src="./website-docs/homepage/public/docs/_home/brands/wechat-dialog.png" width="22" height="22" alt=""> | [**WeChat Dialog Open Platform**](https://chatbot.weixin.qq.com) | Hosted Q&A built on AethCraft: upload knowledge and publish a Q&A service in WeChat without writing code |
 
 ### Command-Line Interface
 

@@ -1115,7 +1115,7 @@ const openWeKnoraEntity = async (el: HTMLElement) => {
     }
   } catch (error) {
     win?.close();
-    console.error('Failed to open WeKnora entity link:', error);
+    console.error('Failed to open AethCraft entity link:', error);
     MessagePlugin.warning(t('agentStream.citation.loadFailed'));
   }
 };

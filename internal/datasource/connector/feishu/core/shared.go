@@ -168,7 +168,7 @@ const MinAttachmentBytes = 2 * 1024
 const maxInlineImageBytes = 10 * 1024 * 1024
 
 // SupportedImageExt sniffs image bytes and returns the filename extension and
-// content type WeKnora accepts for a standalone image knowledge item (png/jpg/
+// content type AethCraft accepts for a standalone image knowledge item (png/jpg/
 // gif — the image set isValidFileType admits). ok is false for non-image or
 // unsupported formats (e.g. webp/bmp), which the caller skips rather than
 // mislabel — a wrong extension would fail parsing. The detected content type is
@@ -382,7 +382,7 @@ func userNameResolver(ctx context.Context, client *Client) func(string) string {
 // DocxFetchInput is the unified description of one docx document from either
 // source (wiki node or Drive file) that FetchDocxWithBlocks needs.
 type DocxFetchInput struct {
-	// WeKnora external_id: wiki=node.NodeToken, drive=file.Token
+	// AethCraft external_id: wiki=node.NodeToken, drive=file.Token
 	DocToken string
 	// Feishu docx document token
 	ObjToken   string

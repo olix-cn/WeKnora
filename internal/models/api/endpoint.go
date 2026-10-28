@@ -53,7 +53,7 @@ type Endpoint struct {
 	URL string
 	// Query is appended to the final URL (Azure api-version).
 	Query map[string]string
-	// Model is the name sent on the wire; ModelID is WeKnora's own identifier.
+	// Model is the name sent on the wire; ModelID is AethCraft's own identifier.
 	Model   string
 	ModelID string
 	// Auth stamps credentials; Headers are static extra headers (vendor
@@ -132,7 +132,7 @@ func (e Endpoint) newPost(ctx context.Context, url string, data []byte, contentT
 	secutils.ApplyCustomHeaders(req, e.Headers)
 	// Identity belongs to this call, not the shared model configuration or
 	// a per-request UUID. Derived contexts retain it across turns and retries.
-	req.Header.Set("User-Agent", "WeKnora")
+	req.Header.Set("User-Agent", "AethCraft")
 	req.Header.Del("X-Conversation-ID")
 	if sessionID, ok := types.SessionIDFromContext(ctx); ok {
 		req.Header.Set("X-Conversation-ID", sessionID)

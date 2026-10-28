@@ -2,7 +2,7 @@
   <a href="https://weknora.weixin.qq.com">
     <picture>
       <source media="(prefers-color-scheme: dark)" srcset="./docs/images/readme/hero-ja-dark.svg">
-      <img src="./docs/images/readme/hero-ja-light.svg" alt="WeKnora：答えを見つけ、知識を実践に活かす。Tencent が公開するオープンソースのエンタープライズ向けナレッジ管理フレームワーク。チームの資料を集約し、Q&A・タスク実行・Wiki 整理に活用します。" width="100%">
+      <img src="./docs/images/readme/hero-ja-light.svg" alt="AethCraft：答えを見つけ、知識を実践に活かす。AethCraft のエンタープライズ向けナレッジ管理フレームワーク。チームの資料を集約し、Q&A・タスク実行・Wiki 整理に活用します。" width="100%">
     </picture>
   </a>
 </p>
@@ -40,9 +40,9 @@
 
 ## プロジェクト紹介
 
-**[WeKnora（ウィーノラ）](https://weknora.weixin.qq.com)** は、大規模言語モデル（LLM）をベースとしたオープンソースのナレッジフレームワークで、エンタープライズ向けの文書理解、セマンティック検索、推論に対応します。チームに散在する文書を集約し、検索・推論に使えるようにし、資料の更新に合わせて維持します。
+**[AethCraft（ウィーノラ）](https://weknora.weixin.qq.com)** は、大規模言語モデル（LLM）をベースとしたオープンソースのナレッジフレームワークで、エンタープライズ向けの文書理解、セマンティック検索、推論に対応します。チームに散在する文書を集約し、検索・推論に使えるようにし、資料の更新に合わせて維持します。
 
-https://github.com/user-attachments/assets/5722b10d-d04d-49ed-a6cc-635a8c77d91f
+./website-docs/homepage/public/docs/_home/brand/aethcraft-intro.mp4
 
 <p align="center"><sub>1 分 52 秒 · 1080p · ナレーションなし・英語の画面テキスト</sub></p>
 
@@ -79,7 +79,7 @@ https://github.com/user-attachments/assets/5722b10d-d04d-49ed-a6cc-635a8c77d91f
       <img src="./website-docs/homepage/public/docs/_home/brands/tencent-cloud.ico" width="28" height="28" alt=""><br/>
       <sub>クラウド</sub><br/>
       <b>Tencent Cloud Lighthouse</b><br/>
-      アプリケーションテンプレートから WeKnora をデプロイし、自分のクラウドサーバーで運用します。<br/><br/>
+      アプリケーションテンプレートから AethCraft をデプロイし、自分のクラウドサーバーで運用します。<br/><br/>
       <a href="https://mc.tencent.com/s69nKCVz">Tencent Cloud でデプロイ →</a>
     </td>
     <td width="33%" valign="top">
@@ -158,8 +158,8 @@ docker compose up -d    # 新しいイメージでコンテナを再作成
 すべてのデプロイ形態、ハードウェア要件、構成例は[インストールガイド](https://weknora.weixin.qq.com/docs/01-getting-started/02-installation)を参照してください。
 
 > [!WARNING]
-> WeKnora にはログイン認証がありますが、本番環境でのデプロイでは以下を強く推奨します：
-> - WeKnora サービスはパブリックインターネットではなく、内部 / プライベートネットワーク環境にデプロイする
+> AethCraft にはログイン認証がありますが、本番環境でのデプロイでは以下を強く推奨します：
+> - AethCraft サービスはパブリックインターネットではなく、内部 / プライベートネットワーク環境にデプロイする
 > - 情報漏洩を防ぐため、サービスを直接パブリックネットワークに公開しない
 > - デプロイ環境に適切なファイアウォールルールとアクセス制御を設定する
 > - セキュリティパッチと改善のため、定期的に最新バージョンに更新する
@@ -301,7 +301,7 @@ docker compose up -d    # 新しいイメージでコンテナを再作成
 <a href="./docs/images/readme/architecture-ja-light.svg">
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="./docs/images/readme/architecture-ja-dark.svg">
-  <img src="./docs/images/readme/architecture-ja-light.svg" alt="WeKnora アーキテクチャ：クライアントとチャネルが WeKnora アプリに接続し、RAG Q&A・Agent 推論・自動 Wiki が同じナレッジ処理パイプラインを共有。アプリはランタイムサービスを呼び出し、PostgreSQL・Redis と任意のストレージにデータを保存" width="100%">
+  <img src="./docs/images/readme/architecture-ja-light.svg" alt="AethCraft アーキテクチャ：クライアントとチャネルが AethCraft アプリに接続し、RAG Q&A・Agent 推論・自動 Wiki が同じナレッジ処理パイプラインを共有。アプリはランタイムサービスを呼び出し、PostgreSQL・Redis と任意のストレージにデータを保存" width="100%">
 </picture>
 </a>
 
@@ -342,11 +342,11 @@ docker compose up -d    # 新しいイメージでコンテナを再作成
 | <img src="./website-docs/homepage/public/docs/_home/brands/browserskill.png" width="22" height="22" alt=""> | [**ローカルブラウザ（BrowserSkill）**](https://weknora.weixin.qq.com/docs/05-clients/09-local-browser) | エージェントがユーザー自身の Chrome / Edge を操作 |
 | <img src="./website-docs/homepage/public/docs/_home/brands/chrome.svg" width="22" height="22" alt=""> | [**Chrome 拡張機能**](https://chromewebstore.google.com/detail/jpemjbopikggjlmikmclgbmkhhopjdgd) | テキスト、画像、ページ全体を選択してワンクリックでナレッジエントリとして保存。コピペやファイルアップロードは不要 |
 | <img src="./docs/images/readme/icons/phone.svg" width="22" height="22" alt=""> | [**WeChat ミニプログラム**](./miniprogram/README.md) | 軽量なモバイルクライアント。API の設定、ナレッジベースの選択、URL のインポート、WeChat からのナレッジ Q&A |
-| <img src="./docs/images/readme/icons/skills.svg" width="22" height="22" alt=""> | [**ClawHub Skill**](https://clawhub.ai/lyingbug/weknora) | ClawHub で公開された WeKnora スキル。REST API でドキュメントのインポート、ハイブリッド検索、ナレッジ管理 |
+| <img src="./docs/images/readme/icons/skills.svg" width="22" height="22" alt=""> | [**ClawHub Skill**](https://clawhub.ai/lyingbug/weknora) | ClawHub で公開された AethCraft スキル。REST API でドキュメントのインポート、ハイブリッド検索、ナレッジ管理 |
 | <img src="./website-docs/homepage/public/docs/_home/brands/deepseek-color.svg" width="22" height="22" alt=""> | [**DeepSeek Harness プラグイン**](https://www.npmjs.com/package/@wxg-prc-cpg/dsh-weknora) | `dsh` のコーディングエージェントに 4 つの読み取り専用ツール（検索、ドキュメント読み取り、質問、ナレッジベース一覧）を提供 |
 | <img src="./docs/images/readme/icons/code.svg" width="22" height="22" alt=""> | [**ウェブ埋め込み Widget**](https://weknora.weixin.qq.com/docs/03-features/13-embed-channel) | エージェントを外部サイトに公開 |
 | <img src="./docs/images/readme/icons/braces.svg" width="22" height="22" alt=""> | [**Go SDK**](https://weknora.weixin.qq.com/docs/05-clients/03-go-sdk) | ナレッジベース・ドキュメント・セッションなどの CRUD と SSE ストリーミング Q&A |
-| <img src="./website-docs/homepage/public/docs/_home/brands/wechat-dialog.png" width="22" height="22" alt=""> | [**WeChat 対話オープンプラットフォーム**](https://chatbot.weixin.qq.com) | WeKnora をベースにしたホスティング型 Q&A。ナレッジをアップロードするだけで WeChat 内に Q&A サービスを公開 |
+| <img src="./website-docs/homepage/public/docs/_home/brands/wechat-dialog.png" width="22" height="22" alt=""> | [**WeChat 対話オープンプラットフォーム**](https://chatbot.weixin.qq.com) | AethCraft をベースにしたホスティング型 Q&A。ナレッジをアップロードするだけで WeChat 内に Q&A サービスを公開 |
 
 ### コマンドラインツール
 

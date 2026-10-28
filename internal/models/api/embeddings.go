@@ -11,7 +11,7 @@ import (
 // pass validation.
 type EmbeddingAPI string
 
-// The embedding protocols WeKnora speaks.
+// The embedding protocols AethCraft speaks.
 const (
 	// EmbeddingOpenAI is POST {base}/embeddings with {model, input[]} answering
 	// {data: [{embedding, index}]} — the shape OpenAI defined and every
@@ -57,7 +57,7 @@ type Embedder interface {
 }
 
 // EmbedImage is one image to embed. It travels inline rather than as a URL:
-// the object store WeKnora reads images from is usually not reachable from
+// the object store AethCraft reads images from is usually not reachable from
 // the vendor, and every multimodal vendor in the catalog accepts base64.
 type EmbedImage struct {
 	Data     []byte

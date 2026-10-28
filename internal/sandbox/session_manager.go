@@ -5,7 +5,7 @@
 // treats the authoritative session→sandbox binding as external state that
 // lives in SessionSandboxBindingStore (Redis in production, memory in tests
 // and single-process deployments). This makes the manager provider-neutral
-// (Cube , E2B) and multi-instance safe: two WeKnora processes
+// (Cube , E2B) and multi-instance safe: two AethCraft processes
 // concurrently servicing the same session never allocate duplicate sandboxes,
 // and a restart never loses the session's remote resource.
 //
@@ -1035,7 +1035,7 @@ func (m *SessionBoundManager) ExecShellCommand(
 
 // ExecShellCommandWithOptions runs a shell command with install-only options.
 // Fallback is explicitly refused so even privileged installer calls never
-// escape onto the WeKnora host machine.
+// escape onto the AethCraft host machine.
 func (m *SessionBoundManager) ExecShellCommandWithOptions(
 	ctx context.Context,
 	sessionID string,
@@ -1508,7 +1508,7 @@ var _ SessionDesktopProvider = (*SessionBoundManager)(nil)
 
 // Cleanup marks the manager closed. Session sandboxes are not force-deleted
 // here: their lifecycle is authoritative in the binding store and would
-// leak to any other WeKnora replica if this replica reaped them on shutdown.
+// leak to any other AethCraft replica if this replica reaped them on shutdown.
 // Providers reclaim idle sandboxes via their own timeout/pause policies.
 func (m *SessionBoundManager) Cleanup(_ context.Context) error {
 	if m == nil {
@@ -2713,7 +2713,7 @@ g -c uploadpack.allowAnySHA1InWant=true --git-dir="$tmp/repo.git" fetch -q --no-
 g --git-dir="$tmp/repo.git" symbolic-ref HEAD refs/heads/main
 g --git-dir="$tmp/repo.git" config core.bare false
 g --git-dir="$tmp/repo.git" config user.email agent@weknora.local
-g --git-dir="$tmp/repo.git" config user.name 'WeKnora Agent'
+g --git-dir="$tmp/repo.git" config user.name 'AethCraft Agent'
 mkdir -p "$tmp/tree"
 g --git-dir="$tmp/repo.git" --work-tree="$tmp/tree" checkout -q -f main
 mkdir -p "$tmp/tree/input" "$tmp/tree/output"
@@ -2762,7 +2762,7 @@ var (
 )
 
 // PermissiveSessionExistenceChecker accepts every session. It is safe in
-// deployments where WeKnora's own DestroySession is the only session-delete
+// deployments where AethCraft's own DestroySession is the only session-delete
 // path (single-process memory binding store); the Redis-authoritative
 // deployment must inject a real checker consulting the session repository.
 type PermissiveSessionExistenceChecker struct{}

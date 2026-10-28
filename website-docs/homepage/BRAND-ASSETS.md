@@ -4,14 +4,14 @@ Logos identify supported integrations; their names and marks belong to their res
 
 Paths below written as `public/brand/…`, `public/brands/…` and `public/product/…` live under `public/docs/_home/`, so the site serves them from `/docs/_home/` next to the rest of the documentation.
 
-- WeKnora logo: `docs/images/logo.png` from the WeKnora repository (the README logo), copied unchanged to `public/brand/weknora-original.png`. The site preserves all lettering, graphics and proportions. CSS hides only the empty outer canvas and blends the white background into the page; dark mode uses an inverted presentation with hue rotation. The source image remains unchanged.
-- WeKnora browser icon: copied unchanged from the existing product's `frontend/public/favicon.ico` into the documentation (`/docs/favicon.ico`), which the homepage also uses. The replacement square sail SVG is no longer shipped.
-- Feishu, GitLab, Tencent IMA, Notion, Yuque, RSS, WeCom, Slack, Telegram: copied unchanged from the WeKnora frontend asset library.
+- AethCraft wordmarks, browser icon and sharing image: imported from the supplied brand kit in `docs/branding/aethcraft`. Light and dark wordmarks use the supplied variants with blank canvas trimmed and quarter-height clear space. See `docs/branding/README.md` for reproducible import instructions.
+- The existing `weknora-original.png` compatibility path also contains the AethCraft wordmark. New headers use `aethcraft-light.png` and `aethcraft-dark.png` without color filters.
+- Feishu, GitLab, Tencent IMA, Notion, Yuque, RSS, WeCom, Slack, Telegram: copied unchanged from the AethCraft frontend asset library.
 - Seafile: copied unchanged from `frontend/src/assets/img/datasource-seafile.png` to `public/brands/seafile.png`.
 - OpenAI, DeepSeek, Qwen, Hunyuan, Gemini, Ollama, MCP: static SVGs from [Lobe Icons](https://github.com/lobehub/lobe-icons), `@lobehub/icons-static-svg@1.95.0`. Upstream MIT license included with assets.
-- Confluence, DingTalk: copied unchanged from the WeKnora frontend asset library (`frontend/src/assets/img/datasource-confluence.svg`, `frontend/src/assets/img/im/dingtalk.svg`).
+- Confluence, DingTalk: copied unchanged from the AethCraft frontend asset library (`frontend/src/assets/img/datasource-confluence.svg`, `frontend/src/assets/img/im/dingtalk.svg`).
 - Claude (Anthropic), Zhipu, Kimi (Moonshot), Volcengine, MiniMax: copied unchanged from `internal/models/providers/assets/`, which carries the same Lobe Icons static SVGs; covered by the included Lobe Icons MIT license.
-- BrowserSkill: `frontend/src/assets/browserskill/logo.png` from the WeKnora frontend (the extension's own icon, [Tencent/BrowserSkill](https://github.com/Tencent/BrowserSkill)), copied unchanged to `public/brands/browserskill.png` with its MIT license as `public/brands/BROWSERSKILL-LICENSE`.
+- BrowserSkill: `frontend/src/assets/browserskill/logo.png` from the AethCraft frontend (the extension's own icon, [Tencent/BrowserSkill](https://github.com/Tencent/BrowserSkill)), copied unchanged to `public/brands/browserskill.png` with its MIT license as `public/brands/BROWSERSKILL-LICENSE`.
 - Chrome: [official Chrome website asset](https://www.google.com/chrome/static/images/chrome-logo-m100.svg).
 - File formats, REST API, CLI: generic interface icons, not brand logos.
 - LiteLLM: [official documentation favicon](https://docs.litellm.ai/img/favicon.ico).

@@ -1868,7 +1868,7 @@ func TestFeishuCursorRoundTrip(t *testing.T) {
 }
 
 // TestSupportedImageExt covers every arm of the sniff table: the png/jpg/gif
-// formats WeKnora accepts (aligned with isValidFileType's image set), and the
+// formats AethCraft accepts (aligned with isValidFileType's image set), and the
 // unsupported case which must return ok=false while still surfacing the detected
 // content type so the caller can log it without re-sniffing.
 func TestSupportedImageExt(t *testing.T) {

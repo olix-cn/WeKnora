@@ -98,7 +98,7 @@ func stripImageXMLTags(s string) string {
 }
 
 // rewriteStorageURLs replaces all storage references in content with HTTP URLs
-// so IM clients — which cannot attach WeKnora credentials to an image fetch —
+// so IM clients — which cannot attach AethCraft credentials to an image fetch —
 // can render them. See internal/storageurl for the shared implementation.
 func rewriteStorageURLs(ctx context.Context, content string, resolver *storageurl.FileServiceResolver) string {
 	if resolver == nil {
@@ -297,9 +297,9 @@ type inflightEntry struct {
 
 // Service orchestrates IM message handling:
 // 1. Receives a unified IncomingMessage from an Adapter
-// 2. Resolves or creates a WeKnora session for the IM channel
+// 2. Resolves or creates an AethCraft session for the IM channel
 // 3. Dispatches slash-commands (/help, /kb, /clear, etc.) without entering QA
-// 4. Calls the WeKnora QA pipeline for normal messages
+// 4. Calls the AethCraft QA pipeline for normal messages
 // 5. Collects the streaming answer and sends it back via the Adapter
 type Service struct {
 	db             *gorm.DB
@@ -526,7 +526,7 @@ func (s *Service) buildIMMCPAuthNotice(ctx context.Context, services []imMCPAuth
 		if authURL != "" {
 			lines = append(lines, fmt.Sprintf("• %s：%s", name, authURL))
 		} else {
-			lines = append(lines, fmt.Sprintf("• %s（请在 WeKnora 管理后台完成 OAuth 授权）", name))
+			lines = append(lines, fmt.Sprintf("• %s（请在 AethCraft 管理后台完成 OAuth 授权）", name))
 		}
 	}
 
@@ -1795,7 +1795,7 @@ func (s *Service) HandleMessage(ctx context.Context, msg *IncomingMessage, chann
 	sessionCtx := context.WithValue(ctx, types.TenantInfoContextKey, tenant)
 	sessionCtx = withIMIdentity(sessionCtx, channel, msg)
 
-	// 2. Resolve or create a WeKnora session
+	// 2. Resolve or create an AethCraft session
 	channelSession, err := s.resolveSession(sessionCtx, msg, tenantID, agentID, channelID, channel.SessionMode)
 	if err != nil {
 		return fmt.Errorf("resolve session: %w", err)
@@ -1826,7 +1826,7 @@ func (s *Service) HandleMessage(ctx context.Context, msg *IncomingMessage, chann
 		return nil
 	}
 
-	// 4. Get the WeKnora session
+	// 4. Get the AethCraft session
 	session, err := s.sessionService.GetSession(sessionCtx, channelSession.SessionID)
 	if err != nil {
 		// The underlying session may have been deleted from the UI while the
@@ -2146,7 +2146,7 @@ func (s *Service) handleCommand(
 	switch result.Action {
 	case ActionClear:
 		// Soft-delete the current ChannelSession so the next IM message
-		// starts a completely fresh WeKnora session. Conversation history
+		// starts a completely fresh AethCraft session. Conversation history
 		// is keyed by session ID and rebuilt from DB on demand, so no
 		// separate cache invalidation step is needed.
 		if err := s.db.Model(&ChannelSession{}).
@@ -2240,7 +2240,7 @@ func (s *Service) sendStreamReply(ctx context.Context, msg *IncomingMessage, str
 	return nil
 }
 
-// isSessionNotFound reports whether err indicates the underlying WeKnora
+// isSessionNotFound reports whether err indicates the underlying AethCraft
 // session no longer exists. The session repository translates GORM's
 // ErrRecordNotFound into apperrors.ErrSessionNotFound, so the application
 // sentinel is what GetSession returns today; the GORM check is kept as a
@@ -2337,7 +2337,7 @@ func (s *Service) resolveUserSession(ctx context.Context, msg *IncomingMessage, 
 		return nil, fmt.Errorf("query channel session: %w", result.Error)
 	}
 
-	// Create a new WeKnora session. Start untitled when there's text to summarise
+	// Create a new AethCraft session. Start untitled when there's text to summarise
 	// so it gets a content-based title after the first message (see HandleMessage);
 	// fall back to the IM identity title otherwise.
 	title := imInitialSessionTitle(msg, buildUserSessionTitle)
@@ -2978,7 +2978,7 @@ func (s *Service) fallbackNonStream(ctx context.Context, msg *IncomingMessage, s
 	})
 }
 
-// runQA executes the WeKnora QA pipeline and returns the full answer text.
+// runQA executes the AethCraft QA pipeline and returns the full answer text.
 func (s *Service) runQA(ctx context.Context, session *types.Session, query string, customAgent *types.CustomAgent, kbIDs []string, attachments types.MessageAttachments, imageURLs []string, userKey string, quote *QuotedMessage) (string, error) {
 	// Cancellable context (no hard deadline): each agent round has its own
 	// LLMCallTimeout. The context can still be cancelled by /stop.

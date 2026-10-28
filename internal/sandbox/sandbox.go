@@ -80,7 +80,7 @@ const (
 	// envd (target "desktop-cube").
 	DefaultCubeDesktopTemplateImage = "wechatopenai/weknora-sandbox:main-desktop-cube"
 
-	// DesktopWebsockifyPort is websockify inside the sandbox. WeKnora dials
+	// DesktopWebsockifyPort is websockify inside the sandbox. AethCraft dials
 	// it through the provider gateway (Host "{port}-{id}.{domain}"), not by
 	// publishing the port on the host NIC. x11vnc stays on 127.0.0.1:5900
 	// with no RFB password; the Basic-auth check lives on websockify.
@@ -336,7 +336,7 @@ type Config struct {
 	// DefaultDockerHost.
 	DockerHost string
 
-	// DockerTLSCertPath is a directory on the WeKnora host holding
+	// DockerTLSCertPath is a directory on the AethCraft host holding
 	// ca.pem / cert.pem / key.pem. Required for a TCP daemon; unix sockets
 	// do not use TLS.
 	DockerTLSCertPath string
@@ -409,7 +409,7 @@ type Config struct {
 	// CubeHTTPTimeout bounds each HTTP call to CubeAPI. Zero uses the default.
 	CubeHTTPTimeout time.Duration
 
-	// CubeDNSServers are nameserver IPs included when WeKnora builds the
+	// CubeDNSServers are nameserver IPs included when AethCraft builds the
 	// standard Cube template. Empty omits the field so Cubelet uses its
 	// cluster default.
 	CubeDNSServers []string

@@ -1,0 +1,40 @@
+/* AethCraft brand palette, from docs/branding/aethcraft/brand-colors.json. */
+:root:root {
+  --aethcraft-primary: #214577;
+  --aethcraft-paper: #fdfdfd;
+  --aethcraft-secondary: #4f6c93;
+  --aethcraft-muted: #d3dae3;
+  --aethcraft-hover: #375885;
+  --aethcraft-soft: #7289a8;
+}
+
+:root:root,
+:root:root[theme-mode="light"] {
+  --td-brand-color-1: #edf1f6;
+  --td-brand-color-2: var(--aethcraft-muted);
+  --td-brand-color-3: var(--aethcraft-hover);
+  --td-brand-color-4: var(--aethcraft-primary);
+  --td-brand-color-5: #19365e;
+  --td-brand-color-6: #152d4f;
+  --td-brand-color-7: #112440;
+  --td-brand-color-8: #0d1c32;
+  --td-brand-color-9: #091425;
+  --td-brand-color-10: #060e1b;
+  --td-brand-color-disabled: var(--aethcraft-soft);
+  --app-brand-gradient: linear-gradient(225deg, #0d1c32, var(--aethcraft-primary) 55%, var(--aethcraft-secondary));
+}
+
+:root:root[theme-mode="dark"] {
+  --td-brand-color-1: #21457733;
+  --td-brand-color-2: #152d4f;
+  --td-brand-color-3: var(--aethcraft-primary);
+  --td-brand-color-4: var(--aethcraft-hover);
+  --td-brand-color-5: #8fa6c4;
+  --td-brand-color-6: #a8bcd5;
+  --td-brand-color-7: #c0cfe2;
+  --td-brand-color-8: var(--aethcraft-muted);
+  --td-brand-color-9: #e6ebf2;
+  --td-brand-color-10: var(--aethcraft-paper);
+  --td-brand-color-disabled: var(--aethcraft-secondary);
+  --td-text-color-anti: #0d1c32;
+}

@@ -96,8 +96,8 @@
     </div>
 
     <!-- Logo - Top Left -->
-    <a href="https://github.com/Tencent/WeKnora" target="_blank" class="header-logo" :title="$t('common.github')">
-      <img src="@/assets/img/weknora.png" alt="WeKnora" class="logo-image" />
+    <a href="/" class="header-logo" title="AethCraft">
+      <BrandLogo class="logo-image" on-dark />
     </a>
 
     <!-- Header Links - Top Right -->
@@ -337,6 +337,7 @@
 </template>
 
 <script setup lang="ts">
+import BrandLogo from '@/components/BrandLogo.vue'
 import { ref, reactive, nextTick, onMounted, onBeforeUnmount, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { MessagePlugin } from 'tdesign-vue-next'
@@ -832,7 +833,7 @@ onMounted(async () => {
   min-height: 100%;
   overflow: hidden;
   position: relative;
-  background: linear-gradient(225deg, #022c22 0%, #064e3b 15%, #065f46 25%, #047857 38%, #059669 50%, #07C05F 65%, #10B981 78%, #34D399 90%, #6EE7B7 100%);
+  background: var(--app-brand-gradient);
 
   &::before {
     content: '';
@@ -1817,7 +1818,7 @@ onMounted(async () => {
 <style lang="less">
 html[theme-mode="dark"] {
   .login-layout {
-    background: linear-gradient(225deg, #011a14 0%, #032e22 15%, #043a2c 25%, #05503d 38%, #046647 50%, #038a56 65%, #049b60 78%, #06a06a 90%, #07b074 100%);
+    background: var(--app-brand-gradient);
   }
 
   .knowledge-node {
@@ -1831,7 +1832,7 @@ html[theme-mode="dark"] {
   }
 
   .header-logo .logo-image {
-    filter: invert(1) hue-rotate(180deg) brightness(1.1);
+    filter: none;
   }
 
   .header-link {
@@ -1889,7 +1890,16 @@ html[theme-mode="dark"] {
   }
 
   .login-features .feature-icon {
-    background: rgba(6, 176, 77, 0.15);
+    background: color-mix(in srgb, var(--td-brand-color) 15%, transparent);
   }
+}
+.login-layout .header-logo .logo-image {
+  width: 148px;
+  height: auto;
+  min-height: 35px;
+}
+.login-layout .header-link,
+.login-layout .tag {
+  color: var(--aethcraft-paper);
 }
 </style>

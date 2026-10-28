@@ -36,7 +36,7 @@ const (
 	remoteMetadataAllocation    = "weknora_allocation"
 )
 
-// ErrSandboxSessionDeleted reports that the owning WeKnora session no longer
+// ErrSandboxSessionDeleted reports that the owning AethCraft session no longer
 // exists. Callers must not execute work with the returned nil handle.
 var ErrSandboxSessionDeleted = errors.New("sandbox session no longer exists")
 

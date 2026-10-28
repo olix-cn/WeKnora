@@ -78,7 +78,7 @@ func TestCheckpointKeepsAgentGitOnceWeKnoraRepoExists(t *testing.T) {
 
 	require.DirExists(t, filepath.Join(workspace, ".git"))
 	gotAgent := strings.TrimSpace(runGitAt(t, env, workspace, "rev-parse", "HEAD"))
-	require.Equal(t, agentHEAD, gotAgent, "WeKnora must not delete or rewrite the agent's work-tree git")
+	require.Equal(t, agentHEAD, gotAgent, "AethCraft must not delete or rewrite the agent's work-tree git")
 	require.FileExists(t, filepath.Join(gitDir, "HEAD"))
 	ls := runGitSplit(t, env, workspace, gitDir, "ls-files")
 	require.NotContains(t, ls, ".git/", "checkpoint must not ingest the agent's .git as tracked files")
@@ -90,7 +90,7 @@ func TestResetPrunesLaterCommitsFromExternalGitDir(t *testing.T) {
 
 	runGitSplit(t, env, workspace, gitDir, "init", "-q")
 	runGitSplit(t, env, workspace, gitDir, "config", "user.email", "agent@weknora.local")
-	runGitSplit(t, env, workspace, gitDir, "config", "user.name", "WeKnora Agent")
+	runGitSplit(t, env, workspace, gitDir, "config", "user.name", "AethCraft Agent")
 	require.NoError(t, os.WriteFile(filepath.Join(workspace, "keep.txt"), []byte("early"), 0o644))
 	runGitSplit(t, env, workspace, gitDir, "add", "-A")
 	runGitSplit(t, env, workspace, gitDir, "commit", "-q", "-m", "early")
@@ -127,7 +127,7 @@ func TestEmptyResetWipesWorkTreeAndReinitializesGitDir(t *testing.T) {
 
 	runGitSplit(t, env, workspace, gitDir, "init", "-q")
 	runGitSplit(t, env, workspace, gitDir, "config", "user.email", "agent@weknora.local")
-	runGitSplit(t, env, workspace, gitDir, "config", "user.name", "WeKnora Agent")
+	runGitSplit(t, env, workspace, gitDir, "config", "user.name", "AethCraft Agent")
 	require.NoError(t, os.WriteFile(filepath.Join(workspace, "keep.txt"), []byte("early"), 0o644))
 	runGitSplit(t, env, workspace, gitDir, "add", "-A")
 	runGitSplit(t, env, workspace, gitDir, "commit", "-q", "-m", "early")
@@ -235,7 +235,7 @@ func TestAdoptsLegacyWorkTreeCheckpointRepo(t *testing.T) {
 	// the checkpointer's identity.
 	runGitAt(t, env, workspace, "init", "-q")
 	runGitAt(t, env, workspace, "config", "user.email", "agent@weknora.local")
-	runGitAt(t, env, workspace, "config", "user.name", "WeKnora Agent")
+	runGitAt(t, env, workspace, "config", "user.name", "AethCraft Agent")
 	require.NoError(t, os.WriteFile(filepath.Join(workspace, "keep.txt"), []byte("early"), 0o644))
 	runGitAt(t, env, workspace, "add", "-A")
 	runGitAt(t, env, workspace, "commit", "-q", "-m", "turn:msg-1")
@@ -299,7 +299,7 @@ func TestAdoptionIsOnlyAttemptedWhileTheNewGitDirIsMissing(t *testing.T) {
 
 	runGitAt(t, env, workspace, "init", "-q")
 	runGitAt(t, env, workspace, "config", "user.email", "agent@weknora.local")
-	runGitAt(t, env, workspace, "config", "user.name", "WeKnora Agent")
+	runGitAt(t, env, workspace, "config", "user.name", "AethCraft Agent")
 	runGitAt(t, env, workspace, "commit", "-q", "--allow-empty", "-m", "turn:msg-0")
 	legacy := strings.TrimSpace(runGitAt(t, env, workspace, "rev-parse", "HEAD"))
 
@@ -311,7 +311,7 @@ func TestAdoptionIsOnlyAttemptedWhileTheNewGitDirIsMissing(t *testing.T) {
 	// The agent now starts its own repository in the work tree.
 	runGitAt(t, env, workspace, "init", "-q")
 	runGitAt(t, env, workspace, "config", "user.email", "agent@weknora.local")
-	runGitAt(t, env, workspace, "config", "user.name", "WeKnora Agent")
+	runGitAt(t, env, workspace, "config", "user.name", "AethCraft Agent")
 	runGitAt(t, env, workspace, "commit", "-q", "--allow-empty", "-m", "agent")
 	agentHEAD := strings.TrimSpace(runGitAt(t, env, workspace, "rev-parse", "HEAD"))
 

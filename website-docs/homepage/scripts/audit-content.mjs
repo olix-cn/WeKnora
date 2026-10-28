@@ -13,7 +13,7 @@ for (const term of ['三套', '方案选择', '历史 Demo', '18K+', '成为行�
   assert.ok(!visible.includes(term), `Retired content still visible: ${term}`);
 }
 assert.match(html, /<video[^>]+preload="none"/, 'Video should not load before user interaction');
-assert.match(html, /https:\/\/github.com\/user-attachments\/assets\/2819598d-3140-4623-814a-8162a22b653c/, 'Use the README video');
+assert.ok(html.includes('/docs/_home/brand/aethcraft-intro.mp4'), 'Use the AethCraft product video');
 assert.ok(!/<video[^>]+autoplay/i.test(html), 'Do not autoplay the product film');
 const wiki = html.match(/<section id="wiki"[\s\S]*?<\/section>/)?.[0];
 assert.ok(wiki, 'The homepage must include a dedicated Wiki section');
@@ -48,5 +48,5 @@ const pendingShots = [...html.matchAll(/website-docs\/homepage\/public(\/docs\/_
 for (const [, image] of html.matchAll(/\\?"image\\?":\\?"([\w-]+)\\?"[^{}]*?\\?"available\\?":false/g)) pendingShots.push(`/docs/_home/product/${image}.png`);
 if (pendingShots.length) console.warn(`Product screenshots still pending (placeholder shown): ${[...new Set(pendingShots)].join(', ')}`);
 assert.match(html, /aria-controls="main-navigation"/);
-assert.match(html, /aria-label="播放 WeKnora 产品介绍视频/);
+assert.match(html, /aria-label="播放 AethCraft 产品介绍视频/);
 console.log(`Homepage audit passed: product content, README video, navigation anchors, ${assets.size} local assets, and retired design choices.`);

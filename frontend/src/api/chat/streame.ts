@@ -17,7 +17,7 @@ import {
   runStreamWithAuthRetry,
 } from '@/utils/authRefresh';
 
-/** The WeKnora page the user has open; agent-chat only. */
+/** The AethCraft page the user has open; agent-chat only. */
 export interface PageContextPayload {
   page?: string
   section?: string

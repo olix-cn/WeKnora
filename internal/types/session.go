@@ -98,7 +98,7 @@ type Session struct {
 	// Kind is empty for ordinary chats and SessionKindAssistant for assistant
 	// conversations; it is set at creation and never updated.
 	Kind string `json:"kind" gorm:"column:kind;type:varchar(32);not null;default:''"`
-	// UserID is the owner scope for this session. WeKnora user UUIDs, API
+	// UserID is the owner scope for this session. AethCraft user UUIDs, API
 	// external-user principals, and embed visitor principals all use this column.
 	UserID string `json:"user_id,omitempty" gorm:"type:varchar(512);index"`
 	// OwnerAuthSource records, server-side, how UserID was authenticated when
@@ -141,7 +141,7 @@ type Session struct {
 	SandboxConfigTenantID uint64 `json:"-" gorm:"column:sandbox_config_tenant_id;type:bigint;default:0"`
 
 	// HostWorkspaceDir is the user-selected project directory this session
-	// operates in, for the WeKnora Lite host sandbox only. Empty means the session
+	// operates in, for the AethCraft Lite host sandbox only. Empty means the session
 	// gets an auto-allocated workspace instead.
 	//
 	// Written once at creation and never updated: re-pointing a live session

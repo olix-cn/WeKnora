@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-WeKnora MCP Server
+AethCraft MCP Server
 
-A Model Context Protocol server that provides access to the WeKnora knowledge management API.
+A Model Context Protocol server that provides access to the AethCraft knowledge management API.
 """
 
 import argparse
@@ -127,10 +127,10 @@ def _normalize_kb_entries(resp: object) -> list[Dict]:
 
 
 class WeKnoraClient:
-    """Client for interacting with WeKnora API"""
+    """Client for interacting with AethCraft API"""
 
     def __init__(self, base_url: str, api_key: str):
-        """Initialize the WeKnora API client with base URL and authentication"""
+        """Initialize the AethCraft API client with base URL and authentication"""
         self.base_url = base_url
         self.api_key = api_key
         # SSL verification: enabled by default. Set WEKNORA_VERIFY_SSL=false to disable
@@ -164,7 +164,7 @@ class WeKnoraClient:
         return self._session_local.session
 
     def _request(self, method: str, endpoint: str, **kwargs) -> Dict[str, Any]:
-        """Make a request to the WeKnora API
+        """Make a request to the AethCraft API
 
         Args:
             method: HTTP method (GET, POST, PUT, DELETE)
@@ -684,7 +684,7 @@ class WeKnoraClient:
 # MCPServer (formerly FastMCP) builds input schemas from function type hints
 # and serializes plain return values automatically.
 mcp = MCPServer("weknora-server", version="1.1.1")
-# Initialize WeKnora API client with configuration
+# Initialize AethCraft API client with configuration
 client = WeKnoraClient(WEKNORA_BASE_URL, WEKNORA_API_KEY)
 
 
@@ -1196,7 +1196,7 @@ def main():
       2. MCP_TRANSPORT environment variable
       3. Default: stdio
     """
-    parser = argparse.ArgumentParser(description="WeKnora MCP Server")
+    parser = argparse.ArgumentParser(description="AethCraft MCP Server")
     parser.add_argument(
         "--transport",
         choices=["stdio", "sse", "http"],

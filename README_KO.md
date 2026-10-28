@@ -2,7 +2,7 @@
   <a href="https://weknora.weixin.qq.com">
     <picture>
       <source media="(prefers-color-scheme: dark)" srcset="./docs/images/readme/hero-ko-dark.svg">
-      <img src="./docs/images/readme/hero-ko-light.svg" alt="WeKnora: 답을 찾고, 지식을 실천으로. Tencent가 오픈소스로 공개한 엔터프라이즈 지식 관리 프레임워크입니다. 팀 자료를 모아 Q&A, 작업 실행, Wiki 정리에 활용합니다." width="100%">
+      <img src="./docs/images/readme/hero-ko-light.svg" alt="AethCraft: 답을 찾고, 지식을 실천으로. AethCraft 엔터프라이즈 지식 관리 프레임워크입니다. 팀 자료를 모아 Q&A, 작업 실행, Wiki 정리에 활용합니다." width="100%">
     </picture>
   </a>
 </p>
@@ -40,9 +40,9 @@
 
 ## 개요
 
-[**WeKnora**](https://weknora.weixin.qq.com)는 엔터프라이즈 문서 이해, 시맨틱 검색, 추론을 위한 오픈소스 LLM 기반 지식 프레임워크입니다. 팀에 흩어진 문서를 한데 모아 검색하고 추론에 활용할 수 있게 하며, 자료가 바뀌면 함께 갱신합니다.
+[**AethCraft**](https://weknora.weixin.qq.com)는 엔터프라이즈 문서 이해, 시맨틱 검색, 추론을 위한 오픈소스 LLM 기반 지식 프레임워크입니다. 팀에 흩어진 문서를 한데 모아 검색하고 추론에 활용할 수 있게 하며, 자료가 바뀌면 함께 갱신합니다.
 
-https://github.com/user-attachments/assets/5722b10d-d04d-49ed-a6cc-635a8c77d91f
+./website-docs/homepage/public/docs/_home/brand/aethcraft-intro.mp4
 
 <p align="center"><sub>1분 52초 · 1080p · 내레이션 없음, 영어 화면 텍스트</sub></p>
 
@@ -89,7 +89,7 @@ https://github.com/user-attachments/assets/5722b10d-d04d-49ed-a6cc-635a8c77d91f
       <img src="./website-docs/homepage/public/docs/_home/brands/tencent-cloud.ico" width="28" height="28" alt=""><br/>
       <sub>클라우드</sub><br/>
       <b>Tencent Cloud Lighthouse</b><br/>
-      애플리케이션 템플릿으로 WeKnora를 배포하고 자신의 클라우드 서버에서 운영합니다.<br/><br/>
+      애플리케이션 템플릿으로 AethCraft를 배포하고 자신의 클라우드 서버에서 운영합니다.<br/><br/>
       <a href="https://mc.tencent.com/s69nKCVz">Tencent Cloud에 배포 →</a>
     </td>
     <td width="33%" valign="top">
@@ -168,8 +168,8 @@ docker compose up -d    # 새 이미지로 컨테이너 재생성
 모든 배포 형태, 하드웨어 요구 사항, 배포 토폴로지는 [설치 가이드](https://weknora.weixin.qq.com/docs/01-getting-started/02-installation)를 참고하세요.
 
 > [!WARNING]
-> WeKnora는 로그인 인증을 제공하지만, 운영 환경 배포 시 아래 사항을 강력히 권장합니다.
-> - WeKnora 서비스를 공용 인터넷이 아닌 내부 / 사설 네트워크 환경에 배포
+> AethCraft는 로그인 인증을 제공하지만, 운영 환경 배포 시 아래 사항을 강력히 권장합니다.
+> - AethCraft 서비스를 공용 인터넷이 아닌 내부 / 사설 네트워크 환경에 배포
 > - 정보 유출 방지를 위해 서비스를 공용 네트워크에 직접 노출하지 않기
 > - 배포 환경에 적절한 방화벽 규칙 및 접근 제어 구성
 > - 보안 패치와 개선 사항 적용을 위해 최신 버전으로 정기 업데이트
@@ -311,7 +311,7 @@ docker compose up -d    # 새 이미지로 컨테이너 재생성
 <a href="./docs/images/readme/architecture-ko-light.svg">
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="./docs/images/readme/architecture-ko-dark.svg">
-  <img src="./docs/images/readme/architecture-ko-light.svg" alt="WeKnora 아키텍처: 클라이언트와 채널이 WeKnora 앱에 연결되고, RAG Q&A·Agent 추론·자동 Wiki가 같은 지식 처리 파이프라인을 공유. 앱은 런타임 서비스를 호출하고 PostgreSQL·Redis와 선택적 스토리지에 데이터를 저장" width="100%">
+  <img src="./docs/images/readme/architecture-ko-light.svg" alt="AethCraft 아키텍처: 클라이언트와 채널이 AethCraft 앱에 연결되고, RAG Q&A·Agent 추론·자동 Wiki가 같은 지식 처리 파이프라인을 공유. 앱은 런타임 서비스를 호출하고 PostgreSQL·Redis와 선택적 스토리지에 데이터를 저장" width="100%">
 </picture>
 </a>
 
@@ -352,11 +352,11 @@ docker compose up -d    # 새 이미지로 컨테이너 재생성
 | <img src="./website-docs/homepage/public/docs/_home/brands/browserskill.png" width="22" height="22" alt=""> | [**로컬 브라우저(BrowserSkill)**](https://weknora.weixin.qq.com/docs/05-clients/09-local-browser) | 에이전트가 사용자 자신의 Chrome / Edge를 조작 |
 | <img src="./website-docs/homepage/public/docs/_home/brands/chrome.svg" width="22" height="22" alt=""> | [**Chrome 확장 프로그램**](https://chromewebstore.google.com/detail/jpemjbopikggjlmikmclgbmkhhopjdgd) | 텍스트, 이미지 또는 전체 페이지를 선택해 원클릭으로 지식 항목으로 저장. 복사/붙여넣기나 파일 업로드 불필요 |
 | <img src="./docs/images/readme/icons/phone.svg" width="22" height="22" alt=""> | [**WeChat 미니 프로그램**](./miniprogram/README.md) | 경량 모바일 클라이언트. API 설정, 지식베이스 선택, URL 임포트, WeChat에서 지식 Q&A |
-| <img src="./docs/images/readme/icons/skills.svg" width="22" height="22" alt=""> | [**ClawHub Skill**](https://clawhub.ai/lyingbug/weknora) | ClawHub에 게시된 WeKnora 스킬. REST API로 문서 임포트, 하이브리드 검색, 지식 관리 |
+| <img src="./docs/images/readme/icons/skills.svg" width="22" height="22" alt=""> | [**ClawHub Skill**](https://clawhub.ai/lyingbug/weknora) | ClawHub에 게시된 AethCraft 스킬. REST API로 문서 임포트, 하이브리드 검색, 지식 관리 |
 | <img src="./website-docs/homepage/public/docs/_home/brands/deepseek-color.svg" width="22" height="22" alt=""> | [**DeepSeek Harness 플러그인**](https://www.npmjs.com/package/@wxg-prc-cpg/dsh-weknora) | `dsh` 코딩 에이전트에 읽기 전용 도구 4개(검색, 문서 읽기, 질문, 지식베이스 목록) 제공 |
 | <img src="./docs/images/readme/icons/code.svg" width="22" height="22" alt=""> | [**웹사이트 임베드 Widget**](https://weknora.weixin.qq.com/docs/03-features/13-embed-channel) | 에이전트를 외부 사이트에 게시 |
 | <img src="./docs/images/readme/icons/braces.svg" width="22" height="22" alt=""> | [**Go SDK**](https://weknora.weixin.qq.com/docs/05-clients/03-go-sdk) | 지식베이스·문서·세션 등의 CRUD와 SSE 스트리밍 Q&A |
-| <img src="./website-docs/homepage/public/docs/_home/brands/wechat-dialog.png" width="22" height="22" alt=""> | [**WeChat 대화 오픈 플랫폼**](https://chatbot.weixin.qq.com) | WeKnora 기반 호스팅 Q&A. 지식을 업로드하면 코드 없이 WeChat에 Q&A 서비스 게시 |
+| <img src="./website-docs/homepage/public/docs/_home/brands/wechat-dialog.png" width="22" height="22" alt=""> | [**WeChat 대화 오픈 플랫폼**](https://chatbot.weixin.qq.com) | AethCraft 기반 호스팅 Q&A. 지식을 업로드하면 코드 없이 WeChat에 Q&A 서비스 게시 |
 
 ### 명령줄 도구
 

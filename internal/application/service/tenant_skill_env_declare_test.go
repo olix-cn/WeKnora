@@ -92,7 +92,7 @@ func TestValidateUserEnvNameFormatLayer(t *testing.T) {
 func TestValidateUserEnvNameReservedLayer(t *testing.T) {
 	require.NoError(t, validateEnvNameNotReserved("TAVILY_API_KEY"))
 	require.NoError(t, validateEnvNameNotReserved("WEKNORA_API_KEY"),
-		"credential names a WeKnora skill reads are not sandbox-injected")
+		"credential names an AethCraft skill reads are not sandbox-injected")
 	require.NoError(t, validateEnvNameNotReserved("WEKNORA_BASE_URL"))
 	require.NoError(t, validateEnvNameNotReserved("lowercase-is-a-format-concern"),
 		"reserved-name validation must remain independent of name format")
@@ -225,7 +225,7 @@ func TestValidateEnvDeclarationsNeverCarriesAValue(t *testing.T) {
 	require.Equal(t, types.SkillEnvVars{{Name: "TAVILY_API_KEY"}}, got)
 }
 
-// Official WeKnora skills (and the ClawHub weknora skill) authenticate with
+// Official AethCraft skills (and the ClawHub weknora skill) authenticate with
 // WEKNORA_API_KEY / WEKNORA_BASE_URL. Those names must survive validation:
 // only the sandbox-injected WEKNORA_SKILL_* / WEKNORA_SESSION_INPUT_DIR
 // names are reserved.

@@ -59,11 +59,11 @@ type RemoteTemplateCatalog interface {
 	ListTemplates(ctx context.Context) ([]RemoteTemplate, error)
 	EnsureStandardTemplate(ctx context.Context) (*RemoteTemplate, error)
 	// ReplaceStandardTemplate applies the current spec to the cluster's
-	// WeKnora template (DNS, image). A READY template cannot pick those up
+	// AethCraft template (DNS, image). A READY template cannot pick those up
 	// any other way. It must not delete a usable template: callers persist
 	// the replacement ID first, then DeleteSupersededStandardTemplates.
 	ReplaceStandardTemplate(ctx context.Context) (*RemoteTemplate, error)
-	// DeleteSupersededStandardTemplates removes WeKnora templates other than
+	// DeleteSupersededStandardTemplates removes AethCraft templates other than
 	// keepID. Call only after keepID is spawnable and has been written onto
 	// every config that still pointed at the previous standard template.
 	DeleteSupersededStandardTemplates(ctx context.Context, keepID string) error
@@ -72,7 +72,7 @@ type RemoteTemplateCatalog interface {
 // RemoteDesktopTemplateCatalog is the desktop sibling of RemoteTemplateCatalog.
 // Cube and E2B implement it; Docker does not (SupportsDesktop stays false).
 type RemoteDesktopTemplateCatalog interface {
-	// EnsureDesktopTemplate returns the cluster's WeKnora desktop template,
+	// EnsureDesktopTemplate returns the cluster's AethCraft desktop template,
 	// building it when absent.
 	EnsureDesktopTemplate(ctx context.Context) (*RemoteTemplate, error)
 	// ReplaceDesktopTemplate applies the current spec to the desktop

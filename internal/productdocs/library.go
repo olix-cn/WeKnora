@@ -1,4 +1,4 @@
-// Package productdocs indexes the WeKnora documentation bundled with the
+// Package productdocs indexes the AethCraft documentation bundled with the
 // server, so the built-in assistant can answer how the product works from
 // the docs of the running version.
 package productdocs

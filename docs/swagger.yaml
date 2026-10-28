@@ -1099,7 +1099,7 @@ definitions:
         allOf:
         - $ref: '#/definitions/github_com_Tencent_WeKnora_internal_types.ModelType'
         description: |-
-          Type is the WeKnora model type this entry describes. Chat models with
+          Type is the AethCraft model type this entry describes. Chat models with
           image input are still KnowledgeQA; the UI derives VLM eligibility from
           Input. Embedding / Rerank / ASR entries exist for the model picker.
     type: object
@@ -2774,7 +2774,7 @@ definitions:
         description: |-
           AccessLevel is the highest access level a run of this agent gets: how
           far it may change data (MCP tools, Wiki writes) without asking. Empty
-          means auto_write. The WeKnora assistant uses the workspace's assistant
+          means auto_write. The AethCraft assistant uses the workspace's assistant
           ceiling instead.
       agent_mode:
         description: |-
@@ -3234,7 +3234,7 @@ definitions:
         type: string
       tls_cert_path:
         description: |-
-          TLSCertPath is a directory on the WeKnora host containing ca.pem,
+          TLSCertPath is a directory on the AethCraft host containing ca.pem,
           cert.pem and key.pem. Required when Host is a TCP endpoint.
         type: string
     type: object
@@ -3270,7 +3270,7 @@ definitions:
           "<port>-<sandboxID>.<sandbox_domain>" through public DNS and TLS, so it
           needs no value here. Self-hosted E2B-compatible control planes usually
           serve every sandbox from one gateway address and expect the sandbox
-          authority in the Host header; setting this makes WeKnora dial the
+          authority in the Host header; setting this makes AethCraft dial the
           gateway directly instead of requiring wildcard DNS and a certificate
           for the sandbox domain. An "http://" gateway also downgrades the
           data-plane scheme, which the E2B SDK otherwise pins to https.
@@ -6068,7 +6068,7 @@ definitions:
         description: SHA-256 of the persisted bytes
         type: string
       created_at:
-        description: When WeKnora persisted the blob
+        description: When AethCraft persisted the blob
         type: string
       deleted_at:
         description: |-
@@ -7899,7 +7899,7 @@ definitions:
       host_workspace_dir:
         description: |-
           HostWorkspaceDir is the user-selected project directory this session
-          operates in, for the WeKnora Lite host sandbox only. Empty means the session
+          operates in, for the AethCraft Lite host sandbox only. Empty means the session
           gets an auto-allocated workspace instead.
 
           Written once at creation and never updated: re-pointing a live session
@@ -7980,7 +7980,7 @@ definitions:
         x-agent-response: true
       user_id:
         description: |-
-          UserID is the owner scope for this session. WeKnora user UUIDs, API
+          UserID is the owner scope for this session. AethCraft user UUIDs, API
           external-user principals, and embed visitor principals all use this column.
         type: string
     type: object
@@ -8044,7 +8044,7 @@ definitions:
       host_workspace_dir:
         description: |-
           HostWorkspaceDir is the user-selected project directory this session
-          operates in, for the WeKnora Lite host sandbox only. Empty means the session
+          operates in, for the AethCraft Lite host sandbox only. Empty means the session
           gets an auto-allocated workspace instead.
 
           Written once at creation and never updated: re-pointing a live session
@@ -8130,7 +8130,7 @@ definitions:
         x-agent-response: true
       user_id:
         description: |-
-          UserID is the owner scope for this session. WeKnora user UUIDs, API
+          UserID is the owner scope for this session. AethCraft user UUIDs, API
           external-user principals, and embed visitor principals all use this column.
         type: string
     type: object
@@ -8712,7 +8712,7 @@ definitions:
       assistant_config:
         allOf:
         - $ref: '#/definitions/github_com_Tencent_WeKnora_internal_types.AssistantConfig'
-        description: 'Assistant config: display name and access ceiling of the WeKnora
+        description: 'Assistant config: display name and access ceiling of the AethCraft
           assistant'
       business:
         description: Business
@@ -8999,7 +8999,7 @@ definitions:
       terminal_idle_disconnect_sec:
         description: |-
           TerminalIdleDisconnectSec is how long an interactive terminal or
-          desktop may go without user activity before WeKnora closes the
+          desktop may go without user activity before AethCraft closes the
           connection so the sandbox can pause on its provider TTL. Terminal
           counts keystrokes and PTY output; desktop counts mouse and keyboard.
           0 uses the built-in default (15 minutes). Not an identity field.
@@ -13700,7 +13700,7 @@ definitions:
     properties:
       sandbox_config_ids:
         description: 'Sandbox config ids to install onto: an agent''s sandbox_config_id,
-          or host on WeKnora Lite'
+          or host on AethCraft Lite'
         items:
           type: string
         type: array
@@ -14153,7 +14153,7 @@ definitions:
         allOf:
         - $ref: '#/definitions/github_com_Tencent_WeKnora_internal_types.AssistantAccessLevel'
         description: |-
-          AssistantAccess is the WeKnora assistant access level: read_only,
+          AssistantAccess is the AethCraft assistant access level: read_only,
           confirm or auto_write. The workspace ceiling caps it; other agents
           ignore it.
       attachment_ids:
@@ -14203,7 +14203,7 @@ definitions:
       page_context:
         allOf:
         - $ref: '#/definitions/github_com_Tencent_WeKnora_internal_types.PageContext'
-        description: PageContext is the WeKnora page the user has open (agent mode
+        description: PageContext is the AethCraft page the user has open (agent mode
           only).
       query:
         description: Query text; may be empty only when an image or file is attached
@@ -14459,11 +14459,11 @@ definitions:
     type: object
 info:
   contact:
-    name: WeKnora Github
+    name: AethCraft Github
     url: https://github.com/Tencent/WeKnora
-  description: WeKnora 知识库管理系统 API 文档
+  description: AethCraft 知识库管理系统 API 文档
   termsOfService: http://swagger.io/terms/
-  title: WeKnora API
+  title: AethCraft API
   version: "1.0"
 paths:
   /agent-chat/{session_id}:
@@ -15785,12 +15785,12 @@ paths:
         id: automation.list
         max_items: 100
         risk: read
-      x-agent-hint: 'Lists the user''s automations: scheduled tasks the WeKnora assistant
+      x-agent-hint: 'Lists the user''s automations: scheduled tasks the AethCraft assistant
         runs on their behalf, with next and last run.'
     post:
       consumes:
       - application/json
-      description: 创建一个按计划由 WeKnora 助手以当前用户身份运行的任务
+      description: 创建一个按计划由 AethCraft 助手以当前用户身份运行的任务
       parameters:
       - description: 自动化
         in: body
@@ -15825,7 +15825,7 @@ paths:
         label_param: name
         risk: write
         role: viewer
-      x-agent-hint: 'Creates an automation the WeKnora assistant runs as the user.
+      x-agent-hint: 'Creates an automation the AethCraft assistant runs as the user.
         If work requires other agents, name them and their assignments in the instruction
         so the assistant can delegate. Turn the user''s wording into a cron expression
         (five fields, minute first) and an IANA timezone, and check it with automation.validate_trigger
@@ -25263,7 +25263,7 @@ paths:
       description: List the agent skills installed onto one sandbox config's image.
       parameters:
       - description: 'Sandbox config ID: the agent''s sandbox_config_id, or host on
-          WeKnora Lite'
+          AethCraft Lite'
         in: path
         name: id
         required: true
@@ -25326,7 +25326,7 @@ paths:
         via the install-events stream.
       parameters:
       - description: 'Sandbox config ID: the agent''s sandbox_config_id, or host on
-          WeKnora Lite'
+          AethCraft Lite'
         in: path
         name: id
         required: true
@@ -26817,7 +26817,7 @@ paths:
         id: skill.list
         risk: read
       x-agent-hint: Lists usable skills, chosen by name. Pass sandbox_config_id from
-        agent.get; when the agent has none, pass host (WeKnora Lite runs skills locally).
+        agent.get; when the agent has none, pass host (AethCraft Lite runs skills locally).
         An empty list means there are no usable skills there; if the agent has no
         sandbox, tell the user to choose one in the agent editor.
   /skills/catalog:

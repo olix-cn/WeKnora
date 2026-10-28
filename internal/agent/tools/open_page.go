@@ -16,7 +16,7 @@ import (
 	"github.com/Tencent/WeKnora/internal/types"
 )
 
-// ToolOpenPage offers the user a link to a WeKnora page, optionally with a
+// ToolOpenPage offers the user a link to an AethCraft page, optionally with a
 // form filled in for them to finish and save.
 const ToolOpenPage = "open_page"
 
@@ -120,7 +120,7 @@ var (
 	openPageAuthTypes    = []string{"", "api_key", "oauth"}
 )
 
-// ToolViewPage opens a WeKnora page in the user's browser and returns what it
+// ToolViewPage opens an AethCraft page in the user's browser and returns what it
 // shows, so the model can answer about it.
 const ToolViewPage = "view_page"
 
@@ -159,7 +159,7 @@ func IsPageButtonTool(name string) bool {
 }
 
 const openPageDescription = "" +
-	"Show the user a button that opens a WeKnora page: a knowledge base or one of its documents, " +
+	"Show the user a button that opens an AethCraft page: a knowledge base or one of its documents, " +
 	"a Wiki page, an agent's editor at a given tab, the model settings, the MCP services, any section " +
 	"of the settings dialog (personal preferences, profile, workspace, engines, integrations, system), " +
 	"a toolbox tool, or the agent, knowledge base or shared space lists. settings section system-global " +
@@ -179,7 +179,7 @@ const openPageDescription = "" +
 	"click. Name what they still need to fill in."
 
 const viewPageDescription = "" +
-	"Open a WeKnora page in the user's browser now and get back what it shows, to answer about a page " +
+	"Open an AethCraft page in the user's browser now and get back what it shows, to answer about a page " +
 	"they do not have open: a setting's current value, what a settings section or list shows. It takes " +
 	"the same targets as open_page, without drafts. The user can go back from the card. If their page " +
 	"has unsaved changes it is not left and they get a button instead; then ask them to open it and " +

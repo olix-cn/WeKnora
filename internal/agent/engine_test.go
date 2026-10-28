@@ -160,7 +160,7 @@ func TestStreamMCPAnswerRejectsUnretrievedKnowledgeCitations(t *testing.T) {
 	engine := newTestEngine(t, model)
 	engine.knowledgeBasesInfo = []*KnowledgeBaseInfo{{
 		ID: "faq-kb", Name: "FAQ TEST", Type: "faq", RecentDocs: []RecentDocInfo{
-			{ChunkID: "faq-1", Title: "什么是 WeKnora？", FAQStandardQuestion: "什么是 WeKnora？"},
+			{ChunkID: "faq-1", Title: "什么是 AethCraft？", FAQStandardQuestion: "什么是 AethCraft？"},
 			{ChunkID: "faq-2", Title: "如何创建知识库？", FAQStandardQuestion: "如何创建知识库？"},
 		},
 	}}

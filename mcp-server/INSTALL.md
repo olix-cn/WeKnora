@@ -1,4 +1,4 @@
-# WeKnora MCP Server 安装和使用指南
+# AethCraft MCP Server 安装和使用指南
 
 ## 快速开始
 
@@ -94,7 +94,7 @@ python main.py --check-only
 ```
 
 这将显示：
-- WeKnora API 基础 URL 配置
+- AethCraft API 基础 URL 配置
 - API 密钥设置状态
 - 依赖包安装状态
 
@@ -107,9 +107,9 @@ python main.py --check-only
 - 没有文件名冲突
 
 ### 2. 连接错误
-如果无法连接到 WeKnora API：
+如果无法连接到 AethCraft API：
 - 检查 `WEKNORA_BASE_URL` 是否正确
-- 确认 WeKnora 服务正在运行
+- 确认 AethCraft 服务正在运行
 - 验证网络连接
 
 ### 3. 认证错误
@@ -177,7 +177,7 @@ CMD ["weknora-mcp-server"]
 创建 systemd 服务文件 `/etc/systemd/system/weknora-mcp.service`：
 ```ini
 [Unit]
-Description=WeKnora MCP Server
+Description=AethCraft MCP Server
 After=network.target
 
 [Service]

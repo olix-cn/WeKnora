@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-WeKnora MCP Server 模组测试脚本
+AethCraft MCP Server 模组测试脚本
 
 测试模组的各种启动方式和功能。unittest discover 会收集本文件中的 TestCase；
 也可直接运行: python test_module.py

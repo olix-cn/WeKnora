@@ -780,7 +780,7 @@ services:
   # Stream Load partial_columns）。本 compose 使用 4.1 官方稳定 tag。
   #
   # 端口说明：
-  #   - 9030 (FE MySQL)：WeKnora 主链路读写、SQL 查询都走此端口。
+  #   - 9030 (FE MySQL)：AethCraft 主链路读写、SQL 查询都走此端口。
   #   - 8030 (FE HTTP)：Stream Load partial update 入口。
   #   - 8040 (BE)     ：BE 心跳与数据传输；FE 会把 stream load 重定向到 BE。
   #
@@ -843,9 +843,9 @@ services:
   # ---------------------------------------------------------------------------
   # Langfuse 自建可观测栈 (opt-in via `--profile langfuse`)
   #
-  # 为了最小化资源占用，Langfuse 会复用 WeKnora 已有的 postgres 和 redis：
+  # 为了最小化资源占用，Langfuse 会复用 AethCraft 已有的 postgres 和 redis：
   #   - postgres：在 WeKnora-postgres 中创建独立的 "langfuse" 数据库
-  #   - redis  ：复用 WeKnora-redis 的 DB 1（WeKnora 自己用 DB 0）
+  #   - redis  ：复用 WeKnora-redis 的 DB 1（AethCraft 自己用 DB 0）
   # 需要新增的只有 Langfuse 应用自身 + ClickHouse（OLAP）+ 专用 MinIO（事件/媒体 S3）。
   #
   # 启用方式：
@@ -950,7 +950,7 @@ services:
     container_name: WeKnora-langfuse-worker
     restart: unless-stopped
     depends_on: &langfuse-depends-on
-      # 复用 WeKnora 已有的 postgres/redis，需要先完成 langfuse 数据库的创建
+      # 复用 AethCraft 已有的 postgres/redis，需要先完成 langfuse 数据库的创建
       langfuse-db-init:
         condition: service_completed_successfully
       redis:
@@ -1070,9 +1070,9 @@ services:
       - WEKNORA_API_KEY=${WEKNORA_API_KEY:-}
       # HTTP/SSE 传输必填：mcp-server 启动时若缺少此项会拒绝启动（客户端以 Authorization: Bearer 携带）
       - MCP_SERVER_AUTH_TOKEN=${MCP_SERVER_AUTH_TOKEN:-}
-      # 调用 WeKnora REST 的读超时（秒，默认 300）
+      # 调用 AethCraft REST 的读超时（秒，默认 300）
       - WEKNORA_CHAT_TIMEOUT=${WEKNORA_CHAT_TIMEOUT:-300}
-      # 是否校验 WeKnora 后端 TLS 证书（默认 true；自签证书可设 false）
+      # 是否校验 AethCraft 后端 TLS 证书（默认 true；自签证书可设 false）
       - WEKNORA_VERIFY_SSL=${WEKNORA_VERIFY_SSL:-true}
       # 允许上传的目录白名单（逗号分隔；留空禁用文件上传工具）
       - MCP_ALLOWED_UPLOAD_DIRS=${MCP_ALLOWED_UPLOAD_DIRS:-}

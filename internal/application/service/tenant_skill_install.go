@@ -1306,7 +1306,7 @@ func describeExecFailure(res *sandbox.ExecuteResult) string {
 // installExecutor resolves the one executor every command of an install runs
 // through. It goes through the capability accessor rather than a bare type
 // assertion so a manager that cannot run install-mode shell reports no
-// capability instead of attempting the install on the WeKnora host.
+// capability instead of attempting the install on the AethCraft host.
 func installExecutor(mgr sandbox.Manager) (sandbox.SessionInstallShellExecutor, error) {
 	executor := sessionSandboxInstallShellExecutor(mgr)
 	if executor == nil {
@@ -1906,7 +1906,7 @@ func weknoraSkillSnapshotName(raw string) string {
 }
 
 // snapshotsNotFromOtherConfig drops provider listings that already name a
-// different WeKnora config. Cube, E2B and Docker all ListSnapshots across the
+// different AethCraft config. Cube, E2B and Docker all ListSnapshots across the
 // whole account/daemon, so without this a reconcile of one config would treat
 // every other config's image as an extra, and an abandoned-build match could
 // bind to the wrong snapshot.
@@ -1958,7 +1958,7 @@ func buildInstallPrompt(skillDir string, bundle *SkillBundle, tools map[string]s
 		skillMD = string(bundle.Files["SKILL.md"])
 		requirementsPath = sandbox.SkillRequirementsPath(bundle.Name)
 	}
-	return fmt.Sprintf(`Install this WeKnora skill into the sandbox image.
+	return fmt.Sprintf(`Install this AethCraft skill into the sandbox image.
 
 Skill directory: %s
 %s

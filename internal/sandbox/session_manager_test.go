@@ -116,7 +116,7 @@ func TestWorkspaceBootstrapPreservesExistingData(t *testing.T) {
 }
 
 // The agent can delete /workspace/output between turns. Preparing only once
-// per process would leave later writes failing until WeKnora restarted.
+// per process would leave later writes failing until AethCraft restarted.
 func TestSessionBoundManagerPreparesWorkspaceOnEveryCall(t *testing.T) {
 	client := newFakeRemoteClient(SandboxTypeCube)
 	cfg := DefaultConfig()

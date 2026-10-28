@@ -85,9 +85,9 @@ const repo = 'https://github.com/Tencent/WeKnora'
 
 export default withMermaid(
   defineConfig({
-    title: 'WeKnora',
-    titleTemplate: ':title · WeKnora 文档',
-    description: 'WeKnora（维娜拉）官方文档：部署、配置、功能说明、API 参考与二次开发',
+    title: 'AethCraft',
+    titleTemplate: ':title · AethCraft 文档',
+    description: 'AethCraft 文档：部署、配置、功能说明、API 参考与二次开发',
     lang: 'zh-CN',
     base: '/docs/',
     cleanUrls: true,
@@ -102,9 +102,10 @@ export default withMermaid(
 
     head: [
       ['link', { rel: 'icon', href: '/docs/favicon.ico', type: 'image/x-icon' }],
-      ['meta', { name: 'theme-color', content: '#101f38' }],
+      ['meta', { name: 'theme-color', content: '#214577' }],
       ['meta', { property: 'og:type', content: 'website' }],
-      ['meta', { property: 'og:title', content: 'WeKnora 文档' }],
+      ['meta', { property: 'og:title', content: 'AethCraft 文档' }],
+      ['meta', { property: 'og:image', content: '/docs/_home/brand/og.png' }],
       [
         'meta',
         {
@@ -129,7 +130,7 @@ export default withMermaid(
 
     themeConfig: {
       logoLink: { link: '/', target: '_self' },
-      siteTitle: 'WeKnora',
+      siteTitle: 'AethCraft',
 
       nav: [],
 
@@ -188,7 +189,7 @@ export default withMermaid(
       },
 
       footer: {
-        message: `基于 WeKnora ${repoVersionLabel} 源码整理 · MIT License`,
+        message: `AethCraft ${repoVersionLabel} · MIT License`,
         copyright: '© Tencent WeKnora',
       },
     },

@@ -63,8 +63,8 @@
 
 ### 新增
 - 初始版本发布
-- WeKnora MCP Server 核心功能
-- 完整的 WeKnora API 集成
+- AethCraft MCP Server 核心功能
+- 完整的 AethCraft API 集成
 - 空间管理工具
 - 知识库管理工具
 - 知识管理工具

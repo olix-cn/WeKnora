@@ -2,7 +2,7 @@
   <a href="https://weknora.weixin.qq.com">
     <picture>
       <source media="(prefers-color-scheme: dark)" srcset="./docs/images/readme/hero-cn-dark.svg">
-      <img src="./docs/images/readme/hero-cn-light.svg" alt="WeKnora：帮你找到答案，并将知识付诸实践。腾讯开源的企业级知识管理框架，汇集团队资料，用于知识问答、任务执行和 Wiki 整理。" width="100%">
+      <img src="./docs/images/readme/hero-cn-light.svg" alt="AethCraft：帮你找到答案，并将知识付诸实践。腾讯开源的企业级知识管理框架，汇集团队资料，用于知识问答、任务执行和 Wiki 整理。" width="100%">
     </picture>
   </a>
 </p>
@@ -40,9 +40,9 @@
 
 ## 项目介绍
 
-**[WeKnora（维娜拉）](https://weknora.weixin.qq.com)** 是一款开源的、基于大语言模型（LLM）的知识管理框架，面向企业级文档理解、语义检索与智能推理场景。它把团队分散的文档汇集起来，用于检索、推理，并随资料更新持续维护。
+**[AethCraft](https://weknora.weixin.qq.com)** 是一款开源的、基于大语言模型（LLM）的知识管理框架，面向企业级文档理解、语义检索与智能推理场景。它把团队分散的文档汇集起来，用于检索、推理，并随资料更新持续维护。
 
-https://github.com/user-attachments/assets/5722b10d-d04d-49ed-a6cc-635a8c77d91f
+./website-docs/homepage/public/docs/_home/brand/aethcraft-intro.mp4
 
 <p align="center"><sub>1 分 52 秒 · 1080p · 无旁白，英文画面文字</sub></p>
 
@@ -79,7 +79,7 @@ https://github.com/user-attachments/assets/5722b10d-d04d-49ed-a6cc-635a8c77d91f
       <img src="./website-docs/homepage/public/docs/_home/brands/tencent-cloud.ico" width="28" height="28" alt=""><br/>
       <sub>云端部署</sub><br/>
       <b>腾讯云轻量应用服务器</b><br/>
-      通过应用模板部署 WeKnora，在自己的云服务器上运行。<br/><br/>
+      通过应用模板部署 AethCraft，在自己的云服务器上运行。<br/><br/>
       <a href="https://mc.tencent.com/s69nKCVz">前往腾讯云部署 →</a>
     </td>
     <td width="33%" valign="top">
@@ -158,8 +158,8 @@ docker compose up -d    # 用新镜像重建容器
 全部部署形态、硬件要求与常见拓扑见[安装部署](https://weknora.weixin.qq.com/docs/01-getting-started/02-installation)。
 
 > [!WARNING]
-> WeKnora 已提供登录鉴权，但在生产环境部署时，我们强烈建议：
-> - 将 WeKnora 服务部署在内网 / 私有网络环境中，而非公网环境；
+> AethCraft 已提供登录鉴权，但在生产环境部署时，我们强烈建议：
+> - 将 AethCraft 服务部署在内网 / 私有网络环境中，而非公网环境；
 > - 避免将服务直接暴露在公网上，以防止重要信息泄露风险；
 > - 为部署环境配置适当的防火墙规则和访问控制；
 > - 定期更新到最新版本以获取安全补丁和改进。
@@ -301,7 +301,7 @@ docker compose up -d    # 用新镜像重建容器
 <a href="./docs/images/readme/architecture-cn-light.svg">
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="./docs/images/readme/architecture-cn-dark.svg">
-  <img src="./docs/images/readme/architecture-cn-light.svg" alt="WeKnora 架构：客户端与渠道接入 WeKnora 主服务，RAG 问答、Agent 推理与自动 Wiki 共享同一条知识处理流水线；主服务调用运行时服务，数据存放在 PostgreSQL、Redis 及可选存储中" width="100%">
+  <img src="./docs/images/readme/architecture-cn-light.svg" alt="AethCraft 架构：客户端与渠道接入 AethCraft 主服务，RAG 问答、Agent 推理与自动 Wiki 共享同一条知识处理流水线；主服务调用运行时服务，数据存放在 PostgreSQL、Redis 及可选存储中" width="100%">
 </picture>
 </a>
 
@@ -341,12 +341,12 @@ docker compose up -d    # 用新镜像重建容器
 | <img src="./docs/images/readme/icons/plug.svg" width="22" height="22" alt=""> | [**内置 MCP Server**](https://weknora.weixin.qq.com/docs/03-features/08-mcp) | 通过 Streamable HTTP 把知识库开放给 Cursor、Claude 等 MCP 客户端；[`mcp-server/`](./mcp-server/MCP_CONFIG.md) 下的 Python 服务已弃用 |
 | <img src="./website-docs/homepage/public/docs/_home/brands/browserskill.png" width="22" height="22" alt=""> | [**本地浏览器（BrowserSkill）**](https://weknora.weixin.qq.com/docs/05-clients/09-local-browser) | 让智能体操作用户自己的 Chrome / Edge |
 | <img src="./website-docs/homepage/public/docs/_home/brands/chrome.svg" width="22" height="22" alt=""> | [**Chrome 插件**](https://chromewebstore.google.com/detail/jpemjbopikggjlmikmclgbmkhhopjdgd) | 在浏览器中选中文本、图片或整个页面，一键保存为知识条目，无需复制粘贴或手动上传文件 |
-| <img src="./docs/images/readme/icons/phone.svg" width="22" height="22" alt=""> | [**微信小程序**](./miniprogram/README.md) | 轻量移动端：配置 WeKnora API、选择知识库、导入 URL，并在微信内向知识库提问 |
-| <img src="./docs/images/readme/icons/skills.svg" width="22" height="22" alt=""> | [**ClawHub Skill**](https://clawhub.ai/lyingbug/weknora) | 发布在 ClawHub 上的 WeKnora 技能，通过 REST API 导入文档、混合检索与管理知识条目 |
+| <img src="./docs/images/readme/icons/phone.svg" width="22" height="22" alt=""> | [**微信小程序**](./miniprogram/README.md) | 轻量移动端：配置 AethCraft API、选择知识库、导入 URL，并在微信内向知识库提问 |
+| <img src="./docs/images/readme/icons/skills.svg" width="22" height="22" alt=""> | [**ClawHub Skill**](https://clawhub.ai/lyingbug/weknora) | 发布在 ClawHub 上的 AethCraft 技能，通过 REST API 导入文档、混合检索与管理知识条目 |
 | <img src="./website-docs/homepage/public/docs/_home/brands/deepseek-color.svg" width="22" height="22" alt=""> | [**DeepSeek Harness 插件**](https://www.npmjs.com/package/@wxg-prc-cpg/dsh-weknora) | 为 `dsh` 编码 Agent 提供四个只读工具：检索、读取文档、提问、列出知识库 |
 | <img src="./docs/images/readme/icons/code.svg" width="22" height="22" alt=""> | [**网站嵌入 Widget**](https://weknora.weixin.qq.com/docs/03-features/13-embed-channel) | 将智能体发布到外部站点 |
 | <img src="./docs/images/readme/icons/braces.svg" width="22" height="22" alt=""> | [**Go SDK**](https://weknora.weixin.qq.com/docs/05-clients/03-go-sdk) | 知识库、文档、会话等资源的 CRUD 与 SSE 流式问答 |
-| <img src="./website-docs/homepage/public/docs/_home/brands/wechat-dialog.png" width="22" height="22" alt=""> | [**微信对话开放平台**](https://chatbot.weixin.qq.com) | 基于 WeKnora 的托管问答平台，上传知识即可在微信内发布问答服务，无需写代码 |
+| <img src="./website-docs/homepage/public/docs/_home/brands/wechat-dialog.png" width="22" height="22" alt=""> | [**微信对话开放平台**](https://chatbot.weixin.qq.com) | 基于 AethCraft 的托管问答平台，上传知识即可在微信内发布问答服务，无需写代码 |
 
 ### 命令行工具
 

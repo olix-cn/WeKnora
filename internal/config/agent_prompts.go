@@ -1,4 +1,4 @@
-// Package config loads WeKnora runtime configuration.
+// Package config loads AethCraft runtime configuration.
 package config
 
 import "github.com/Tencent/WeKnora/internal/types"

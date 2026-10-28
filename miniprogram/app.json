@@ -5,14 +5,14 @@
     "pages/settings/settings"
   ],
   "window": {
-    "navigationBarTitleText": "WeKnora",
+    "navigationBarTitleText": "AethCraft",
     "navigationBarBackgroundColor": "#0d3b2a",
     "navigationBarTextStyle": "white",
     "backgroundColor": "#f3f3f3"
   },
   "tabBar": {
     "color": "#8b8b8b",
-    "selectedColor": "#07c05f",
+    "selectedColor": "#214577",
     "backgroundColor": "#ffffff",
     "borderStyle": "white",
     "list": [

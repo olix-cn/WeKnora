@@ -621,7 +621,7 @@ func TestQueryTemplatesProvisionsPerClusterIndependently(t *testing.T) {
 	require.Equal(t, int32(2), client.ensureCalls.Load())
 }
 
-// A cluster whose only WeKnora template failed to build must be reprovisioned,
+// A cluster whose only AethCraft template failed to build must be reprovisioned,
 // not reported as already equipped.
 func TestQueryTemplatesReprovisionsOverFailedStandardTemplate(t *testing.T) {
 	client := &stubProviderClient{

@@ -63,7 +63,7 @@ const (
 	// ToolShellExec lets the LLM execute ad-hoc shell commands inside the
 	// current session's sandbox (dependency installs, environment probing).
 	// Registered only when the resolved backend advertises the session shell
-	// capability (Cube, E2B, Docker). The command never runs on the WeKnora host.
+	// capability (Cube, E2B, Docker). The command never runs on the AethCraft host.
 	//
 	// Also absent from AvailableToolDefinitions: registerSandboxShellIfAllowed
 	// keys it on SkillsEnabled (or install mode), so the shell follows the
@@ -290,7 +290,7 @@ func NormalizeAllowedTools(allowed []string) []string {
 }
 
 // RetiredToolReplacement tells the model how to replace a removed tool.
-// Empty when name was never a WeKnora tool.
+// Empty when name was never an AethCraft tool.
 func RetiredToolReplacement(name string) string {
 	switch name {
 	case LegacyToolExecuteSkillScript:

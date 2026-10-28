@@ -11,7 +11,7 @@ const docTemplate = `{
         "title": "{{.Title}}",
         "termsOfService": "http://swagger.io/terms/",
         "contact": {
-            "name": "WeKnora Github",
+            "name": "AethCraft Github",
             "url": "https://github.com/Tencent/WeKnora"
         },
         "version": "{{.Version}}"
@@ -2061,7 +2061,7 @@ const docTemplate = `{
                     "max_items": 100,
                     "risk": "read"
                 },
-                "x-agent-hint": "Lists the user's automations: scheduled tasks the WeKnora assistant runs on their behalf, with next and last run."
+                "x-agent-hint": "Lists the user's automations: scheduled tasks the AethCraft assistant runs on their behalf, with next and last run."
             },
             "post": {
                 "security": [
@@ -2069,7 +2069,7 @@ const docTemplate = `{
                         "Bearer": []
                     }
                 ],
-                "description": "创建一个按计划由 WeKnora 助手以当前用户身份运行的任务",
+                "description": "创建一个按计划由 AethCraft 助手以当前用户身份运行的任务",
                 "consumes": [
                     "application/json"
                 ],
@@ -2124,7 +2124,7 @@ const docTemplate = `{
                     "risk": "write",
                     "role": "viewer"
                 },
-                "x-agent-hint": "Creates an automation the WeKnora assistant runs as the user. If work requires other agents, name them and their assignments in the instruction so the assistant can delegate. Turn the user's wording into a cron expression (five fields, minute first) and an IANA timezone, and check it with automation.validate_trigger first, telling the user the next run times it returns. Runs are unattended: write the instruction as a complete task, since nobody can answer questions during a run. access_level defaults to confirm, where each change waits for the user's approval; only set auto_write when the user asks for it."
+                "x-agent-hint": "Creates an automation the AethCraft assistant runs as the user. If work requires other agents, name them and their assignments in the instruction so the assistant can delegate. Turn the user's wording into a cron expression (five fields, minute first) and an IANA timezone, and check it with automation.validate_trigger first, telling the user the next run times it returns. Runs are unattended: write the instruction as a complete task, since nobody can answer questions during a run. access_level defaults to confirm, where each change waits for the user's approval; only set auto_write when the user asks for it."
             }
         },
         "/automations/by-session/{session_id}": {
@@ -16810,7 +16810,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "x-agent": "sandbox_config_id",
-                        "description": "Sandbox config ID: the agent's sandbox_config_id, or host on WeKnora Lite",
+                        "description": "Sandbox config ID: the agent's sandbox_config_id, or host on AethCraft Lite",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -16885,7 +16885,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "x-agent": "sandbox_config_id",
-                        "description": "Sandbox config ID: the agent's sandbox_config_id, or host on WeKnora Lite",
+                        "description": "Sandbox config ID: the agent's sandbox_config_id, or host on AethCraft Lite",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -19182,7 +19182,7 @@ const docTemplate = `{
                     "id": "skill.list",
                     "risk": "read"
                 },
-                "x-agent-hint": "Lists usable skills, chosen by name. Pass sandbox_config_id from agent.get; when the agent has none, pass host (WeKnora Lite runs skills locally). An empty list means there are no usable skills there; if the agent has no sandbox, tell the user to choose one in the agent editor."
+                "x-agent-hint": "Lists usable skills, chosen by name. Pass sandbox_config_id from agent.get; when the agent has none, pass host (AethCraft Lite runs skills locally). An empty list means there are no usable skills there; if the agent has no sandbox, tell the user to choose one in the agent editor."
             }
         },
         "/skills/catalog": {
@@ -25590,7 +25590,7 @@ const docTemplate = `{
                     ]
                 },
                 "type": {
-                    "description": "Type is the WeKnora model type this entry describes. Chat models with\nimage input are still KnowledgeQA; the UI derives VLM eligibility from\nInput. Embedding / Rerank / ASR entries exist for the model picker.",
+                    "description": "Type is the AethCraft model type this entry describes. Chat models with\nimage input are still KnowledgeQA; the UI derives VLM eligibility from\nInput. Embedding / Rerank / ASR entries exist for the model picker.",
                     "allOf": [
                         {
                             "$ref": "#/definitions/github_com_Tencent_WeKnora_internal_types.ModelType"
@@ -27677,7 +27677,7 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "access_level": {
-                    "description": "AccessLevel is the highest access level a run of this agent gets: how\nfar it may change data (MCP tools, Wiki writes) without asking. Empty\nmeans auto_write. The WeKnora assistant uses the workspace's assistant\nceiling instead.",
+                    "description": "AccessLevel is the highest access level a run of this agent gets: how\nfar it may change data (MCP tools, Wiki writes) without asking. Empty\nmeans auto_write. The AethCraft assistant uses the workspace's assistant\nceiling instead.",
                     "allOf": [
                         {
                             "$ref": "#/definitions/github_com_Tencent_WeKnora_internal_types.AssistantAccessLevel"
@@ -28126,7 +28126,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "tls_cert_path": {
-                    "description": "TLSCertPath is a directory on the WeKnora host containing ca.pem,\ncert.pem and key.pem. Required when Host is a TCP endpoint.",
+                    "description": "TLSCertPath is a directory on the AethCraft host containing ca.pem,\ncert.pem and key.pem. Required when Host is a TCP endpoint.",
                     "type": "string"
                 }
             }
@@ -28164,7 +28164,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "proxy_url": {
-                    "description": "ProxyURL is the data-plane gateway that fronts envd. E2B Cloud resolves\n\"\u003cport\u003e-\u003csandboxID\u003e.\u003csandbox_domain\u003e\" through public DNS and TLS, so it\nneeds no value here. Self-hosted E2B-compatible control planes usually\nserve every sandbox from one gateway address and expect the sandbox\nauthority in the Host header; setting this makes WeKnora dial the\ngateway directly instead of requiring wildcard DNS and a certificate\nfor the sandbox domain. An \"http://\" gateway also downgrades the\ndata-plane scheme, which the E2B SDK otherwise pins to https.",
+                    "description": "ProxyURL is the data-plane gateway that fronts envd. E2B Cloud resolves\n\"\u003cport\u003e-\u003csandboxID\u003e.\u003csandbox_domain\u003e\" through public DNS and TLS, so it\nneeds no value here. Self-hosted E2B-compatible control planes usually\nserve every sandbox from one gateway address and expect the sandbox\nauthority in the Host header; setting this makes AethCraft dial the\ngateway directly instead of requiring wildcard DNS and a certificate\nfor the sandbox domain. An \"http://\" gateway also downgrades the\ndata-plane scheme, which the E2B SDK otherwise pins to https.",
                     "type": "string"
                 },
                 "sandbox_domain": {
@@ -31737,7 +31737,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "created_at": {
-                    "description": "When WeKnora persisted the blob",
+                    "description": "When AethCraft persisted the blob",
                     "type": "string"
                 },
                 "deleted_at": {
@@ -34109,7 +34109,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "host_workspace_dir": {
-                    "description": "HostWorkspaceDir is the user-selected project directory this session\noperates in, for the WeKnora Lite host sandbox only. Empty means the session\ngets an auto-allocated workspace instead.\n\nWritten once at creation and never updated: re-pointing a live session\nat a different directory would leave its transcript describing files\nthat are no longer there. Standard edition never writes it.",
+                    "description": "HostWorkspaceDir is the user-selected project directory this session\noperates in, for the AethCraft Lite host sandbox only. Empty means the session\ngets an auto-allocated workspace instead.\n\nWritten once at creation and never updated: re-pointing a live session\nat a different directory would leave its transcript describing files\nthat are no longer there. Standard edition never writes it.",
                     "type": "string"
                 },
                 "id": {
@@ -34172,7 +34172,7 @@ const docTemplate = `{
                     "x-agent-response": true
                 },
                 "user_id": {
-                    "description": "UserID is the owner scope for this session. WeKnora user UUIDs, API\nexternal-user principals, and embed visitor principals all use this column.",
+                    "description": "UserID is the owner scope for this session. AethCraft user UUIDs, API\nexternal-user principals, and embed visitor principals all use this column.",
                     "type": "string"
                 }
             }
@@ -34256,7 +34256,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "host_workspace_dir": {
-                    "description": "HostWorkspaceDir is the user-selected project directory this session\noperates in, for the WeKnora Lite host sandbox only. Empty means the session\ngets an auto-allocated workspace instead.\n\nWritten once at creation and never updated: re-pointing a live session\nat a different directory would leave its transcript describing files\nthat are no longer there. Standard edition never writes it.",
+                    "description": "HostWorkspaceDir is the user-selected project directory this session\noperates in, for the AethCraft Lite host sandbox only. Empty means the session\ngets an auto-allocated workspace instead.\n\nWritten once at creation and never updated: re-pointing a live session\nat a different directory would leave its transcript describing files\nthat are no longer there. Standard edition never writes it.",
                     "type": "string"
                 },
                 "id": {
@@ -34333,7 +34333,7 @@ const docTemplate = `{
                     "x-agent-response": true
                 },
                 "user_id": {
-                    "description": "UserID is the owner scope for this session. WeKnora user UUIDs, API\nexternal-user principals, and embed visitor principals all use this column.",
+                    "description": "UserID is the owner scope for this session. AethCraft user UUIDs, API\nexternal-user principals, and embed visitor principals all use this column.",
                     "type": "string"
                 }
             }
@@ -35096,7 +35096,7 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "assistant_config": {
-                    "description": "Assistant config: display name and access ceiling of the WeKnora assistant",
+                    "description": "Assistant config: display name and access ceiling of the AethCraft assistant",
                     "allOf": [
                         {
                             "$ref": "#/definitions/github_com_Tencent_WeKnora_internal_types.AssistantConfig"
@@ -35458,7 +35458,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "terminal_idle_disconnect_sec": {
-                    "description": "TerminalIdleDisconnectSec is how long an interactive terminal or\ndesktop may go without user activity before WeKnora closes the\nconnection so the sandbox can pause on its provider TTL. Terminal\ncounts keystrokes and PTY output; desktop counts mouse and keyboard.\n0 uses the built-in default (15 minutes). Not an identity field.",
+                    "description": "TerminalIdleDisconnectSec is how long an interactive terminal or\ndesktop may go without user activity before AethCraft closes the\nconnection so the sandbox can pause on its provider TTL. Terminal\ncounts keystrokes and PTY output; desktop counts mouse and keyboard.\n0 uses the built-in default (15 minutes). Not an identity field.",
                     "type": "integer"
                 },
                 "user_sandbox_empty_retention_days": {
@@ -41757,7 +41757,7 @@ const docTemplate = `{
             ],
             "properties": {
                 "sandbox_config_ids": {
-                    "description": "Sandbox config ids to install onto: an agent's sandbox_config_id, or host on WeKnora Lite",
+                    "description": "Sandbox config ids to install onto: an agent's sandbox_config_id, or host on AethCraft Lite",
                     "type": "array",
                     "items": {
                         "type": "string"
@@ -42379,7 +42379,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "assistant_access": {
-                    "description": "AssistantAccess is the WeKnora assistant access level: read_only,\nconfirm or auto_write. The workspace ceiling caps it; other agents\nignore it.",
+                    "description": "AssistantAccess is the AethCraft assistant access level: read_only,\nconfirm or auto_write. The workspace ceiling caps it; other agents\nignore it.",
                     "allOf": [
                         {
                             "$ref": "#/definitions/github_com_Tencent_WeKnora_internal_types.AssistantAccessLevel"
@@ -42448,7 +42448,7 @@ const docTemplate = `{
                     }
                 },
                 "page_context": {
-                    "description": "PageContext is the WeKnora page the user has open (agent mode only).",
+                    "description": "PageContext is the AethCraft page the user has open (agent mode only).",
                     "allOf": [
                         {
                             "$ref": "#/definitions/github_com_Tencent_WeKnora_internal_types.PageContext"
@@ -42820,8 +42820,8 @@ var SwaggerInfo = &swag.Spec{
 	Host:             "",
 	BasePath:         "/api/v1",
 	Schemes:          []string{},
-	Title:            "WeKnora API",
-	Description:      "WeKnora 知识库管理系统 API 文档",
+	Title:            "AethCraft API",
+	Description:      "AethCraft 知识库管理系统 API 文档",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

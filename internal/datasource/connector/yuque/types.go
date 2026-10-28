@@ -1,6 +1,6 @@
 // Package yuque implements the Yuque (语雀) data source connector for WeKnora.
 //
-// It syncs documents from personal and group knowledge bases (books/repos) into WeKnora
+// It syncs documents from personal and group knowledge bases (books/repos) into AethCraft
 // knowledge bases, preserving Markdown formatting.
 //
 // Yuque API docs:

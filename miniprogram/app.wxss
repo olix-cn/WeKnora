@@ -17,7 +17,7 @@ page {
   border-radius: 24rpx;
   background: #ffffff;
   border: 1rpx solid #e7ebf0;
-  box-shadow: 0 12rpx 36rpx rgba(7, 192, 95, 0.08);
+  box-shadow: 0 12rpx 36rpx rgba(33, 69, 119, 0.08);
 }
 
 .title {
@@ -64,7 +64,7 @@ textarea {
 button {
   margin-top: 24rpx;
   border-radius: 18rpx;
-  background: #07c05f;
+  background: #214577;
   color: #ffffff;
   font-weight: 700;
 }

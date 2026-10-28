@@ -1,4 +1,4 @@
-// Command weknora is a CLI for Tencent WeKnora knowledge bases.
+// Command weknora is a CLI for Tencent AethCraft knowledge bases.
 package main
 
 import (

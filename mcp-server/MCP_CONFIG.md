@@ -1,4 +1,4 @@
-# 使用 uv 运行 WeKnora MCP 服务器
+# 使用 uv 运行 AethCraft MCP 服务器
 
 > 更推荐使用`uv`来运行基于python的MCP服务。
 >
