@@ -9,11 +9,12 @@ const tabletStyles = source.slice(
 )
 const phoneStyles = source.slice(source.indexOf('@media (max-width: 480px)'))
 
-test('phone login puts the form before the showcase and reserves room for the header', () => {
+test('phone login reserves room for the logo and keeps the introduction compact', () => {
   assert.match(tabletStyles, /\.login-layout\s*\{[\s\S]*?flex-direction:\s*column;[\s\S]*?padding-top:\s*64px;/)
-  assert.match(tabletStyles, /\.form-section\s*\{[\s\S]*?order:\s*-1;/)
+  assert.doesNotMatch(tabletStyles, /min-height:\s*50vh|order:\s*-1/)
 })
 
-test('narrow login headers use icon-only links to avoid overlapping the logo', () => {
-  assert.match(phoneStyles, /\.header-links\s*\{[\s\S]*?\.link-text\s*\{\s*display:\s*none;/)
+test('login removes navigation and carousel and keeps a readable phone heading', () => {
+  assert.doesNotMatch(source, /header-links|swiper|carousel-container|login-features|form-welcome|form-hint/)
+  assert.match(phoneStyles, /\.showcase-subtitle\s*\{\s*font-size:\s*28px;/)
 })

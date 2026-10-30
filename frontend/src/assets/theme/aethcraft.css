@@ -6,6 +6,29 @@
   --aethcraft-muted: #d3dae3;
   --aethcraft-hover: #375885;
   --aethcraft-soft: #7289a8;
+  --login-steel: #10243c;
+  --login-steel-deep: #080f19;
+  --login-steel-light: #21457770;
+  --login-grid-major: #7289a81a;
+  --login-grid-minor: #7289a80a;
+  --login-drawing: #7289a8;
+  --login-scan: #d3dae3;
+  --login-mask: #000;
+  --login-panel: #182d45;
+  --login-panel-deep: #122338;
+  --login-panel-border: #38516d;
+  --login-panel-highlight: #7289a866;
+  --login-panel-shadow: #02081166;
+  --login-field: #0d1e30;
+  --login-field-hover: #142940;
+  --login-text: #edf2f8;
+  --login-text-secondary: #bccbdd;
+  --login-text-muted: #a0b2c8;
+  --login-control: #476e9d;
+  --login-control-hover: #537eae;
+  --login-control-active: #375885;
+  --login-focus: #8faed4;
+  --login-error: #ffadb5;
 }
 
 :root:root,

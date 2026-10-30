@@ -6558,6 +6558,11 @@ export default {
     }
   },
   auth: {
+    enterpriseTitle: 'AethCraft',
+    enterpriseDescription: '大模型驱动的企业级Agent',
+    rememberCredentials: '记住账号密码',
+    rememberCredentialsHint: '仅在可信设备上启用，账号密码将保存在此浏览器中。',
+    rememberCredentialsFailed: '无法更新此浏览器保存的账号密码，请检查浏览器存储设置。',
     login: '登录',
     logout: '退出',
     oidcLogin: '使用 OIDC 登录',

@@ -6557,6 +6557,11 @@ export default {
     }
   },
   auth: {
+    enterpriseTitle: 'AethCraft',
+    enterpriseDescription: 'Корпоративный Agent на базе языковых моделей',
+    rememberCredentials: 'Запомнить аккаунт и пароль',
+    rememberCredentialsHint: 'Включайте только на доверенном устройстве. Аккаунт и пароль сохраняются в этом браузере.',
+    rememberCredentialsFailed: 'Не удалось обновить сохранённые данные. Проверьте настройки хранилища браузера.',
     login: 'Вход',
     logout: 'Выход',
     oidcLogin: 'Войти через OIDC',

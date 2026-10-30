@@ -2927,6 +2927,11 @@ export default {
     passwordMismatch: 'Passwords do not match'
   },
   auth: {
+    enterpriseTitle: 'AethCraft',
+    enterpriseDescription: 'LLM-powered enterprise Agent',
+    rememberCredentials: 'Remember account and password',
+    rememberCredentialsHint: 'Use only on a trusted device. Your account and password will be saved in this browser.',
+    rememberCredentialsFailed: 'Could not update saved credentials. Check your browser storage settings.',
     login: 'Login',
     logout: 'Logout',
     oidcLogin: 'Sign in with OIDC',

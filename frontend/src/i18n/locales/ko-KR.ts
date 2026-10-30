@@ -6557,6 +6557,11 @@ export default {
     }
   },
   auth: {
+    enterpriseTitle: 'AethCraft',
+    enterpriseDescription: '대규모 언어 모델 기반 기업용 Agent',
+    rememberCredentials: '계정 및 비밀번호 저장',
+    rememberCredentialsHint: '신뢰할 수 있는 기기에서만 사용하세요. 계정과 비밀번호가 이 브라우저에 저장됩니다.',
+    rememberCredentialsFailed: '저장된 로그인 정보를 업데이트하지 못했습니다. 브라우저 저장소 설정을 확인하세요.',
     login: '로그인',
     logout: '로그아웃',
     oidcLogin: 'OIDC로 로그인',

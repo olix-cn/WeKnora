@@ -2927,6 +2927,11 @@ export default {
     passwordMismatch: 'パスワードが一致しません'
   },
   auth: {
+    enterpriseTitle: 'AethCraft',
+    enterpriseDescription: '大規模言語モデルで動く企業向けAgent',
+    rememberCredentials: 'アカウントとパスワードを保存',
+    rememberCredentialsHint: '信頼できる端末でのみ有効にしてください。このブラウザーに保存されます。',
+    rememberCredentialsFailed: '保存情報を更新できません。ブラウザーのストレージ設定を確認してください。',
     login: 'ログイン',
     logout: 'ログアウト',
     oidcLogin: 'OIDCでログイン',
