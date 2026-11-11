@@ -36,3 +36,26 @@ test('unsupported browser falls back without storing a password', async () => {
     else Reflect.deleteProperty(globalThis, 'window')
   }
 })
+
+test('supported browsers receive verified credentials; rejected saves do not block login', async () => {
+  const descriptors = ['window', 'navigator'].map(key => [key, Object.getOwnPropertyDescriptor(globalThis, key)] as const)
+  const received: unknown[] = []
+  class PasswordCredential {
+    constructor(public data: { id: string; password: string }) {}
+  }
+  Object.defineProperty(globalThis, 'window', { configurable: true, value: { isSecureContext: true, PasswordCredential } })
+  Object.defineProperty(globalThis, 'navigator', { configurable: true, value: {
+    credentials: { store: async (credential: unknown) => { received.push(credential) } },
+  } })
+  try {
+    assert.equal(await saveVerifiedPassword('alice', 'test-password'), true)
+    assert.deepEqual((received[0] as PasswordCredential).data, { id: 'alice', password: 'test-password' })
+    navigator.credentials.store = async () => { throw new Error('denied') }
+    assert.equal(await saveVerifiedPassword('alice', 'test-password'), false)
+  } finally {
+    for (const [key, descriptor] of descriptors) {
+      if (descriptor) Object.defineProperty(globalThis, key, descriptor)
+      else Reflect.deleteProperty(globalThis, key)
+    }
+  }
+})

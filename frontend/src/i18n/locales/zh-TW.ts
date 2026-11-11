@@ -6822,7 +6822,7 @@ export default {
     usernameInvalid: '使用者名只能包含字母、數字、底線和中文字符',
     confirmPasswordRequired: '請確認密碼',
     passwordMismatch: '兩次輸入的密碼不一致',
-    loginError: '登入錯誤，請檢查電子信箱或密碼',
+    loginError: '登入錯誤，請檢查使用者名稱、電子信箱或密碼',
     loginErrorRetry: '登入錯誤，請稍後重試',
     registerError: '註冊錯誤，請稍後重試',
     workspaceOnboarding: {

@@ -22,6 +22,9 @@ test('application shell uses only YHSJ identity assets', () => {
   const html = readFileSync(new URL('../../index.html', import.meta.url), 'utf8')
   assert.match(html, /<title>YHSJ<\/title>/)
   assert.match(html, /yhsj-icon\.svg/)
+  const embed = readFileSync(new URL('../../embed.html', import.meta.url), 'utf8')
+  assert.match(embed, /<title>YHSJ<\/title>/)
+  assert.doesNotMatch(embed, /favicon\.ico|WeKnora/)
   for (const file of ['../views/auth/Login.vue', '../components/menu.vue']) {
     const source = readFileSync(new URL(file, import.meta.url), 'utf8')
     assert.match(source, /assets\/img\/yhsj\.svg/)

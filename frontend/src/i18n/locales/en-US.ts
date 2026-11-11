@@ -3153,7 +3153,7 @@ export default {
     usernameInvalid: 'Username can only contain letters, numbers, underscores and Chinese characters',
     confirmPasswordRequired: 'Confirm password',
     passwordMismatch: 'Entered passwords do not match',
-    loginError: 'Login error, please check email or password',
+    loginError: 'Login error, please check your username, email or password',
     loginErrorRetry: 'Login error, please try again later',
     registerError: 'Registration error, please try again later',
     workspaceOnboarding: {

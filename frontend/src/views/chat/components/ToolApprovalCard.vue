@@ -103,6 +103,7 @@ import { resumeSuspendedRunKey } from '@/utils/suspendedRun'
 import { usePromptCountdown } from '@/composables/usePromptCountdown'
 import { markPromptSubmitted, promptSubmission, usePromptDock } from '@/composables/usePromptDock'
 import { isSubmitKey } from '@/utils/promptKeys'
+import { brandText } from '@/config/branding'
 
 const props = defineProps<{
   pendingId: string
@@ -345,7 +346,7 @@ const headerIcon = computed(() => {
 
 const targetLabel = computed(() => (
   t('agentStream.toolApproval.targetWithTool', {
-    service: props.serviceName,
+    service: brandText(props.serviceName),
     tool: props.mcpToolName,
   })
 ))

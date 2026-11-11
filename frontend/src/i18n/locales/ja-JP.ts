@@ -3153,7 +3153,7 @@ export default {
     usernameInvalid: 'ユーザ名に使用できるのは英数字、アンダースコア、漢字のみです',
     confirmPasswordRequired: 'パスワードを再入力してください',
     passwordMismatch: '入力したパスワードが一致しません',
-    loginError: 'ログインに失敗しました。メールアドレスまたはパスワードを確認してください',
+    loginError: 'ログインに失敗しました。ユーザー名、メールアドレス、パスワードを確認してください',
     loginErrorRetry: 'ログインに失敗しました。しばらくしてから再試行してください',
     registerError: '登録に失敗しました。しばらくしてから再試行してください',
     workspaceOnboarding: {
