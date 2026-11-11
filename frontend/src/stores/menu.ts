@@ -82,6 +82,11 @@ export const useMenuStore = defineStore('menuStore', () => {
       if (item.path === 'organizations' && !authStore.hasRole('admin')) {
         return false
       }
+      // Sidebar visibility only. Keep agent use in chat and server RBAC unchanged.
+      // Missing membership information must not briefly expose the management entry.
+      if (item.path === 'agents' && !authStore.hasRole('contributor')) {
+        return false
+      }
       if (!deploymentCapabilities.isSupported(item.requiredCapability)) {
         return false
       }
