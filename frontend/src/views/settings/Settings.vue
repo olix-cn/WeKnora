@@ -63,7 +63,7 @@
     <div class="content-wrapper" :class="{
       'content-wrapper--wide': currentSection === 'members',
       'content-wrapper--resource-list': ['models', 'mymemory', 'platform-api-keys', 'model-catalog', 'members', 'sandbox'].includes(currentSection),
-      'content-wrapper--full': SYSTEM_ADMIN_SECTIONS.has(currentSection) || isIntegrationSection(currentSection),
+      'content-wrapper--full': SYSTEM_ADMIN_SECTIONS.has(currentSection),
     }">
       <!-- 角色不允许访问当前 section（deep-link 进来 / 跨空间切换后角色降级）—— 优先于具体 section 渲染。
            正常导航走 navItems filter 不会到这里，但 watch(navItems) 的 fallback 会在角色降级
@@ -198,10 +198,6 @@
           <TenantMembers />
         </div>
 
-        <!-- 发布集成 -->
-        <div v-if="isIntegrationSection(currentSection)" class="section">
-          <IntegrationSettingsSection :tab="integrationTabFromSection(currentSection)" />
-        </div>
       </template>
     </div>
   </SettingsModalShell>
@@ -245,12 +241,6 @@ import SystemSettings from '@/views/system/SystemSettings.vue'
 import RuntimeQueues from '@/views/system/RuntimeQueues.vue'
 import PlatformAPIKeys from '@/views/system/PlatformAPIKeys.vue'
 import SystemAuditLog from '@/views/system/SystemAuditLog.vue'
-import IntegrationSettingsSection from '@/views/integrations/IntegrationSettingsSection.vue'
-import {
-  INTEGRATION_PREVIEW_ITEMS,
-  INTEGRATION_TAB_CAPABILITY,
-  INTEGRATION_TAB_MIN_ROLE,
-} from '@/config/integrations'
 import {
   SETTINGS_SECTION_MIN_ROLE,
   SYSTEM_ADMIN_SETTINGS_SECTIONS,
@@ -260,12 +250,10 @@ import { isToolboxSection, toolboxLocation } from '@/config/toolbox'
 import { hostSkillsOnly } from '@/utils/skillTarget'
 import {
   buildSettingsRouteQuery,
-  integrationSectionKey,
-  integrationTabFromSection,
   isIntegrationSection,
-  normalizeSettingsSection as normalizeSettingsSectionFromQuery,
   settingsQueryUnchanged,
 } from '@/config/settingsRoute'
+import { visibleSettingsSection } from '@/config/settingsVisibility'
 
 const route = useRoute()
 const router = useRouter()
@@ -319,7 +307,7 @@ type NavGroup = {
 const SYSTEM_ADMIN_SECTIONS = SYSTEM_ADMIN_SETTINGS_SECTIONS
 
 const normalizeSettingsSection = (section: string) => {
-  return normalizeSettingsSectionFromQuery(section, route.query.tab as string | undefined)
+  return visibleSettingsSection(section, route.query.tab as string | undefined)
 }
 
 const syncSettingsRoute = (sectionKey: string) => {
@@ -333,11 +321,7 @@ const syncSettingsRoute = (sectionKey: string) => {
 }
 
 const isSectionSupported = (key: string): boolean => {
-  if (isIntegrationSection(key)) {
-    return deploymentCapabilities.isSupported(
-      INTEGRATION_TAB_CAPABILITY[integrationTabFromSection(key)],
-    )
-  }
+  if (isIntegrationSection(key)) return false
   if (key === 'skills' || key === 'envvars') {
     return skillSettingsSupported(deploymentCapabilities.capabilities)
   }
@@ -345,12 +329,7 @@ const isSectionSupported = (key: string): boolean => {
 }
 
 const canSeeSection = (key: string): boolean => {
-  if (isIntegrationSection(key)) {
-    const min = INTEGRATION_TAB_MIN_ROLE[integrationTabFromSection(key)]
-    if (!min) return true
-    if (authStore.canAccessAllTenants) return true
-    return authStore.hasRole(min)
-  }
+  if (isIntegrationSection(key)) return false
   if (SYSTEM_ADMIN_SECTIONS.has(key)) {
     return authStore.isSystemAdmin
   }
@@ -365,12 +344,6 @@ const navItems = computed(() => {
   // 一律走 SETTINGS_SECTION_MIN_ROLE 表，避免 ad-hoc isAdmin/isOwner 散落在多处。
   // 服务端在每条路由上仍以 g.Viewer/Admin/Owner 为准，这里只决定 UI 是
   // 否露入口；改动入口规则请同步更新 settingsAccess.ts 和对应后端路由。
-  const integrationItems: NavItem[] = INTEGRATION_PREVIEW_ITEMS.map((item) => ({
-    key: integrationSectionKey(item.key),
-    icon: item.icon.type === 'icon' ? item.icon.name : 'integration',
-    emoji: item.icon.type === 'emoji' ? item.icon.value : undefined,
-    label: t(`integrations.tabs.${item.key}`),
-  }))
   const all: NavItem[] = [
     { key: 'general', icon: 'setting', label: t('general.title') },
     { key: 'ollama', icon: 'server', label: 'Ollama' },
@@ -397,7 +370,6 @@ const navItems = computed(() => {
     { key: 'credentialvault', icon: 'lock-on', label: t('credentialVault.title') },
     { key: 'tenant', icon: 'user-circle', label: t('settings.tenantInfo') },
     { key: 'members', icon: 'usergroup', label: t('tenantMember.title') },
-    ...integrationItems,
   ]
   // currentTenantRole 为空表示「membership 还没加载」—— 比起渲染整套
   // viewer 入口然后角色一返回又消失，先卡住不渲染更稳，跟原先 members
@@ -430,11 +402,6 @@ const navGroups = computed<NavGroup[]>(() => {
       key: 'models_runtime',
       label: t('settings.navGroups.modelsRuntime'),
       items: pickItems(['models', 'ollama', 'weknoracloud']),
-    },
-    {
-      key: 'integrations',
-      label: t('integrations.title'),
-      items: pickItems(INTEGRATION_PREVIEW_ITEMS.map((item) => integrationSectionKey(item.key))),
     },
     {
       key: 'data_extensions',
@@ -582,7 +549,7 @@ watch(
       syncSettingsRoute(currentSection.value || 'general')
       return
     }
-    const normalizedSection = normalizeSettingsSectionFromQuery(
+    const normalizedSection = visibleSettingsSection(
       section,
       typeof route.query.tab === 'string' ? route.query.tab : undefined,
     )

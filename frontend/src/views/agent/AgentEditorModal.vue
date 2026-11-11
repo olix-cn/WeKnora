@@ -39,27 +39,6 @@
             </div>
           </div>
 
-          <!-- 集成渠道状态（编辑模式，配置在集成中心） -->
-          <div v-if="editorMode === 'edit' && editorAgent?.id" class="setting-row">
-            <div class="setting-info">
-              <label>{{ $t('integrations.agentEditor.label') }}</label>
-              <p class="desc">{{ isPostCreateSession ? $t('agent.editor.postCreateHint.integrationDesc') : $t('integrations.agentEditor.desc') }}</p>
-            </div>
-            <div class="setting-control">
-              <div class="integration-inline">
-                <button type="button" class="integration-inline__stat integration-inline__link" @click="gotoIntegrations('im')">
-                  <span>{{ $t('integrations.tabs.im') }} · {{ agentIMChannelCount }}</span>
-                  <t-icon name="chevron-right" size="14px" />
-                </button>
-                <span class="integration-inline__sep" aria-hidden="true">|</span>
-                <button type="button" class="integration-inline__stat integration-inline__link" @click="gotoIntegrations('embed')">
-                  <span>{{ $t('integrations.tabs.embed') }} · {{ agentEmbedChannelCount }}</span>
-                  <t-icon name="chevron-right" size="14px" />
-                </button>
-              </div>
-            </div>
-          </div>
-
           <!-- 运行模式（首先选择） -->
           <div class="setting-row">
             <div class="setting-info">
@@ -1891,7 +1870,6 @@ import AssistantActionButton from '@/components/assistant/AssistantActionButton.
 import {
   createAgent,
   updateAgent,
-  listIMChannels,
   type CustomAgent,
   type PlaceholderDefinition,
   type AgentTypePreset,
@@ -1929,10 +1907,8 @@ import SettingDrawer from '@/components/settings/SettingDrawer.vue';
 import KBParserSettings, { type ParserEngineRule } from '@/views/knowledge/settings/KBParserSettings.vue';
 import AgentShareSettings from '@/components/AgentShareSettings.vue';
 import { SKILL_ICON } from '@/types/mention';
-import { listEmbedChannels } from '@/api/embed';
 import { ASSISTANT_ACCESS_LEVELS, type AssistantAccessLevel } from '@/api/assistant';
 import { getRootZoom, rectToCssPx } from '@/utils/zoom';
-import { integrationSectionKey } from '@/config/settingsRoute';
 import { toolboxLocation } from '@/config/toolbox';
 import {
   deriveKbFilterFromTools,
@@ -3186,30 +3162,6 @@ watch(currentSection, (section) => {
   }
 });
 
-const agentIMChannelCount = ref(0);
-const agentEmbedChannelCount = ref(0);
-
-async function loadAgentIntegrationCounts(agentId: string) {
-  try {
-    const [imResp, embedResp] = await Promise.all([
-      listIMChannels(agentId),
-      listEmbedChannels(agentId),
-    ]);
-    agentIMChannelCount.value = imResp?.data?.length ?? 0;
-    agentEmbedChannelCount.value = embedResp?.data?.length ?? 0;
-  } catch {
-    agentIMChannelCount.value = 0;
-    agentEmbedChannelCount.value = 0;
-  }
-}
-
-function gotoIntegrations(tab: 'im' | 'embed') {
-  const agentId = editorAgent.value?.id;
-  if (!agentId) return;
-  handleClose();
-  router.push({ path: '/platform/settings', query: { section: integrationSectionKey(tab), agentId } });
-}
-
 const filteredIntentPlaceholders = computed(() => {
   if (!intentPromptPopup.value.prefix) {
     return placeholderData.value.system_prompt;
@@ -3714,7 +3666,6 @@ watch(() => props.visible, async (val) => {
       });
       // Display inherited defaults for all agents without persisting a copy.
       fillBuiltinAgentDefaults();
-      void loadAgentIntegrationCounts(agentData.id);
     } else {
       // 创建新智能体，使用系统默认值
       storedToolNames.value = [];
@@ -3807,8 +3758,6 @@ watch(() => props.visible, async (val) => {
   } else {
     editorInitializing.value = false;
     clearFieldHighlight();
-    agentIMChannelCount.value = 0;
-    agentEmbedChannelCount.value = 0;
     showSkillProgress.value = false;
     skillProgressRecord.value = null;
     skillProgressId.value = '';
@@ -5132,7 +5081,6 @@ const handleSave = async () => {
       modalShell.markClean();
       markContextualGuideDone('agentCreate')
       currentSection.value = 'basic';
-      void loadAgentIntegrationCounts(created.id);
       MessagePlugin.success(t('agent.messages.created'));
       notifyAllowedToolsWarnings(result?.allowed_tools_warnings);
       emit('success', created);

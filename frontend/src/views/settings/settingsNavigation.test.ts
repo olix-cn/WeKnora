@@ -35,13 +35,13 @@ function integrationMenu(visibleKeys: string[]): string[] {
 
 const integrationKeys = INTEGRATION_PREVIEW_ITEMS.map((item) => integrationSectionKey(item.key))
 
-test('settings sidebar includes every registered integration, including CLI, in navigation order', () => {
-  assert.deepEqual(integrationMenu(['general', ...integrationKeys]), integrationKeys)
+test('settings sidebar hides the entire integrations group for every role', () => {
+  assert.deepEqual(integrationMenu(['general', ...integrationKeys]), [])
 })
 
-test('settings sidebar preserves visibility filtering without hiding CLI', () => {
+test('settings sidebar never exposes a partial integrations group', () => {
   const visible = integrationKeys.filter((key) => key !== 'integration-api' && key !== 'integration-im')
-  assert.deepEqual(integrationMenu(visible), visible)
+  assert.deepEqual(integrationMenu(visible), [])
   assert.deepEqual(integrationMenu(['general']), [])
 })
 
