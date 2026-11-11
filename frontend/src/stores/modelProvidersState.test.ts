@@ -48,11 +48,11 @@ test('providerLabel uses labels[locale], then the same language, then label', ()
     label: 'Tencent Cloud LKEAP',
     labels: { 'zh-CN': '腾讯云 LKEAP' },
   })
-  assert.equal(providerLabel(lkeap, 'zh-CN'), '腾讯云 LKEAP')
-  assert.equal(providerLabel(lkeap, 'zh-TW'), '腾讯云 LKEAP', 'language match without exact region')
-  assert.equal(providerLabel(lkeap, 'en-US'), 'Tencent Cloud LKEAP')
-  assert.equal(providerLabel(lkeap, 'ja-JP'), 'Tencent Cloud LKEAP')
-  assert.equal(providerLabel(lkeap), 'Tencent Cloud LKEAP')
+  assert.equal(providerLabel(lkeap, 'zh-CN'), 'YHSJ云 LKEAP')
+  assert.equal(providerLabel(lkeap, 'zh-TW'), 'YHSJ云 LKEAP', 'language match without exact region')
+  assert.equal(providerLabel(lkeap, 'en-US'), 'YHSJ Cloud LKEAP')
+  assert.equal(providerLabel(lkeap, 'ja-JP'), 'YHSJ Cloud LKEAP')
+  assert.equal(providerLabel(lkeap), 'YHSJ Cloud LKEAP')
   assert.equal(providerLabel(null, 'zh-CN'), '')
 })
 

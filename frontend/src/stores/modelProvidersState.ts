@@ -11,6 +11,7 @@ import type {
   ModelProviderExtraField,
   ModelProviderOption,
 } from '@/api/initialization'
+import { brandText } from '../config/branding'
 
 /** Editor model types → backend ModelType names used by ExtraField.model_types. */
 const FRONTEND_TO_BACKEND_MODEL_TYPE: Record<string, string> = {
@@ -91,16 +92,17 @@ export function pickLocalized(
 
 export function providerLabel(provider: ModelProviderOption | null | undefined, locale?: string): string {
   if (!provider) return ''
-  return pickLocalized(provider.labels, locale, provider.label || provider.value || '')
+  return brandText(pickLocalized(provider.labels, locale, provider.label || provider.value || ''))
 }
 
 export function providerDescription(provider: ModelProviderOption | null | undefined, locale?: string): string {
   if (!provider) return ''
-  return pickLocalized(provider.descriptions, locale, provider.description || '')
+  return brandText(pickLocalized(provider.descriptions, locale, provider.description || ''))
 }
 
 /** `<img src>`-ready icon, or '' when the vendor ships none. */
 export function providerIcon(provider: ModelProviderOption | null | undefined): string {
+  if (provider && /weknora|tencent|lkeap|hunyuan/i.test(`${provider.value} ${provider.label}`)) return ''
   const icon = provider?.icon
   return typeof icon === 'string' && icon.startsWith('data:image/') ? icon : ''
 }

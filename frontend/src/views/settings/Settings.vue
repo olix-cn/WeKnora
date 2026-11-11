@@ -26,7 +26,7 @@
               fill="none" xmlns="http://www.w3.org/2000/svg" class="nav-icon">
               <rect x="1.5" y="1.5" width="15" height="15" rx="3.5" stroke="currentColor" stroke-width="1.2"
                 fill="none" />
-              <path d="M4.5 5.5L6.5 12.5L9 7.5L11.5 12.5L13.5 5.5" stroke="currentColor" stroke-width="1.3"
+              <path d="M5 5L9 9L13 5M9 9V13" stroke="currentColor" stroke-width="1.3"
                 stroke-linecap="round" stroke-linejoin="round" fill="none" />
             </svg>
             <!-- 沙箱：隔离运行窗口，避免和 Ollama / 系统设置共用 server -->
@@ -374,7 +374,7 @@ const navItems = computed(() => {
   const all: NavItem[] = [
     { key: 'general', icon: 'setting', label: t('general.title') },
     { key: 'ollama', icon: 'server', label: 'Ollama' },
-    { key: 'weknoracloud', icon: '', label: 'WeKnora Cloud' },
+    { key: 'weknoracloud', icon: '', label: 'YHSJ Cloud' },
     { key: 'models', icon: 'control-platform', label: t('settings.modelManagement') },
     { key: 'websearch', icon: 'search', label: t('settings.webSearchConfig') },
     { key: 'chathistory', icon: 'chat', label: t('chatHistorySettings.title') },

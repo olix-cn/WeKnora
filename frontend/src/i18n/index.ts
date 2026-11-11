@@ -7,15 +7,16 @@ import jaJP from './locales/ja-JP.ts'
 import zhTW from './locales/zh-TW.ts'
 import { BUILT_IN_DEFAULT, resolveDefaultLocale } from './resolveDefaultLocale.ts'
 import { pluralRules } from './pluralizationRules.ts'
+import { brandMessages } from '../config/branding'
 
-const messages = {
+const messages = brandMessages({
   'zh-CN': zhCN,
   'zh-TW': zhTW,
   'en-US': enUS,
   'ru-RU': ruRU,
   'ko-KR': koKR,
   'ja-JP': jaJP
-}
+})
 
 // User's explicit past choice wins; otherwise use the deployment default.
 const savedLocale = localStorage.getItem('locale') || resolveDefaultLocale(
