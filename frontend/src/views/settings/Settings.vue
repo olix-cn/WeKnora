@@ -21,14 +21,6 @@
               <line x1="2.94" y1="12.5" x2="15.06" y2="12.5" stroke="currentColor" stroke-width="1.2"
                 stroke-linecap="round" />
             </svg>
-            <!-- WeKnora Cloud 使用自定义 W 图标 -->
-            <svg v-else-if="item.key === 'weknoracloud'" width="17" height="17" viewBox="0 0 18 18"
-              fill="none" xmlns="http://www.w3.org/2000/svg" class="nav-icon">
-              <rect x="1.5" y="1.5" width="15" height="15" rx="3.5" stroke="currentColor" stroke-width="1.2"
-                fill="none" />
-              <path d="M5 5L9 9L13 5M9 9V13" stroke="currentColor" stroke-width="1.3"
-                stroke-linecap="round" stroke-linejoin="round" fill="none" />
-            </svg>
             <!-- 沙箱：隔离运行窗口，避免和 Ollama / 系统设置共用 server -->
             <svg v-else-if="item.key === 'sandbox'" width="17" height="17" viewBox="0 0 18 18" fill="none"
               xmlns="http://www.w3.org/2000/svg" class="nav-icon">
@@ -84,11 +76,6 @@
         <!-- Ollama 设置 -->
         <div v-if="currentSection === 'ollama'" class="section">
           <OllamaSettings />
-        </div>
-
-        <!-- WeKnora Cloud -->
-        <div v-if="currentSection === 'weknoracloud'" class="section">
-          <WeKnoraCloudSettings />
         </div>
 
         <!-- 模型配置 -->
@@ -235,7 +222,6 @@ import VectorStoreSettings from './VectorStoreSettings.vue'
 import ParserEngineSettings from './ParserEngineSettings.vue'
 import StorageBackendSettings from './StorageBackendSettings.vue'
 import SandboxSettings from './SandboxSettings.vue'
-import WeKnoraCloudSettings from './WeKnoraCloudSettings.vue'
 import TenantMembers from './TenantMembers.vue'
 import SystemSettings from '@/views/system/SystemSettings.vue'
 import RuntimeQueues from '@/views/system/RuntimeQueues.vue'
@@ -250,10 +236,9 @@ import { isToolboxSection, toolboxLocation } from '@/config/toolbox'
 import { hostSkillsOnly } from '@/utils/skillTarget'
 import {
   buildSettingsRouteQuery,
-  isIntegrationSection,
   settingsQueryUnchanged,
 } from '@/config/settingsRoute'
-import { visibleSettingsSection } from '@/config/settingsVisibility'
+import { visibleSettingsSection, isHiddenSettingsSection } from '@/config/settingsVisibility'
 
 const route = useRoute()
 const router = useRouter()
@@ -321,7 +306,7 @@ const syncSettingsRoute = (sectionKey: string) => {
 }
 
 const isSectionSupported = (key: string): boolean => {
-  if (isIntegrationSection(key)) return false
+  if (isHiddenSettingsSection(key)) return false
   if (key === 'skills' || key === 'envvars') {
     return skillSettingsSupported(deploymentCapabilities.capabilities)
   }
@@ -329,7 +314,7 @@ const isSectionSupported = (key: string): boolean => {
 }
 
 const canSeeSection = (key: string): boolean => {
-  if (isIntegrationSection(key)) return false
+  if (isHiddenSettingsSection(key)) return false
   if (SYSTEM_ADMIN_SECTIONS.has(key)) {
     return authStore.isSystemAdmin
   }
@@ -347,7 +332,6 @@ const navItems = computed(() => {
   const all: NavItem[] = [
     { key: 'general', icon: 'setting', label: t('general.title') },
     { key: 'ollama', icon: 'server', label: 'Ollama' },
-    { key: 'weknoracloud', icon: '', label: 'YHSJ Cloud' },
     { key: 'models', icon: 'control-platform', label: t('settings.modelManagement') },
     { key: 'websearch', icon: 'search', label: t('settings.webSearchConfig') },
     { key: 'chathistory', icon: 'chat', label: t('chatHistorySettings.title') },
@@ -401,7 +385,7 @@ const navGroups = computed<NavGroup[]>(() => {
     {
       key: 'models_runtime',
       label: t('settings.navGroups.modelsRuntime'),
-      items: pickItems(['models', 'ollama', 'weknoracloud']),
+      items: pickItems(['models', 'ollama']),
     },
     {
       key: 'data_extensions',
