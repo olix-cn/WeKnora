@@ -6769,6 +6769,10 @@ export default {
     }
   },
   auth: {
+    saveCredentials: 'Сохранить аккаунт и пароль',
+    cancelSaveCredentials: 'Отменить сохранение',
+    saveCredentialsHint: 'После входа аккаунт будет запомнен, а пароль сохранит браузер. Не используйте на общих устройствах.',
+    saveCredentialsFallback: 'Аккаунт запомнен. Для сохранения пароля используйте функцию браузера.',
     login: 'Вход',
     logout: 'Выход',
     oidcLogin: 'Войти через OIDC',

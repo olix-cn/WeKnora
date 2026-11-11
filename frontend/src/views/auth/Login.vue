@@ -34,13 +34,21 @@
               label-align="top">
               <t-form-item :label="$t('auth.email')" name="email">
                 <t-input v-model="formData.email" :placeholder="$t('auth.emailPlaceholder')" type="text"
-                  autocomplete="email" size="large" :disabled="loading" />
+                  name="username" autocomplete="username" size="large" :disabled="loading" />
               </t-form-item>
 
               <t-form-item :label="$t('auth.password')" name="password">
                 <t-input v-model="formData.password" :placeholder="$t('auth.passwordPlaceholder')" type="password"
-                  autocomplete="current-password" size="large" :disabled="loading" @enter="handleLogin" />
+                  name="password" autocomplete="current-password" size="large" :disabled="loading" @enter="handleLogin" />
               </t-form-item>
+
+              <div class="credential-actions">
+                <t-button type="button" theme="default" variant="outline" :disabled="loading"
+                  :aria-pressed="saveCredentials" @click="toggleSaveCredentials">
+                  {{ saveCredentials ? $t('auth.cancelSaveCredentials') : $t('auth.saveCredentials') }}
+                </t-button>
+                <p class="credential-hint">{{ $t('auth.saveCredentialsHint') }}</p>
+              </div>
 
               <t-button type="submit" theme="primary" size="large" block :loading="loading" class="submit-button">
                 {{ loading ? $t('auth.loggingIn') : $t('auth.login') }}
@@ -190,6 +198,7 @@ import {
 import { useAuthStore } from '@/stores/auth'
 import { useI18n } from 'vue-i18n'
 import { getApiBaseUrl } from '@/utils/api-base'
+import { savedLoginAccount, rememberLoginAccount, saveVerifiedPassword } from '@/utils/loginCredentials'
 
 const router = useRouter()
 const route = useRoute()
@@ -211,6 +220,12 @@ const oidcProviderName = ref('')
 const registrationMode = ref('')
 const registrationEnabled = computed(() => canRegister(registrationMode.value, !!inviteLookup.value))
 const complexPasswordEnabled = ref(false)
+const saveCredentials = ref(!!savedLoginAccount(localStorage))
+
+const toggleSaveCredentials = () => {
+  saveCredentials.value = !saveCredentials.value
+  if (!saveCredentials.value) rememberLoginAccount(localStorage, '')
+}
 
 // invite-link state. When the URL carries ?token=xxx we resolve it to
 // the originating tenant + role and switch the form into a "register
@@ -231,7 +246,7 @@ const oidcLoginText = computed(() => {
 
 // Login form data
 const formData = reactive<{ [key: string]: any }>({
-  email: '',
+  email: savedLoginAccount(localStorage),
   password: '',
 })
 
@@ -429,6 +444,11 @@ const handleLogin = async () => {
     })
 
     if (response.success) {
+      if (saveCredentials.value) {
+        rememberLoginAccount(localStorage, formData.email)
+        const saved = await saveVerifiedPassword(formData.email, formData.password)
+        if (!saved) MessagePlugin.info(t('auth.saveCredentialsFallback'))
+      }
       if (inviteToken.value) {
         // 从邀请链接登录：持久化会话后兑换 token 并进入对应空间。
         await persistLoginResponse(response, true)
@@ -1278,6 +1298,17 @@ onMounted(async () => {
   font-weight: 500;
   font-family: var(--app-font-family);
   margin: 20px 0 16px 0;
+}
+
+.credential-actions {
+  margin-top: 8px;
+}
+
+.credential-hint {
+  margin: 8px 0 0;
+  color: var(--td-text-color-secondary);
+  font-size: var(--app-text-sm);
+  line-height: 1.5;
 }
 
 .oidc-divider {

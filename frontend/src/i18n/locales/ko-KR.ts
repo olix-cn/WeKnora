@@ -6769,6 +6769,10 @@ export default {
     }
   },
   auth: {
+    saveCredentials: '계정과 비밀번호 저장',
+    cancelSaveCredentials: '저장 취소',
+    saveCredentialsHint: '로그인 후 계정을 기억하고 비밀번호는 브라우저에서 관리합니다. 공용 기기에서는 사용하지 마세요.',
+    saveCredentialsFallback: '계정을 기억했습니다. 브라우저의 비밀번호 저장 기능을 사용하세요.',
     login: '로그인',
     logout: '로그아웃',
     oidcLogin: 'OIDC로 로그인',

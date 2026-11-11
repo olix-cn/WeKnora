@@ -3101,6 +3101,10 @@ export default {
     passwordMismatch: 'Passwords do not match'
   },
   auth: {
+    saveCredentials: 'Save account and password',
+    cancelSaveCredentials: 'Cancel saving',
+    saveCredentialsHint: 'After sign-in, remember the account and let your browser manage the password. Do not use on shared devices.',
+    saveCredentialsFallback: 'Account remembered. Use your browser’s save-password feature to save the password.',
     login: 'Login',
     logout: 'Logout',
     oidcLogin: 'Sign in with OIDC',

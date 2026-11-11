@@ -6770,6 +6770,10 @@ export default {
     }
   },
   auth: {
+    saveCredentials: '儲存帳號密碼',
+    cancelSaveCredentials: '取消儲存',
+    saveCredentialsHint: '登入成功後記住帳號，密碼由瀏覽器密碼管理員儲存。請勿在公用裝置上使用。',
+    saveCredentialsFallback: '已記住帳號。請使用瀏覽器的「儲存密碼」功能儲存密碼。',
     login: '登入',
     logout: '退出',
     oidcLogin: '使用 OIDC 登入',

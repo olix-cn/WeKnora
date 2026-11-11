@@ -3101,6 +3101,10 @@ export default {
     passwordMismatch: 'パスワードが一致しません'
   },
   auth: {
+    saveCredentials: 'アカウントとパスワードを保存',
+    cancelSaveCredentials: '保存を取り消す',
+    saveCredentialsHint: 'ログイン成功後にアカウントを記憶し、パスワードはブラウザーで管理します。共有端末では使用しないでください。',
+    saveCredentialsFallback: 'アカウントを記憶しました。パスワードはブラウザーの保存機能をご利用ください。',
     login: 'ログイン',
     logout: 'ログアウト',
     oidcLogin: 'OIDCでログイン',

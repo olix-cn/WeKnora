@@ -6770,6 +6770,10 @@ export default {
     }
   },
   auth: {
+    saveCredentials: '保存账号密码',
+    cancelSaveCredentials: '取消保存',
+    saveCredentialsHint: '登录成功后记住账号，密码由浏览器密码管理器保存。请勿在公用设备上使用。',
+    saveCredentialsFallback: '账号已记住。请使用浏览器的“保存密码”功能保存密码。',
     login: '登录',
     logout: '退出',
     oidcLogin: '使用 OIDC 登录',
