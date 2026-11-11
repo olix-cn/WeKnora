@@ -3,17 +3,18 @@ import { readFileSync } from 'node:fs'
 import test from 'node:test'
 
 const source = readFileSync(new URL('./Login.vue', import.meta.url), 'utf8')
-const tabletStyles = source.slice(
-  source.indexOf('@media (max-width: 768px)'),
-  source.indexOf('@media (max-width: 480px)'),
-)
-const phoneStyles = source.slice(source.indexOf('@media (max-width: 480px)'))
+const template = source.slice(0, source.indexOf('</template>'))
 
-test('phone login puts the form before the showcase and reserves room for the header', () => {
-  assert.match(tabletStyles, /\.login-layout\s*\{[\s\S]*?flex-direction:\s*column;[\s\S]*?padding-top:\s*64px;/)
-  assert.match(tabletStyles, /\.form-section\s*\{[\s\S]*?order:\s*-1;/)
+test('login removes promotional panels, graphics and external header controls', () => {
+  assert.doesNotMatch(template, /showcase-section|animated-bg|header-links|language-switch|https:\/\//)
+  assert.doesNotMatch(source, /import .*swiper|screenshot[1-4] from|showLanguageMenu/)
 })
 
-test('narrow login headers use icon-only links to avoid overlapping the logo', () => {
-  assert.match(phoneStyles, /\.header-links\s*\{[\s\S]*?\.link-text\s*\{\s*display:\s*none;/)
+test('login panel is centered at desktop and mobile sizes and can scroll on short screens', () => {
+  assert.match(source, /\.login-layout\s*\{[^}]*align-items:\s*center;[^}]*justify-content:\s*center;[^}]*min-height:\s*100dvh;/)
+  assert.match(source, /\.form-panel\s*\{[^}]*width:\s*100%;[^}]*max-width:\s*480px;/)
+  assert.doesNotMatch(source, /padding-top:\s*64px|flex:\s*0 0 48%|order:\s*-1/)
+  assert.match(template, /alt="YHSJ"/)
+  assert.match(template, /oidcEnabled/)
+  assert.match(template, /registrationEnabled/)
 })
