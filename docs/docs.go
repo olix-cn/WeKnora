@@ -32657,6 +32657,7 @@ const docTemplate = `{
             ],
             "properties": {
                 "email": {
+                    "description": "Email address or username. The JSON key is retained for compatibility.",
                     "type": "string"
                 },
                 "password": {

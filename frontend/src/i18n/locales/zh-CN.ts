@@ -6770,6 +6770,9 @@ export default {
     }
   },
   auth: {
+    account: '用户名或邮箱',
+    accountPlaceholder: '请输入用户名或邮箱',
+    accountRequired: '请输入用户名或邮箱',
     saveCredentials: '保存账号密码',
     cancelSaveCredentials: '取消保存',
     saveCredentialsHint: '登录成功后记住账号，密码由浏览器密码管理器保存。请勿在公用设备上使用。',

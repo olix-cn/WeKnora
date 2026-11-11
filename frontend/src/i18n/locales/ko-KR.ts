@@ -6769,6 +6769,9 @@ export default {
     }
   },
   auth: {
+    account: '사용자 이름 또는 이메일',
+    accountPlaceholder: '사용자 이름 또는 이메일 입력',
+    accountRequired: '사용자 이름 또는 이메일을 입력하세요',
     saveCredentials: '계정과 비밀번호 저장',
     cancelSaveCredentials: '저장 취소',
     saveCredentialsHint: '로그인 후 계정을 기억하고 비밀번호는 브라우저에서 관리합니다. 공용 기기에서는 사용하지 마세요.',

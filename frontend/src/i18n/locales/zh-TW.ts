@@ -6770,6 +6770,9 @@ export default {
     }
   },
   auth: {
+    account: '使用者名稱或電子郵件',
+    accountPlaceholder: '請輸入使用者名稱或電子郵件',
+    accountRequired: '請輸入使用者名稱或電子郵件',
     saveCredentials: '儲存帳號密碼',
     cancelSaveCredentials: '取消儲存',
     saveCredentialsHint: '登入成功後記住帳號，密碼由瀏覽器密碼管理員儲存。請勿在公用裝置上使用。',

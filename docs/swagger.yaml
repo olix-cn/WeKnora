@@ -5576,6 +5576,7 @@ definitions:
   github_com_Tencent_WeKnora_internal_types.LoginRequest:
     properties:
       email:
+        description: Email address or username. The JSON key is retained for compatibility.
         type: string
       password:
         minLength: 6

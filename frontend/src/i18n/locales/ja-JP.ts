@@ -3101,6 +3101,9 @@ export default {
     passwordMismatch: 'パスワードが一致しません'
   },
   auth: {
+    account: 'ユーザー名またはメールアドレス',
+    accountPlaceholder: 'ユーザー名またはメールアドレスを入力',
+    accountRequired: 'ユーザー名またはメールアドレスを入力してください',
     saveCredentials: 'アカウントとパスワードを保存',
     cancelSaveCredentials: '保存を取り消す',
     saveCredentialsHint: 'ログイン成功後にアカウントを記憶し、パスワードはブラウザーで管理します。共有端末では使用しないでください。',

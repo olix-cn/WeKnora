@@ -3101,6 +3101,9 @@ export default {
     passwordMismatch: 'Passwords do not match'
   },
   auth: {
+    account: 'Username or email',
+    accountPlaceholder: 'Enter your username or email',
+    accountRequired: 'Enter your username or email',
     saveCredentials: 'Save account and password',
     cancelSaveCredentials: 'Cancel saving',
     saveCredentialsHint: 'After sign-in, remember the account and let your browser manage the password. Do not use on shared devices.',

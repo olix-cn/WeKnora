@@ -32,8 +32,8 @@
           <div class="form-content">
             <t-form ref="formRef" :data="formData" :rules="formRules" @submit="handleLogin" layout="vertical"
               label-align="top">
-              <t-form-item :label="$t('auth.email')" name="email">
-                <t-input v-model="formData.email" :placeholder="$t('auth.emailPlaceholder')" type="text"
+              <t-form-item :label="$t('auth.account')" name="email">
+                <t-input v-model="formData.email" :placeholder="$t('auth.accountPlaceholder')" type="text"
                   name="username" autocomplete="username" size="large" :disabled="loading" />
               </t-form-item>
 
@@ -261,8 +261,7 @@ const registerData = reactive<{ [key: string]: any }>({
 // Login form validation rules
 const formRules = computed(() => ({
   email: [
-    { required: true, message: t('auth.emailRequired'), type: 'error' },
-    { email: true, message: t('auth.emailInvalid'), type: 'error' }
+    { required: true, whitespace: true, message: t('auth.accountRequired'), type: 'error' },
   ],
   password: [
     { required: true, message: t('auth.passwordRequired'), type: 'error' },
@@ -439,7 +438,7 @@ const handleLogin = async () => {
     loading.value = true
 
     const response = await login({
-      email: formData.email,
+      email: formData.email.trim(),
       password: formData.password,
     })
 

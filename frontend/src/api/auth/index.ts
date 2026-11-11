@@ -5,6 +5,7 @@ const t = (key: string) => i18n.global.t(key)
 
 // 用户登录接口
 export interface LoginRequest {
+  /** Email address or username. The wire key remains compatible with older clients. */
   email: string
   password: string
 }
