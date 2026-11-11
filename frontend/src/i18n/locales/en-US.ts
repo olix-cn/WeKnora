@@ -5201,6 +5201,10 @@ export default {
         }
       },
       keyLabels: {
+        ui: { navigation: {
+          automations_visible: 'Show Automations menu',
+          toolbox_visible: 'Show Toolbox menu',
+        } },
         auth: {
           registration_mode: 'Registration mode',
           default_tenant_mode: 'Default workspace provisioning',
@@ -5233,6 +5237,10 @@ export default {
         }
       },
       keyDescriptions: {
+        ui: { navigation: {
+          automations_visible: 'Show the home Automations menu for all users. Hidden by default; existing jobs keep running. Other users see changes after refreshing.',
+          toolbox_visible: 'Show the home Toolbox menu for all users. Hidden by default; tool configuration and backend permissions are unchanged. Other users must refresh.',
+        } },
         auth: {
           registration_mode: 'Registration mode. Open registration allows anyone to create an account; invitation registration requires a valid invitation link; disabled registration prevents account creation while existing accounts can still accept invitations. Changes take effect immediately.',
           default_tenant_mode: 'Workspace provisioning after public registration. create_personal creates an Owner workspace; tenantless creates only the account until the user accepts an invitation or creates a workspace. Applies to new users only.',

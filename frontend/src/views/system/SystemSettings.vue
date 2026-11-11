@@ -385,6 +385,8 @@ type SettingsSection = 'users' | 'access' | 'tenant' | 'runtime' | 'security' | 
 // unexpected key.
 const SETTINGS_SECTION_KEYS: Record<Exclude<SettingsSection, 'other' | 'users'>, readonly string[]> = {
   access: [
+    'ui.navigation.automations_visible',
+    'ui.navigation.toolbox_visible',
     'auth.registration_mode',
     'auth.complex_password_enabled',
     'auth.default_tenant_mode',
@@ -825,7 +827,7 @@ const quotaActionDisabled = computed(() => savingKey.value !== null ||
   settings.value.some((item) => hasBulkAction(item) && isDirty(item)))
 
 async function refreshSandboxDockerCapability(key: string) {
-  if (key !== 'sandbox.docker_enabled') return
+  if (key !== 'sandbox.docker_enabled' && !key.startsWith('ui.navigation.')) return
   await deploymentCapabilities.ensureLoaded(true)
 }
 

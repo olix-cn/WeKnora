@@ -13,6 +13,8 @@ import (
 var DeploymentCapabilityKeys = []string{
 	"organizations",
 	"agents",
+	"navigation.automations",
+	"navigation.toolbox",
 	"integrations.im",
 	"integrations.embed",
 	"integrations.api",
@@ -118,6 +120,8 @@ func BuildDeploymentCapabilities(
 		Capabilities: map[string]DeploymentCapability{
 			"organizations":                    organizations,
 			"agents":                           supportedDeploymentCapability(available.Agents),
+			"navigation.automations":           {Supported: false, Reason: "hidden_by_default"},
+			"navigation.toolbox":               {Supported: false, Reason: "hidden_by_default"},
 			"integrations.im":                  supportedDeploymentCapability(available.IM),
 			"integrations.embed":               supportedDeploymentCapability(available.Embed),
 			"integrations.api":                 supportedDeploymentCapability(available.API),
@@ -148,10 +152,22 @@ func (h *SystemHandler) BindDeploymentCapabilities(data DeploymentCapabilitiesDa
 // @Success 200 {object} handler.GetDeploymentCapabilitiesResponse
 // @Router       /system/capabilities [get]
 func (h *SystemHandler) GetDeploymentCapabilities(c *gin.Context) {
+	data := overlayLiveDockerSandboxCapability(h.deploymentCapabilities)
+	for _, item := range []struct{ capability, setting string }{
+		{"navigation.automations", "ui.navigation.automations_visible"},
+		{"navigation.toolbox", "ui.navigation.toolbox_visible"},
+	} {
+		enabled := h.systemSettingSvc != nil && h.systemSettingSvc.GetBool(c.Request.Context(), item.setting, "", false)
+		capability := DeploymentCapability{Supported: enabled}
+		if !enabled {
+			capability.Reason = "hidden_by_default"
+		}
+		data.Capabilities[item.capability] = capability
+	}
 	c.JSON(http.StatusOK, gin.H{
 		"code": 0,
 		"msg":  "success",
-		"data": overlayLiveDockerSandboxCapability(h.deploymentCapabilities),
+		"data": data,
 	})
 }
 

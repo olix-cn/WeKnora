@@ -4727,6 +4727,10 @@ export default {
         }
       },
       keyDescriptions: {
+        ui: { navigation: {
+          automations_visible: '모든 사용자에게 자동화 메뉴를 표시합니다. 기본적으로 숨겨지며 기존 작업은 중지하지 않습니다. 다른 사용자는 새로고침해야 합니다.',
+          toolbox_visible: '모든 사용자에게 도구 모음 메뉴를 표시합니다. 기본적으로 숨겨지며 설정과 권한은 변경하지 않습니다. 다른 사용자는 새로고침해야 합니다.',
+        } },
         model: {
           max_concurrency: '백그라운드 작업(문서 색인/보강)이 단일 모델에 대해 갖는 기본 동시 호출 상한이며, 모델 ID 기준으로 모든 복제본이 공유합니다. 매 호출마다 실시간으로 읽고 재시작 없이 즉시 적용됩니다. 0 또는 음수는 기본 상한을 해제합니다(각 모델은 모델 관리에서 설정한 자체 상한을 계속 준수함). 백그라운드 작업에만 영향을 주며 대화형 채팅에는 영향을 주지 않습니다.'
         },
@@ -4759,6 +4763,10 @@ export default {
         }
       },
       keyLabels: {
+        ui: { navigation: {
+          automations_visible: '자동화 메뉴 표시',
+          toolbox_visible: '도구 모음 메뉴 표시',
+        } },
         model: {
           max_concurrency: '모델 기본 동시 처리 상한'
         },

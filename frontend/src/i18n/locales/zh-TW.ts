@@ -4729,6 +4729,10 @@ export default {
         }
       },
       keyDescriptions: {
+        ui: { navigation: {
+          automations_visible: '向所有使用者顯示首頁自動化選單。預設隱藏，不停用既有任務；其他使用者重新整理頁面後生效。',
+          toolbox_visible: '向所有使用者顯示首頁工具箱選單。預設隱藏，不刪除工具設定或變更後端權限；其他使用者重新整理頁面後生效。',
+        } },
         model: {
           max_concurrency: '後台任務（文件入庫/富化）對單個模型的預設併發上限，按模型 ID 全副本共享。每次呼叫實時讀取，修改後立即生效、無需重啟。0 或負數表示關閉預設限制（各模型仍會尊重自身在模型管理裡設定的上限）。僅影響後台任務，不影響交互式對話。'
         },
@@ -4761,6 +4765,10 @@ export default {
         }
       },
       keyLabels: {
+        ui: { navigation: {
+          automations_visible: '顯示自動化選單',
+          toolbox_visible: '顯示工具箱選單',
+        } },
         model: {
           max_concurrency: '模型預設併發上限'
         },

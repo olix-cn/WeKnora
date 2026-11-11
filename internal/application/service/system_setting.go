@@ -101,6 +101,14 @@ type settingSpec struct {
 // the new value, no in-memory state bound at init time we cannot
 // re-derive)".
 var registry = map[string]settingSpec{
+	"ui.navigation.automations_visible": {
+		Type: "bool", Default: false, Category: "ui",
+		Description: "是否向所有用户显示首页自动化菜单。默认隐藏；仅影响入口，不停用现有自动化任务。",
+	},
+	"ui.navigation.toolbox_visible": {
+		Type: "bool", Default: false, Category: "ui",
+		Description: "是否向所有用户显示首页工具箱菜单。默认隐藏；不删除工具配置，不改变后端访问权限。",
+	},
 	// NOTE: file.max_size_mb is intentionally NOT registered. Although
 	// the Go upload handlers accept a runtime override via
 	// systemSettingSvc.GetInt, the actual upload limit is gated end-to-end

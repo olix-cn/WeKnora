@@ -19,6 +19,14 @@ test('capability filtering is fail-open unless backend explicitly disables a fea
   assert.equal(isDeploymentCapabilitySupported(capabilities, 'agents'), true)
 })
 
+test('optional home menus default to hidden and only explicit true enables them', () => {
+  for (const key of ['navigation.automations', 'navigation.toolbox'] as const) {
+    assert.equal(isDeploymentCapabilitySupported({}, key), false)
+    assert.equal(isDeploymentCapabilitySupported({ [key]: { supported: false } }, key), false)
+    assert.equal(isDeploymentCapabilitySupported({ [key]: { supported: true } }, key), true)
+  }
+})
+
 test('organizations stay hidden in lite even when capabilities fail open', () => {
   assert.equal(
     isDeploymentCapabilitySupported({}, 'organizations', { liteMode: true }),

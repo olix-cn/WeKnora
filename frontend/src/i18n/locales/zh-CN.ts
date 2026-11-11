@@ -4729,6 +4729,10 @@ export default {
         }
       },
       keyDescriptions: {
+        ui: { navigation: {
+          automations_visible: '向所有用户显示首页自动化菜单。默认隐藏，仅控制入口，不停用已有任务；其他用户刷新页面后生效。',
+          toolbox_visible: '向所有用户显示首页工具箱菜单。默认隐藏，不删除工具配置、不改变后端权限；其他用户刷新页面后生效。',
+        } },
         model: {
           max_concurrency: '后台任务（文档入库/富化）对单个模型的默认并发上限，按模型 ID 全副本共享。每次调用实时读取，修改后立即生效、无需重启。0 或负数表示关闭默认限制（各模型仍会尊重自身在模型管理里配置的上限）。仅影响后台任务，不影响交互式对话。'
         },
@@ -4761,6 +4765,10 @@ export default {
         }
       },
       keyLabels: {
+        ui: { navigation: {
+          automations_visible: '显示自动化菜单',
+          toolbox_visible: '显示工具箱菜单',
+        } },
         model: {
           max_concurrency: '模型默认并发上限'
         },

@@ -5201,6 +5201,10 @@ export default {
         }
       },
       keyLabels: {
+        ui: { navigation: {
+          automations_visible: '自動化メニューを表示',
+          toolbox_visible: 'ツールボックスメニューを表示',
+        } },
         auth: {
           registration_mode: '登録モード',
           default_tenant_mode: 'デフォルトのワークスペース作成方式',
@@ -5233,6 +5237,10 @@ export default {
         }
       },
       keyDescriptions: {
+        ui: { navigation: {
+          automations_visible: '全ユーザーに自動化メニューを表示します。既定では非表示。既存のタスクは停止しません。他のユーザーはページを更新してください。',
+          toolbox_visible: '全ユーザーにツールボックスメニューを表示します。既定では非表示。ツール設定や権限は変更しません。他のユーザーはページを更新してください。',
+        } },
         auth: {
           registration_mode: '登録モード。公開登録では誰でもアカウントを作成できます。招待登録には有効な招待リンクが必要です。登録禁止でも既存アカウントは招待を承諾できます。保存後すぐに反映されます。',
           default_tenant_mode: '公開登録後のワークスペース作成方式です。create_personalはオーナー権限のワークスペースを作成し、tenantlessはアカウントのみを作成して、ユーザが招待を承諾するかワークスペースを作成するまで待ちます。新規ユーザにのみ適用されます。',

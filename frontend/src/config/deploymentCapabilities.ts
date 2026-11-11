@@ -1,6 +1,8 @@
 export const DEPLOYMENT_CAPABILITY_KEYS = [
   'organizations',
   'agents',
+  'navigation.automations',
+  'navigation.toolbox',
   'integrations.im',
   'integrations.embed',
   'integrations.api',
@@ -49,7 +51,9 @@ export function isDeploymentCapabilitySupported(
   // User allocation is a deployment gate (env opt-in plus Redis). A missed
   // probe must not show the switch.
   if (
-    key === 'settings.sandbox.docker'
+    key === 'navigation.automations'
+    || key === 'navigation.toolbox'
+    || key === 'settings.sandbox.docker'
     || key === 'settings.sandbox.host'
     || key === 'settings.sandbox.remote'
     || key === 'settings.sandbox.user_allocation'
