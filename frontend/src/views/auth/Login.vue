@@ -43,10 +43,9 @@
               </t-form-item>
 
               <div class="credential-actions">
-                <t-button type="button" theme="default" variant="outline" :disabled="loading"
-                  :aria-pressed="saveCredentials" @click="toggleSaveCredentials">
-                  {{ saveCredentials ? $t('auth.cancelSaveCredentials') : $t('auth.saveCredentials') }}
-                </t-button>
+                <t-checkbox v-model="saveCredentials" :disabled="loading" @change="handleSaveCredentialsChange">
+                  {{ $t('auth.saveCredentials') }}
+                </t-checkbox>
                 <p class="credential-hint">{{ $t('auth.saveCredentialsHint') }}</p>
               </div>
 
@@ -222,8 +221,7 @@ const registrationEnabled = computed(() => canRegister(registrationMode.value, !
 const complexPasswordEnabled = ref(false)
 const saveCredentials = ref(!!savedLoginAccount(localStorage))
 
-const toggleSaveCredentials = () => {
-  saveCredentials.value = !saveCredentials.value
+const handleSaveCredentialsChange = () => {
   if (!saveCredentials.value) rememberLoginAccount(localStorage, '')
 }
 

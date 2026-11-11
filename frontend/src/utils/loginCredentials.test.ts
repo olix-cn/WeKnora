@@ -25,6 +25,9 @@ test('password saving is opt-in and happens after successful authentication', ()
   assert.match(source, /if \(response.success\) \{\s*if \(saveCredentials.value\)/)
   assert.match(source, /name="username" autocomplete="username"/)
   assert.match(source, /name="password" autocomplete="current-password"/)
+  assert.match(source, /<t-checkbox v-model="saveCredentials" :disabled="loading" @change="handleSaveCredentialsChange">/)
+  assert.doesNotMatch(source, /aria-pressed="saveCredentials"|toggleSaveCredentials/)
+  assert.match(source, /const handleSaveCredentialsChange = \(\) => \{\s*if \(!saveCredentials.value\) rememberLoginAccount\(localStorage, ''\)/)
 })
 
 test('unsupported browser falls back without storing a password', async () => {
