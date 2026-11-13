@@ -3101,6 +3101,8 @@ export default {
     passwordMismatch: 'Passwords do not match'
   },
   auth: {
+    emailOptional: 'Email (optional)',
+    emailOptionalPlaceholder: 'Optional; can also be used to sign in',
     account: 'Username or email',
     accountPlaceholder: 'Enter your username or email',
     accountRequired: 'Enter your username or email',

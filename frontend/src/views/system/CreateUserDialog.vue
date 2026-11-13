@@ -68,9 +68,9 @@
               <t-input v-model="form.username" type="text" clearable autocomplete="off" :disabled="submitting"
                 :placeholder="t('system.globalSettings.createUser.usernamePlaceholder')" />
             </t-form-item>
-            <t-form-item :label="t('system.globalSettings.createUser.emailLabel')" name="email">
+            <t-form-item :label="t('auth.emailOptional')" name="email">
               <t-input v-model="form.email" type="text" clearable autocomplete="off" :disabled="submitting"
-                :placeholder="t('system.globalSettings.createUser.emailPlaceholder')" />
+                :placeholder="t('auth.emailOptionalPlaceholder')" />
             </t-form-item>
             <t-form-item name="autoGenerate">
               <t-checkbox v-model="form.autoGenerate" :disabled="submitting">
@@ -162,7 +162,6 @@ const rules = computed<Record<string, FormRule[]>>(() => ({
     { min: 2, max: 50, message: t('system.globalSettings.createUser.validation.usernameLength'), trigger: 'blur' },
   ],
   email: [
-    { required: true, message: t('system.globalSettings.createUser.validation.emailRequired'), trigger: 'blur' },
     { email: true, message: t('system.globalSettings.createUser.validation.emailInvalid'), trigger: 'blur' },
   ],
   newPassword: newPasswordRules(t, complexPasswordEnabled.value),
@@ -244,7 +243,7 @@ async function submit() {
     emit('created')
     const view = resolveCreateUserView(
       response,
-      { username: payload.username, email: payload.email },
+      { username: payload.username, email: payload.email || '' },
       form.autoGenerate,
     )
     const next = applyCreateUserResponse(createUserSuccess.value, view)

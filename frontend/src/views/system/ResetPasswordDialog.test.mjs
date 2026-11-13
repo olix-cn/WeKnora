@@ -127,7 +127,8 @@ for (const outcome of ['success', 'failure']) {
     const pending = initial.submit()
     await flush()
     assert.equal(requests.length, 1)
-    assert.equal(requests[0].body.email, 'user@example.com')
+    assert.equal(requests[0].body.user_id, 'target')
+    assert.equal(requests[0].body.email, undefined)
     initial.onVisibleChange(false)
     assert.equal(parent.resetVisibleId, 'target')
 
@@ -173,7 +174,7 @@ test('row reset keeps the selected email and reports its pending state', async (
   const pending = state.submit()
   await flush()
   assert.equal(parent.resetBusy, true)
-  assert.equal(requests[0].body.email, 'bob@example.com')
+  assert.equal(requests[0].body.user_id, 'target')
   requests[0].resolve({})
   await pending
   await flush()

@@ -6777,6 +6777,8 @@ export default {
     }
   },
   auth: {
+    emailOptional: 'Почта (необязательно)',
+    emailOptionalPlaceholder: 'Можно не указывать; также используется для входа',
     account: 'Имя пользователя или почта',
     accountPlaceholder: 'Введите имя пользователя или почту',
     accountRequired: 'Введите имя пользователя или почту',

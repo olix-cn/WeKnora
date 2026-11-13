@@ -6778,6 +6778,8 @@ export default {
     }
   },
   auth: {
+    emailOptional: '邮箱（选填）',
+    emailOptionalPlaceholder: '可留空；填写后也可用于登录',
     account: '用户名或邮箱',
     accountPlaceholder: '请输入用户名或邮箱',
     accountRequired: '请输入用户名或邮箱',

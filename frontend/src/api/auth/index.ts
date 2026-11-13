@@ -72,7 +72,7 @@ export interface OIDCConfigResponse {
 // 用户注册接口
 export interface RegisterRequest {
   username: string
-  email: string
+  email?: string
   password: string
 }
 

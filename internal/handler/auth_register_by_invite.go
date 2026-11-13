@@ -23,7 +23,7 @@ import (
 // wants to register.
 type registerByInviteRequest struct {
 	Token    string `json:"token"    binding:"required"`
-	Email    string `json:"email"    binding:"required,email"`
+	Email    string `json:"email"    binding:"omitempty,email"`
 	Username string `json:"username" binding:"required"`
 	Password string `json:"password" binding:"required,min=6"`
 }
@@ -149,8 +149,8 @@ func (h *AuthHandler) RegisterByInvite(c *gin.Context) {
 	// a log line — applying it to a real password would silently
 	// rewrite the stored credential and lock the user out. Passwords
 	// must never be logged, so they don't need that defence here.
-	if req.Token == "" || req.Email == "" || req.Username == "" || req.Password == "" {
-		c.Error(apperrors.NewValidationError("token, email, username and password are required"))
+	if req.Token == "" || req.Username == "" || req.Password == "" {
+		c.Error(apperrors.NewValidationError("token, username and password are required"))
 		return
 	}
 
@@ -170,10 +170,12 @@ func (h *AuthHandler) RegisterByInvite(c *gin.Context) {
 	// my existing account". Surface 409 so the SPA can prompt them to
 	// log in instead, and the invitation can be applied to their
 	// existing account via /me/invitations once we wire that path.
-	if existing, _ := h.userService.GetUserByEmail(ctx, req.Email); existing != nil {
-		c.Error(apperrors.NewConflictError(
-			"this email already has an account; please log in to join the workspace"))
-		return
+	if req.Email != "" {
+		if existing, _ := h.userService.GetUserByEmail(ctx, req.Email); existing != nil {
+			c.Error(apperrors.NewConflictError(
+				"this email already has an account; please log in to join the workspace"))
+			return
+		}
 	}
 
 	if err := service.ValidatePasswordPolicy(req.Password, h.complexPasswordEnabled(ctx)); err != nil {

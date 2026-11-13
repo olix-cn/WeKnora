@@ -375,7 +375,8 @@ export async function listAllUsers(
 }
 
 export interface ResetUserPasswordRequest {
-  email: string
+  user_id?: string
+  email?: string
   new_password: string
 }
 
@@ -392,8 +393,8 @@ export async function resetUserPassword(req: ResetUserPasswordRequest): Promise<
 export interface CreateSystemUserRequest {
   /** 2-50 characters. */
   username: string
-  /** Must be a valid email address. */
-  email: string
+  /** Optional; must be a valid address when supplied. */
+  email?: string
   /**
    * Optional. Omit the key (or send null) to have the server generate a
    * random password, returned exactly once in `generated_password`.

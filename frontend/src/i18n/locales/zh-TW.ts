@@ -6778,6 +6778,8 @@ export default {
     }
   },
   auth: {
+    emailOptional: '電子郵件（選填）',
+    emailOptionalPlaceholder: '可留空；填寫後也可用於登入',
     account: '使用者名稱或電子郵件',
     accountPlaceholder: '請輸入使用者名稱或電子郵件',
     accountRequired: '請輸入使用者名稱或電子郵件',

@@ -1445,7 +1445,6 @@ definitions:
         minLength: 2
         type: string
     required:
-    - email
     - username
     type: object
   github_com_Tencent_WeKnora_internal_types.AgentStep:
@@ -7396,7 +7395,6 @@ definitions:
         minLength: 2
         type: string
     required:
-    - email
     - password
     - username
     type: object
@@ -13132,8 +13130,10 @@ definitions:
         type: string
       new_password:
         type: string
+      user_id:
+        description: Target user ID. Supply this or the legacy email field.
+        type: string
     required:
-    - email
     - new_password
     type: object
   internal_handler.ResetUserPasswordResponse:
@@ -14218,7 +14218,6 @@ definitions:
       username:
         type: string
     required:
-    - email
     - password
     - token
     - username

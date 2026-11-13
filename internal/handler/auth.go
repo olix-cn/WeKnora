@@ -207,9 +207,9 @@ func (h *AuthHandler) Register(c *gin.Context) {
 	// Passwords must never be logged, so they don't need that defence.
 
 	// Validate required fields
-	if req.Username == "" || req.Email == "" || req.Password == "" {
+	if strings.TrimSpace(req.Username) == "" || req.Password == "" {
 		logger.Error(ctx, "Missing required registration fields")
-		appErr := errors.NewValidationError("Username, email and password are required")
+		appErr := errors.NewValidationError("Username and password are required")
 		c.Error(appErr)
 		return
 	}

@@ -27,6 +27,22 @@ func (s *resetPasswordUserService) GetUserByEmail(context.Context, string) (*typ
 	return s.target, nil
 }
 
+func (s *resetPasswordUserService) GetUserByID(context.Context, string) (*types.User, error) {
+	s.lookupCalls++
+	return s.target, nil
+}
+
+func TestResetUserPasswordSupportsUserIDWithoutEmail(t *testing.T) {
+	users := &resetPasswordUserService{target: &types.User{ID: "no-email", Username: "alice"}}
+	h := &SystemHandler{userSvc: users}
+	w := performPasswordReset(t, passwordResetRouter(h, "admin"), map[string]string{
+		"user_id": "no-email", "new_password": "Secure9!",
+	})
+	if w.Code != http.StatusOK || users.resetUserID != "no-email" {
+		t.Fatalf("status=%d reset=%q body=%s", w.Code, users.resetUserID, w.Body.String())
+	}
+}
+
 func (s *resetPasswordUserService) AdminResetPassword(_ context.Context, userID, _ string) error {
 	s.resetCalls++
 	s.resetUserID = userID

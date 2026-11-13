@@ -6777,6 +6777,8 @@ export default {
     }
   },
   auth: {
+    emailOptional: '이메일 (선택)',
+    emailOptionalPlaceholder: '선택 사항이며 로그인에도 사용할 수 있습니다',
     account: '사용자 이름 또는 이메일',
     accountPlaceholder: '사용자 이름 또는 이메일 입력',
     accountRequired: '사용자 이름 또는 이메일을 입력하세요',

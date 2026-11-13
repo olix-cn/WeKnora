@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"errors"
+	"strings"
 	"time"
 
 	"github.com/Tencent/WeKnora/internal/types"
@@ -87,6 +88,10 @@ func (r *userRepository) GetUsersByIDs(ctx context.Context, ids []string) (map[s
 
 // GetUserByEmail gets a user by email
 func (r *userRepository) GetUserByEmail(ctx context.Context, email string) (*types.User, error) {
+	email = strings.TrimSpace(email)
+	if email == "" {
+		return nil, ErrUserNotFound
+	}
 	var user types.User
 	if err := r.db.WithContext(ctx).Where("email = ?", email).First(&user).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {

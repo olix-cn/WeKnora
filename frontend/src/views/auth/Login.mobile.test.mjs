@@ -10,7 +10,7 @@ test('login removes promotional panels, graphics and external header controls', 
   assert.doesNotMatch(source, /import .*swiper|screenshot[1-4] from|showLanguageMenu/)
 })
 
-test('login accepts usernames while registration still requires a valid email', () => {
+test('login accepts usernames while an optional registration email is validated when supplied', () => {
   const rules = source.slice(source.indexOf('const formRules'), source.indexOf('// Register form validation'))
   assert.doesNotMatch(rules, /email: true/)
   assert.match(rules, /auth.accountRequired/)

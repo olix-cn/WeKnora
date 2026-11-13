@@ -21,8 +21,8 @@
           {{ t('system.globalSettings.passwordReset.warning') }}
         </p>
         <t-form ref="formRef" :data="form" :rules="rules" label-align="top" class="system-admin-action-popup-form">
-          <t-form-item :label="t('system.globalSettings.passwordReset.emailLabel')" name="email">
-            <div class="system-admin-action-popup-target">{{ email }}</div>
+          <t-form-item :label="t('auth.account')">
+            <div class="system-admin-action-popup-target">{{ email || userId }}</div>
           </t-form-item>
           <t-form-item :label="t('system.globalSettings.passwordReset.newPasswordLabel')" name="newPassword">
             <t-input v-model="form.newPassword" type="password" autocomplete="new-password" :disabled="submitting"
@@ -60,7 +60,7 @@ import { getAuthConfig } from '@/api/auth'
 import { newPasswordRules } from '@/utils/passwordPolicy'
 
 // Hide the teleported popup on other tabs without discarding a pending reset.
-const props = defineProps<{ visible: boolean; active: boolean; email: string }>()
+const props = defineProps<{ visible: boolean; active: boolean; email: string; userId?: string }>()
 const emit = defineEmits<{
   'update:visible': [boolean]
   announced: [string]
@@ -91,10 +91,6 @@ const loadAuthConfig = async () => {
 }
 
 const rules = computed<Record<string, FormRule[]>>(() => ({
-  email: [
-    { required: true, message: t('auth.emailRequired'), type: 'error' },
-    { email: true, message: t('auth.emailInvalid'), type: 'error' }
-  ],
   newPassword: newPasswordRules(t, complexPasswordEnabled.value),
   confirmPassword: [
     { required: true, message: t('auth.confirmPasswordRequired'), trigger: 'blur' },
@@ -141,7 +137,7 @@ async function submit() {
     const valid = await formRef.value?.validate?.()
     if (valid !== true) return
     await resetUserPassword({
-      email: form.email.trim(),
+      ...(props.userId ? { user_id: props.userId } : { email: form.email.trim() }),
       new_password: form.newPassword,
     })
     const success = t('system.globalSettings.passwordReset.success')

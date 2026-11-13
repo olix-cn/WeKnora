@@ -27523,7 +27523,6 @@ const docTemplate = `{
         "github_com_Tencent_WeKnora_internal_types.AdminCreateUserRequest": {
             "type": "object",
             "required": [
-                "email",
                 "username"
             ],
             "properties": {
@@ -34956,7 +34955,6 @@ const docTemplate = `{
         "github_com_Tencent_WeKnora_internal_types.RegisterRequest": {
             "type": "object",
             "required": [
-                "email",
                 "password",
                 "username"
             ],
@@ -42384,7 +42382,6 @@ const docTemplate = `{
         "internal_handler.ResetUserPasswordRequest": {
             "type": "object",
             "required": [
-                "email",
                 "new_password"
             ],
             "properties": {
@@ -42392,6 +42389,10 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "new_password": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "description": "Target user ID. Supply this or the legacy email field.",
                     "type": "string"
                 }
             }
@@ -43935,7 +43936,6 @@ const docTemplate = `{
         "internal_handler.registerByInviteRequest": {
             "type": "object",
             "required": [
-                "email",
                 "password",
                 "token",
                 "username"

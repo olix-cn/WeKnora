@@ -112,7 +112,7 @@ type User struct {
 	// Username of the user
 	Username string `json:"username"   gorm:"type:varchar(100);uniqueIndex;not null"`
 	// Email address of the user
-	Email string `json:"email"      gorm:"type:varchar(255);uniqueIndex;not null"`
+	Email string `json:"email"      gorm:"type:varchar(255);uniqueIndex:idx_users_email,where:email <> '';not null;default:''"`
 	// Hashed password of the user
 	PasswordHash string `json:"-"          gorm:"type:varchar(255);not null"`
 	// Avatar URL of the user
@@ -217,7 +217,7 @@ type OIDCUserInfo struct {
 // RegisterRequest represents a registration request
 type RegisterRequest struct {
 	Username string `json:"username" binding:"required,min=2,max=50"`
-	Email    string `json:"email"    binding:"required,email"`
+	Email    string `json:"email"    binding:"omitempty,email"`
 	Password string `json:"password" binding:"required,min=6"`
 
 	// TenantProvisioning is server-controlled registration context. It is
@@ -235,7 +235,7 @@ type RegisterRequest struct {
 // empty string included, is subject to the password policy.
 type AdminCreateUserRequest struct {
 	Username string  `json:"username" binding:"required,min=2,max=50"`
-	Email    string  `json:"email"    binding:"required,email"`
+	Email    string  `json:"email"    binding:"omitempty,email"`
 	Password *string `json:"password"`
 }
 

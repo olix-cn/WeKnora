@@ -124,8 +124,8 @@
                   :disabled="loading" />
               </t-form-item>
 
-              <t-form-item :label="$t('auth.email')" name="email">
-                <t-input v-model="registerData.email" :placeholder="$t('auth.emailPlaceholder')" type="text"
+              <t-form-item :label="$t('auth.emailOptional')" name="email">
+                <t-input v-model="registerData.email" :placeholder="$t('auth.emailOptionalPlaceholder')" type="text"
                   autocomplete="email" size="large" :disabled="loading" />
               </t-form-item>
 
@@ -281,7 +281,6 @@ const registerRules = computed(() => ({
     }
   ],
   email: [
-    { required: true, message: t('auth.emailRequired'), type: 'error' },
     { email: true, message: t('auth.emailInvalid'), type: 'error' }
   ],
   password: newPasswordRules(t, complexPasswordEnabled.value),
@@ -507,7 +506,7 @@ const handleRegister = async () => {
 
       // Switch to login mode and fill in email
       isRegisterMode.value = false
-      formData.email = registerData.email
+      formData.email = registerData.username
 
       // Clear register form
       Object.keys(registerData).forEach(key => {

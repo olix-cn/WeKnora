@@ -136,17 +136,21 @@ func (s *userService) Register(ctx context.Context, req *types.RegisterRequest) 
 	logger.Info(ctx, "Start user registration")
 
 	// Validate input
-	if req.Username == "" || req.Email == "" || req.Password == "" {
-		return nil, errors.New("username, email and password are required")
+	if req == nil || strings.TrimSpace(req.Username) == "" || req.Password == "" {
+		return nil, errors.New("username and password are required")
 	}
+	req.Username = strings.TrimSpace(req.Username)
+	req.Email = strings.TrimSpace(req.Email)
 
 	// Check if user already exists
-	existingUser, _ := s.userRepo.GetUserByEmail(ctx, req.Email)
-	if existingUser != nil {
-		return nil, ErrUserEmailExists
+	if req.Email != "" {
+		existingUser, _ := s.userRepo.GetUserByEmail(ctx, req.Email)
+		if existingUser != nil {
+			return nil, ErrUserEmailExists
+		}
 	}
 
-	existingUser, _ = s.userRepo.GetUserByUsername(ctx, req.Username)
+	existingUser, _ := s.userRepo.GetUserByUsername(ctx, req.Username)
 	if existingUser != nil {
 		return nil, ErrUserUsernameExists
 	}
@@ -868,8 +872,8 @@ func (s *userService) AdminCreateUser(
 	req *types.AdminCreateUserRequest,
 	provisioning types.TenantProvisioningMode,
 ) (*types.User, string, error) {
-	if req == nil || strings.TrimSpace(req.Username) == "" || strings.TrimSpace(req.Email) == "" {
-		return nil, "", errors.New("username and email are required")
+	if req == nil || strings.TrimSpace(req.Username) == "" {
+		return nil, "", errors.New("username is required")
 	}
 
 	password := ""

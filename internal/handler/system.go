@@ -1669,7 +1669,8 @@ func (h *SystemHandler) SetUserStatus(c *gin.Context) {
 // an operator tool and emails are easier to verify than UUIDs. The password is
 // never written to logs or audit details.
 type ResetUserPasswordRequest struct {
-	Email       string `json:"email" binding:"required,email"`
+	UserID      string `json:"user_id" binding:"required_without=Email"`
+	Email       string `json:"email" binding:"required_without=UserID,omitempty,email"`
 	NewPassword string `json:"new_password" binding:"required"`
 }
 
@@ -1701,7 +1702,13 @@ func (h *SystemHandler) ResetUserPassword(c *gin.Context) {
 		return
 	}
 
-	user, err := h.userSvc.GetUserByEmail(ctx, req.Email)
+	var user *types.User
+	var err error
+	if req.UserID != "" {
+		user, err = h.userSvc.GetUserByID(ctx, req.UserID)
+	} else {
+		user, err = h.userSvc.GetUserByEmail(ctx, req.Email)
+	}
 	if err != nil || user == nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
 		return

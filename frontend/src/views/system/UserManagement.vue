@@ -65,7 +65,7 @@
           <template #created="{ row }"><span class="user-management__date">{{ formatDate(row.created_at) }}</span></template>
           <template #actions="{ row }">
             <div class="user-management__actions">
-              <ResetPasswordDialog :visible="resetVisibleId === row.id" :active="active" :email="row.email"
+              <ResetPasswordDialog :visible="resetVisibleId === row.id" :active="active" :email="row.email" :user-id="row.id"
                 @update:visible="value => { resetVisibleId = value ? row.id : null }"
                 @busy-change="resetBusy = $event" @announced="announce">
                 <t-button variant="text" class="user-management__action"

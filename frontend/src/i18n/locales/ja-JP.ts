@@ -3101,6 +3101,8 @@ export default {
     passwordMismatch: 'パスワードが一致しません'
   },
   auth: {
+    emailOptional: 'メールアドレス（任意）',
+    emailOptionalPlaceholder: '省略可。入力するとログインにも使用できます',
     account: 'ユーザー名またはメールアドレス',
     accountPlaceholder: 'ユーザー名またはメールアドレスを入力',
     accountRequired: 'ユーザー名またはメールアドレスを入力してください',
