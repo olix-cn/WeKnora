@@ -4521,6 +4521,7 @@ export default {
       modifiedAt: 'Последнее изменение: {value}',
       tagInputPlaceholder: 'Нажмите Enter, чтобы добавить запись, например: example.com / *.foo.com / 10.0.0.0/8',
       audit: {
+        noChanges: 'Без изменений',
         tabLabel: 'Журнал аудита',
         description: 'События уровня платформы: изменения системных настроек, выдача/отзыв роли системного администратора, массовая синхронизация квот. Сортировка от новых к старым.',
         refresh: 'Обновить',
@@ -4564,6 +4565,7 @@ export default {
           'system.admin_revoked': 'Отозван системный администратор',
           'system.user_password_reset': 'Сброшен пароль пользователя',
           'system.user_created': 'Создан пользователь',
+          'system.user_already_exists': 'Аккаунт уже существует (не создан)',
           'system.queue_task_retried': 'Повторно запущена сбойная задача',
           'system.queue_task_deleted': 'Удалена запись о сбойной задаче',
           'system.queue_task_run_now': 'Задача очереди запущена сейчас',
@@ -4659,7 +4661,7 @@ export default {
         confirmPasswordPlaceholder: 'Введите новый пароль ещё раз',
         confirmBtn: 'Создать пользователя',
         success: 'Пользователь создан',
-        successIdempotent: 'Пользователь уже существует; изменений нет',
+        successIdempotent: 'Аккаунт {username} уже существует. Новый аккаунт не создан; пароль и права не изменены.',
         missingPassword: 'Пользователь создан, но сгенерированный пароль не вернулся. Сбросьте пароль, чтобы восстановить доступ.',
         failed: 'Не удалось создать пользователя',
         validation: {

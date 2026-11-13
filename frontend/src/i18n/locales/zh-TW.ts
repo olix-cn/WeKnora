@@ -4523,6 +4523,7 @@ export default {
       modifiedAt: '上次修改：{value}',
       tagInputPlaceholder: 'Enter新增條目，例：example.com / *.foo.com / 10.0.0.0/8',
       audit: {
+        noChanges: '未變更',
         tabLabel: '稽核日誌',
         description: '記錄平台級操作：系統設定變更、系統管理員授予/回收、配額批次同步等。按時間倒序展示。',
         refresh: '重新整理',
@@ -4566,6 +4567,7 @@ export default {
           'system.admin_revoked': '回收系統管理員',
           'system.user_password_reset': '重設使用者密碼',
           'system.user_created': '建立使用者',
+          'system.user_already_exists': '帳號已存在（未建立）',
           'system.queue_task_retried': '重新執行失敗任務',
           'system.queue_task_deleted': '清除失敗任務記錄',
           'system.queue_task_run_now': '立即執行佇列任務',
@@ -4661,7 +4663,7 @@ export default {
         confirmPasswordPlaceholder: '再次輸入新密碼',
         confirmBtn: '建立使用者',
         success: '使用者已建立',
-        successIdempotent: '使用者已存在，未做任何更改',
+        successIdempotent: '帳號 {username} 已存在，本次未建立，也未變更密碼或權限。',
         missingPassword: '使用者已建立，但未返回生成的密碼。請使用重設密碼來復原存取。',
         failed: '建立使用者失敗',
         validation: {

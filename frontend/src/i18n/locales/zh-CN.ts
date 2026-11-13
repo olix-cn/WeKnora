@@ -4523,6 +4523,7 @@ export default {
       modifiedAt: '上次修改：{value}',
       tagInputPlaceholder: '回车添加条目，例：example.com / *.foo.com / 10.0.0.0/8',
       audit: {
+        noChanges: '未更改',
         tabLabel: '审计日志',
         description: '记录平台级操作：系统设置变更、系统管理员授予/回收、配额批量同步等。按时间倒序展示。',
         refresh: '刷新',
@@ -4566,6 +4567,7 @@ export default {
           'system.admin_revoked': '回收系统管理员',
           'system.user_password_reset': '重置用户密码',
           'system.user_created': '创建用户',
+          'system.user_already_exists': '账号已存在（未创建）',
           'system.queue_task_retried': '重新执行失败任务',
           'system.queue_task_deleted': '清除失败任务记录',
           'system.queue_task_run_now': '立即执行队列任务',
@@ -4661,7 +4663,7 @@ export default {
         confirmPasswordPlaceholder: '再次输入新密码',
         confirmBtn: '创建用户',
         success: '用户已创建',
-        successIdempotent: '用户已存在，未做任何更改',
+        successIdempotent: '账号 {username} 已存在，本次未创建，也未更改密码或权限。',
         missingPassword: '用户已创建，但未返回生成的密码。请使用重置密码来恢复访问。',
         failed: '创建用户失败',
         validation: {

@@ -5390,7 +5390,7 @@ export default {
         confirmPasswordPlaceholder: '新しいパスワードをもう一度入力してください',
         confirmBtn: 'ユーザを作成',
         success: 'ユーザを作成しました',
-        successIdempotent: 'ユーザはすでに存在するため、変更はありません',
+        successIdempotent: 'アカウント {username} は既に存在します。新規作成は行わず、パスワードや権限も変更していません。',
         missingPassword: 'ユーザは作成されましたが、生成されたパスワードが返されませんでした。パスワードをリセットしてアクセスを復旧してください。',
         failed: 'ユーザの作成に失敗しました',
         validation: {
@@ -5421,6 +5421,7 @@ export default {
         failed: 'すべてのワークスペースへの適用に失敗しました'
       },
       audit: {
+        noChanges: '変更なし',
         tabLabel: '監査ログ',
         description: 'プラットフォームレベルのイベントです。システム設定の変更、システム管理者の付与・解除、クォータの一括同期などを新しい順に表示します。',
         refresh: '更新',
@@ -5452,6 +5453,7 @@ export default {
           'system.admin_revoked': 'システム管理者の解除',
           'system.user_password_reset': 'ユーザパスワードのリセット',
           'system.user_created': 'ユーザの作成',
+          'system.user_already_exists': 'アカウントは既存（作成なし）',
           'system.queue_task_retried': '失敗タスクの再実行',
           'system.queue_task_deleted': '失敗タスクのレコード削除',
           'system.queue_task_run_now': 'キュータスクの即時実行',

@@ -5390,7 +5390,7 @@ export default {
         confirmPasswordPlaceholder: 'Enter the new password again',
         confirmBtn: 'Create user',
         success: 'User created',
-        successIdempotent: 'User already existed; no changes made',
+        successIdempotent: 'Account {username} already exists. No account was created; its password and permissions were not changed.',
         missingPassword: 'User was created but the generated password was not returned. Reset the password to recover access.',
         failed: 'Failed to create user',
         validation: {
@@ -5421,6 +5421,7 @@ export default {
         failed: 'Failed to apply to all workspaces'
       },
       audit: {
+        noChanges: 'No changes',
         tabLabel: 'Audit log',
         description: 'Platform-level events: system setting changes, system admin grants/revocations, bulk quota syncs. Newest first.',
         refresh: 'Refresh',
@@ -5452,6 +5453,7 @@ export default {
           'system.admin_revoked': 'System admin revoked',
           'system.user_password_reset': 'User password reset',
           'system.user_created': 'User created',
+          'system.user_already_exists': 'Account already exists (not created)',
           'system.queue_task_retried': 'Failed task run again',
           'system.queue_task_deleted': 'Failed task record cleared',
           'system.queue_task_run_now': 'Queue task run now',

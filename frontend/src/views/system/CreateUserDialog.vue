@@ -269,10 +269,12 @@ function resetFormFields() {
   formRef.value?.clearValidate?.()
 }
 
-function announce(msg: string, kind: 'success' | 'error' = 'success') {
+function announce(msg: string, kind: 'success' | 'error' | 'info' = 'success') {
   emit('announced', msg)
   if (kind === 'error') {
     MessagePlugin.error(msg)
+  } else if (kind === 'info') {
+    MessagePlugin.info(msg)
   } else {
     MessagePlugin.success(msg)
   }
@@ -308,7 +310,7 @@ async function submit() {
     } else if (next.notice === 'created') {
       announce(t('system.globalSettings.createUser.success'))
     } else if (next.notice === 'idempotent') {
-      announce(t('system.globalSettings.createUser.successIdempotent'))
+      announce(t('system.globalSettings.createUser.successIdempotent', { username: form.username.trim() }), 'info')
     } else if (next.notice === 'missingPassword') {
       announce(t('system.globalSettings.createUser.missingPassword'), 'error')
     }

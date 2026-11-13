@@ -4521,6 +4521,7 @@ export default {
       modifiedAt: '마지막 수정: {value}',
       tagInputPlaceholder: '엔터로 항목 추가. 예: example.com / *.foo.com / 10.0.0.0/8',
       audit: {
+        noChanges: '변경 없음',
         tabLabel: '감사 로그',
         description: '플랫폼 수준의 작업을 기록합니다: 시스템 설정 변경, 시스템 관리자 부여/회수, 할당량 일괄 동기화 등. 최신순으로 표시됩니다.',
         refresh: '새로고침',
@@ -4564,6 +4565,7 @@ export default {
           'system.admin_revoked': '시스템 관리자 회수',
           'system.user_password_reset': '사용자 비밀번호 재설정',
           'system.user_created': '사용자 생성',
+          'system.user_already_exists': '계정이 이미 존재함 (생성하지 않음)',
           'system.queue_task_retried': '실패 작업 다시 실행',
           'system.queue_task_deleted': '실패 작업 기록 삭제',
           'system.queue_task_run_now': '큐 작업 즉시 실행',
@@ -4659,7 +4661,7 @@ export default {
         confirmPasswordPlaceholder: '새 비밀번호를 다시 입력',
         confirmBtn: '사용자 생성',
         success: '사용자가 생성되었습니다',
-        successIdempotent: '이미 존재하는 사용자입니다. 변경 사항이 없습니다',
+        successIdempotent: '계정 {username}이(가) 이미 존재합니다. 새 계정을 생성하지 않았으며 비밀번호와 권한은 변경하지 않았습니다.',
         missingPassword: '사용자는 생성되었지만 생성된 비밀번호가 반환되지 않았습니다. 비밀번호를 재설정해 접근을 복구하세요.',
         failed: '사용자 생성 실패',
         validation: {

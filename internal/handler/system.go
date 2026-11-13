@@ -1803,7 +1803,7 @@ func (h *SystemHandler) CreateSystemUser(c *gin.Context) {
 				return
 			}
 			logger.Infof(ctx, "Create user noop (identity already exists, ID: %s)", user.ID)
-			h.emitAdminAudit(ctx, types.AuditActionSystemUserCreated, user, map[string]any{
+			h.emitAdminAudit(ctx, types.AuditActionSystemUserAlreadyExists, user, map[string]any{
 				"target_email":       user.Email,
 				"target_username":    user.Username,
 				"password_generated": false,

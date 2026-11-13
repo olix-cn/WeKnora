@@ -260,8 +260,8 @@ func TestCreateSystemUserDuplicateIdentityReturnsExistingUser(t *testing.T) {
 	if resp.GeneratedPassword != "" {
 		t.Fatalf("generated_password=%q, want empty for an existing user", resp.GeneratedPassword)
 	}
-	if len(audits.entries) != 1 || audits.entries[0].Action != types.AuditActionSystemUserCreated {
-		t.Fatalf("expected one %s audit entry, got %+v", types.AuditActionSystemUserCreated, audits.entries)
+	if len(audits.entries) != 1 || audits.entries[0].Action != types.AuditActionSystemUserAlreadyExists {
+		t.Fatalf("expected one %s audit entry, got %+v", types.AuditActionSystemUserAlreadyExists, audits.entries)
 	}
 	if !strings.Contains(string(audits.entries[0].Details), `"idempotent":true`) {
 		t.Fatalf("audit details must mark idempotent=true, got %s", audits.entries[0].Details)

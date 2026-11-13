@@ -66,8 +66,8 @@
               </div>
             </template>
             <template #action="{ row }">
-              <t-tag :theme="auditActionTheme(row.action)" size="small" variant="light-outline">
-                {{ formatAuditAction(row.action) }}
+              <t-tag :theme="auditActionTheme(userCreationAuditAction(row))" size="small" variant="light-outline">
+                {{ formatAuditAction(userCreationAuditAction(row)) }}
               </t-tag>
             </template>
             <template #target="{ row }">
@@ -78,8 +78,8 @@
               </div>
             </template>
             <template #outcome="{ row }">
-              <t-tag :theme="auditOutcomeTheme(row.outcome)" size="small" variant="light">
-                {{ t('system.globalSettings.audit.outcome.' + row.outcome) }}
+              <t-tag :theme="userAlreadyExisted(row) ? 'default' : auditOutcomeTheme(row.outcome)" size="small" variant="light">
+                {{ userAlreadyExisted(row) ? t('system.globalSettings.audit.noChanges') : t('system.globalSettings.audit.outcome.' + row.outcome) }}
               </t-tag>
             </template>
           </t-table>
@@ -182,6 +182,7 @@ import {
 import SettingDrawer from '@/components/settings/SettingDrawer.vue'
 import { AUDIT_ACTION_I18N_ROOTS } from '@/i18n/auditActionRegistry'
 import { auditActionLabel } from '@/i18n/auditActionLabel'
+import { userAlreadyExisted, userCreationAuditAction } from './userCreationAudit'
 import { useAuthStore } from '@/stores/auth'
 
 interface AuditDetailField {
@@ -313,6 +314,8 @@ function auditTargetKey(row: AuditLog): string {
     row.action === 'system.admin_promoted'
     || row.action === 'system.admin_revoked'
     || row.action === 'system.user_password_reset'
+    || row.action === 'system.user_created'
+    || row.action === 'system.user_already_exists'
   ) {
     if (!details) return row.target_user_id ? row.target_user_id.slice(0, 8) : ''
     const name = typeof details.target_username === 'string' ? details.target_username : ''
@@ -428,12 +431,12 @@ function auditSummaryFields(row: AuditLog): AuditDetailField[] {
     {
       key: 'action',
       label: t('system.globalSettings.audit.columns.action'),
-      value: formatAuditAction(row.action),
+      value: formatAuditAction(userCreationAuditAction(row)),
     },
     {
       key: 'outcome',
       label: t('system.globalSettings.audit.columns.outcome'),
-      value: t('system.globalSettings.audit.outcome.' + row.outcome),
+      value: userAlreadyExisted(row) ? t('system.globalSettings.audit.noChanges') : t('system.globalSettings.audit.outcome.' + row.outcome),
     },
   ]
 
@@ -511,7 +514,7 @@ function auditRequestFields(row: AuditLog): AuditDetailField[] {
 }
 
 const auditDetailTitle = computed(() =>
-  selectedAuditEntry.value ? formatAuditAction(selectedAuditEntry.value.action) : '',
+  selectedAuditEntry.value ? formatAuditAction(userCreationAuditAction(selectedAuditEntry.value)) : '',
 )
 
 const auditDetailDescription = computed(() =>

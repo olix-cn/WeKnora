@@ -3,24 +3,25 @@ import test, { type TestContext } from 'node:test'
 import { fixture } from '../../test-utils/vueFixture'
 import * as state from './createUserDialogState'
 
-function setup(t: TestContext) {
+function setup(t: TestContext, created = true) {
   const f = fixture(t)
   const loads: Array<{ keyword: string; resolve: (value: any) => void; reject: (error: Error) => void }> = []
   const requests: any[] = []
+  const notices: string[] = []
   const props = { visible: true, active: true }
   const { vm, close } = f.component(new URL('./CreateUserDialog.vue', import.meta.url), {
     'vue-i18n': { useI18n: () => ({ t: (key: string) => key }) },
-    'tdesign-vue-next': { MessagePlugin: { success() {}, warning() {}, error() {} } },
+    'tdesign-vue-next': { MessagePlugin: { success() { notices.push('success') }, warning() {}, error() {}, info() { notices.push('info') } } },
     '@/api/auth': { getAuthConfig: async () => ({ success: true, complex_password_enabled: false }) },
     '@/api/system': {
       listUserCreationWorkspaces: (keyword: string) => new Promise((resolve, reject) => loads.push({ keyword, resolve, reject })),
-      createSystemUser: async (request: any) => { requests.push(request); return { created: true } },
+      createSystemUser: async (request: any) => { requests.push(request); return { created } },
     },
     '@/utils/clipboard': { copyWithToast() {} },
     '@/utils/passwordPolicy': { newPasswordRules: () => [] },
     './createUserDialogState': state,
   }, props)
-  return { ...f, vm, close, loads, requests }
+  return { ...f, vm, close, loads, requests, notices }
 }
 
 test('new user defaults to read-only and sends the selected workspace with the creation request', async t => {
@@ -38,6 +39,17 @@ test('new user defaults to read-only and sends the selected workspace with the c
   assert.deepEqual(JSON.parse(JSON.stringify(requests[0])), {
     username: 'alice', email: '', password: '1', default_tenant_id: 42, role: 'contributor',
   })
+})
+
+test('an existing account produces an informational notice, never a creation-success toast', async t => {
+  const { vm, notices } = setup(t, false)
+  vm.form.username = 'existing'
+  vm.form.defaultTenantId = 42
+  vm.form.autoGenerate = true
+  vm.formRef = { validate: async () => true }
+  await vm.submit()
+  assert.deepEqual(notices, ['info'])
+  assert.equal(vm.createUserSuccess, null)
 })
 
 test('late workspace responses and unmounted requests cannot overwrite a newer search', async t => {
