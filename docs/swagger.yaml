@@ -5578,7 +5578,6 @@ definitions:
         description: Email address or username. The JSON key is retained for compatibility.
         type: string
       password:
-        minLength: 6
         type: string
     required:
     - email
@@ -7388,7 +7387,6 @@ definitions:
       email:
         type: string
       password:
-        minLength: 6
         type: string
       username:
         maxLength: 50
@@ -14211,7 +14209,6 @@ definitions:
       email:
         type: string
       password:
-        minLength: 6
         type: string
       token:
         type: string

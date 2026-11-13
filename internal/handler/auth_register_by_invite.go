@@ -25,7 +25,7 @@ type registerByInviteRequest struct {
 	Token    string `json:"token"    binding:"required"`
 	Email    string `json:"email"    binding:"omitempty,email"`
 	Username string `json:"username" binding:"required"`
-	Password string `json:"password" binding:"required,min=6"`
+	Password string `json:"password" binding:"required"`
 }
 
 // invitationLookupResponse is the public projection of a share-link

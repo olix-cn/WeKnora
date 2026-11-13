@@ -167,7 +167,7 @@ type AuthToken struct {
 type LoginRequest struct {
 	// Email accepts an email address or username; the JSON key is kept for older clients.
 	Email    string `json:"email"    binding:"required"`
-	Password string `json:"password" binding:"required,min=6"`
+	Password string `json:"password" binding:"required"`
 }
 
 type OIDCAuthURLResponse struct {
@@ -218,7 +218,7 @@ type OIDCUserInfo struct {
 type RegisterRequest struct {
 	Username string `json:"username" binding:"required,min=2,max=50"`
 	Email    string `json:"email"    binding:"omitempty,email"`
-	Password string `json:"password" binding:"required,min=6"`
+	Password string `json:"password" binding:"required"`
 
 	// TenantProvisioning is server-controlled registration context. It is
 	// deliberately excluded from JSON so a public caller cannot choose its

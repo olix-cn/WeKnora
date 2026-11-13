@@ -11,7 +11,7 @@ func TestLoginRequestAcceptsUsernameAndEmail(t *testing.T) {
 	v := validator.New()
 	v.SetTagName("binding")
 	for _, account := range []string{"alice", "alice@example.com", "用户名"} {
-		require.NoError(t, v.Struct(LoginRequest{Email: account, Password: "Secure9!"}))
+		require.NoError(t, v.Struct(LoginRequest{Email: account, Password: "1"}))
 	}
 	require.Error(t, v.Struct(LoginRequest{Password: "Secure9!"}))
 	require.Error(t, v.Struct(LoginRequest{Email: "alice"}))

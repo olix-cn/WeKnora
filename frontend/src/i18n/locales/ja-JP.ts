@@ -3101,6 +3101,7 @@ export default {
     passwordMismatch: 'パスワードが一致しません'
   },
   auth: {
+    passwordMaxBytes: 'パスワードはUTF-8で72バイト以内にしてください',
     emailOptional: 'メールアドレス（任意）',
     emailOptionalPlaceholder: '省略可。入力するとログインにも使用できます',
     account: 'ユーザー名またはメールアドレス',
@@ -5380,7 +5381,7 @@ export default {
         emailPlaceholder: '有効なメールアドレスを入力してください',
         autoGenerateLabel: 'ランダムなパスワードを自動生成',
         newPasswordLabel: '新しいパスワード',
-        newPasswordPlaceholder: '英字と数字を含む8〜32文字',
+        newPasswordPlaceholder: '空でないパスワードを入力してください',
         confirmPasswordLabel: '新しいパスワード（確認）',
         confirmPasswordPlaceholder: '新しいパスワードをもう一度入力してください',
         confirmBtn: 'ユーザを作成',
@@ -9174,7 +9175,7 @@ export default {
       submit: 'パスワードを更新',
       success: 'パスワードを更新しました。新しいパスワードでログインしてください。',
       failed: 'パスワードの変更に失敗しました。現在のパスワードが正しいか確認してください。',
-      policyFailed: '新しいパスワードは8〜32文字で、英字と数字を含める必要があります',
+      policyFailed: 'パスワードは空でなく72バイト以内にしてください。管理者が複雑なルールを有効にした場合はそのルールにも従ってください',
       sameAsCurrent: '新しいパスワードは現在のパスワードと異なる必要があります',
       oidcOnlyDescription: 'このアカウントはOIDCログインで作成されたため、ローカルパスワードが設定されていません。',
       oidcOnlyNotice: 'システム管理者にパスワードのリセットを依頼するか、引き続きOIDCでログインしてください。セルフサービスでの変更には現在のパスワードが必要です。',

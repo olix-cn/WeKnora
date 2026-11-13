@@ -3101,6 +3101,7 @@ export default {
     passwordMismatch: 'Passwords do not match'
   },
   auth: {
+    passwordMaxBytes: 'Password must be at most 72 UTF-8 bytes',
     emailOptional: 'Email (optional)',
     emailOptionalPlaceholder: 'Optional; can also be used to sign in',
     account: 'Username or email',
@@ -5380,7 +5381,7 @@ export default {
         emailPlaceholder: 'Enter a valid email address',
         autoGenerateLabel: 'Auto-generate a random password',
         newPasswordLabel: 'New password',
-        newPasswordPlaceholder: '8-32 characters, including letters and numbers',
+        newPasswordPlaceholder: 'Enter any nonempty password',
         confirmPasswordLabel: 'Confirm new password',
         confirmPasswordPlaceholder: 'Enter the new password again',
         confirmBtn: 'Create user',
@@ -9174,7 +9175,7 @@ export default {
       submit: 'Update password',
       success: 'Password updated. Please sign in with your new password.',
       failed: 'Failed to change password. Check that your current password is correct.',
-      policyFailed: 'New password must be 8-32 characters and include letters and numbers',
+      policyFailed: 'Password must be nonempty and at most 72 bytes; follow complex rules if enabled by the administrator',
       sameAsCurrent: 'New password must differ from your current password',
       oidcOnlyDescription: 'Your account was created via OIDC sign-in and has no known local password yet.',
       oidcOnlyNotice: 'Ask a system administrator to reset your password, or keep signing in with OIDC. Self-service change requires your current password.',

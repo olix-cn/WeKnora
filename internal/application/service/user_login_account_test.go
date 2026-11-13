@@ -37,11 +37,16 @@ func TestLoginWithUsernameOrEmail(t *testing.T) {
 		{"wrong password", "alice", "incorrect", false, false},
 		{"empty account", "  ", "Secure9!", false, false},
 		{"disabled account", "alice", "Secure9!", true, false},
+		{"single digit password", "alice", "1", false, true},
+		{"Chinese password", "alice", "密码", false, true},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
 			tokenRepo := &stubAuthTokenRepo{tokens: map[string]*types.AuthToken{}}
 			svc := newAuthTestUserService(tokenRepo)
 			user := persistedTestUser(t, 0, "alice@example.com", "Secure9!")
+			if tt.name == "single digit password" || tt.name == "Chinese password" {
+				user = persistedTestUser(t, 0, "alice@example.com", tt.password)
+			}
 			user.Username = "alice"
 			user.IsActive = !tt.inactive
 			svc.userRepo = &loginAccountRepo{&stubUserRepoForAuth{users: map[string]*types.User{user.ID: user}}}

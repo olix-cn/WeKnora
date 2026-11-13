@@ -115,12 +115,12 @@ func TestResetUserPasswordRejectsSelfReset(t *testing.T) {
 	}
 }
 
-func TestResetUserPasswordRejectsWeakPasswordBeforeUserLookup(t *testing.T) {
+func TestResetUserPasswordRejectsEmptyPasswordBeforeUserLookup(t *testing.T) {
 	users := &resetPasswordUserService{target: &types.User{ID: "target-user"}}
 	h := &SystemHandler{userSvc: users}
 
 	w := performPasswordReset(t, passwordResetRouter(h, "admin-user"), map[string]string{
-		"email": "alice@example.com", "new_password": "password",
+		"email": "alice@example.com", "new_password": "",
 	})
 	if w.Code != http.StatusBadRequest {
 		t.Fatalf("status=%d body=%s", w.Code, w.Body.String())

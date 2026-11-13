@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"errors"
+	"strings"
 	"testing"
 
 	"github.com/Tencent/WeKnora/internal/config"
@@ -27,11 +28,22 @@ func TestValidatePasswordPolicy(t *testing.T) {
 		complex  bool
 		want     error
 	}{
-		{name: "simple missing digit", password: "password", want: ErrPasswordPolicy},
-		{name: "simple too short", password: "Ab1defg", want: ErrPasswordPolicy},
-		{name: "simple too long", password: "Abcdefg1" + "xxxxxxxxxxxxxxxxxxxxxxxxx", want: ErrPasswordPolicy},
+		{name: "empty", want: ErrPasswordPolicy},
+		{name: "letters only", password: "password"},
+		{name: "one digit", password: "1"},
+		{name: "one letter", password: "a"},
+		{name: "Chinese", password: "密码"},
+		{name: "literal whitespace", password: " \t\n"},
+		{name: "maximum bytes", password: strings.Repeat("a", 72)},
+		{name: "too many bytes", password: strings.Repeat("a", 73), want: ErrPasswordPolicy},
+		{name: "unicode maximum bytes", password: strings.Repeat("密", 24)},
+		{name: "unicode too many bytes", password: strings.Repeat("密", 25), want: ErrPasswordPolicy},
+		{name: "invalid UTF8", password: string([]byte{0xff}), want: ErrPasswordPolicy},
+		{name: "simple short", password: "Ab1defg"},
+		{name: "simple more than 32", password: "Abcdefg1" + "xxxxxxxxxxxxxxxxxxxxxxxxx"},
 		{name: "simple ok", password: "password1"},
-		{name: "simple unicode letter is not ASCII", password: "Ä1234567", want: ErrPasswordPolicy},
+		{name: "simple unicode", password: "Ä1234567"},
+		{name: "complex too short", password: "Aa1!", complex: true, want: ErrComplexPasswordPolicy},
 		{name: "complex missing special", password: "NewSecure9", complex: true, want: ErrComplexPasswordPolicy},
 		{name: "complex missing upper", password: "newsecure9!", complex: true, want: ErrComplexPasswordPolicy},
 		{name: "complex missing lower", password: "NEWSECURE9!", complex: true, want: ErrComplexPasswordPolicy},

@@ -264,12 +264,12 @@ func TestAdminResetPasswordHashesPasswordAndRevokesSessions(t *testing.T) {
 	}
 }
 
-func TestAdminResetPasswordRejectsWeakPasswordBeforeWrite(t *testing.T) {
+func TestAdminResetPasswordRejectsEmptyPasswordBeforeWrite(t *testing.T) {
 	tokenRepo := &stubAuthTokenRepo{tokens: map[string]*types.AuthToken{}}
 	svc := newAuthTestUserService(tokenRepo)
 	repo := svc.userRepo.(*stubUserRepoForAuth)
 
-	err := svc.AdminResetPassword(context.Background(), "user-1", "password")
+	err := svc.AdminResetPassword(context.Background(), "user-1", "")
 	if !errors.Is(err, ErrPasswordPolicy) {
 		t.Fatalf("AdminResetPassword() err = %v, want ErrPasswordPolicy", err)
 	}
@@ -291,7 +291,7 @@ func TestChangePasswordRequiresPolicyAndRevokesSessions(t *testing.T) {
 	}
 	repo.users["user-1"].PasswordHash = string(hashed)
 
-	if err := svc.ChangePassword(ctx, "user-1", "OldSecure9", "weak"); !errors.Is(err, ErrPasswordPolicy) {
+	if err := svc.ChangePassword(ctx, "user-1", "OldSecure9", ""); !errors.Is(err, ErrPasswordPolicy) {
 		t.Fatalf("ChangePassword(weak) err = %v, want ErrPasswordPolicy", err)
 	}
 	if repo.updateCalls != 0 || len(tokenRepo.revokedUserIDs) != 0 {
@@ -303,10 +303,10 @@ func TestChangePasswordRequiresPolicyAndRevokesSessions(t *testing.T) {
 		t.Fatalf("ChangePassword(wrong old) err = %v, want ErrInvalidOldPassword", err)
 	}
 
-	if err := svc.ChangePassword(ctx, "user-1", "OldSecure9", "NewSecure9"); err != nil {
+	if err := svc.ChangePassword(ctx, "user-1", "OldSecure9", "1"); err != nil {
 		t.Fatalf("ChangePassword() err = %v", err)
 	}
-	if err := bcrypt.CompareHashAndPassword([]byte(repo.users["user-1"].PasswordHash), []byte("NewSecure9")); err != nil {
+	if err := bcrypt.CompareHashAndPassword([]byte(repo.users["user-1"].PasswordHash), []byte("1")); err != nil {
 		t.Fatalf("stored hash does not match new password: %v", err)
 	}
 	if len(tokenRepo.revokedUserIDs) != 1 || tokenRepo.revokedUserIDs[0] != "user-1" {

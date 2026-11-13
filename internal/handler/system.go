@@ -1665,9 +1665,8 @@ func (h *SystemHandler) SetUserStatus(c *gin.Context) {
 }
 
 // ResetUserPasswordRequest defines the system-administrator password-reset
-// payload. Email is intentionally the only user-facing identifier: the UI is
-// an operator tool and emails are easier to verify than UUIDs. The password is
-// never written to logs or audit details.
+// payload. Prefer UserID for users without an email; Email remains a backwards-
+// compatible identifier. The password is never written to logs or audit details.
 type ResetUserPasswordRequest struct {
 	UserID      string `json:"user_id" binding:"required_without=Email"`
 	Email       string `json:"email" binding:"required_without=UserID,omitempty,email"`
@@ -1779,8 +1778,8 @@ func (h *SystemHandler) CreateSystemUser(c *gin.Context) {
 	req.Username = secutils.SanitizeForLog(strings.TrimSpace(req.Username))
 	req.Email = secutils.SanitizeForLog(strings.TrimSpace(req.Email))
 	// Password is intentionally NOT trimmed or sanitized.
-	if req.Username == "" || req.Email == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Username and email are required"})
+	if req.Username == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Username is required"})
 		return
 	}
 	// Binding's min=2/max=50 ran on the raw JSON, re-check the trimmed value.

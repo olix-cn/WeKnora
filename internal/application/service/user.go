@@ -49,11 +49,11 @@ var (
 	ErrUserIdentityConflict = errors.New("email and username refer to conflicting existing identities")
 
 	// ErrPasswordPolicy is returned when a newly chosen password does not
-	// meet the product's public 8-32 character, letter-and-number contract.
+	// meet the nonempty UTF-8 / bcrypt byte-limit contract.
 	// It is exported so HTTP handlers can translate the failure to a 400
 	// without exposing bcrypt or persistence errors.
 	ErrPasswordPolicy = errors.New(
-		"password must be 8-32 characters and contain at least one letter and one number")
+		"password must be nonempty valid UTF-8 and no more than 72 bytes")
 	// ErrComplexPasswordPolicy is returned when the runtime complex-password
 	// switch is on and the new password is missing a required character class.
 	ErrComplexPasswordPolicy = errors.New(

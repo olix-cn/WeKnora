@@ -294,9 +294,7 @@ func TestCreateSystemUserRejectsMissingFields(t *testing.T) {
 
 	cases := []map[string]string{
 		{"email": "alice@example.com"},
-		{"username": "alice"},
 		{"username": "", "email": "alice@example.com"},
-		{"username": "alice", "email": ""},
 		{"username": "   ", "email": "alice@example.com"},
 		// Binding's min=2 ran on the raw JSON; the trimmed value "a" (1
 		// rune) must be rejected by the post-trim re-check.

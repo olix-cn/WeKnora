@@ -12,12 +12,14 @@ export function newPasswordRules(
 ): FormRule[] {
   const common: FormRule[] = [
     { required: true, message: t('auth.passwordRequired'), type: 'error' },
-    { min: 8, message: t('auth.passwordMinLength'), type: 'error' },
-    { max: 32, message: t('auth.passwordMaxLength'), type: 'error' },
+    { validator: (value: string) => new TextEncoder().encode(value || '').length <= 72,
+      message: t('auth.passwordMaxBytes'), type: 'error' },
   ]
   if (complexEnabled) {
     return [
       ...common,
+      { min: 8, message: t('auth.passwordMinLength'), type: 'error' },
+      { max: 32, message: t('auth.passwordMaxLength'), type: 'error' },
       { pattern: /[a-z]/, message: t('auth.passwordMustContainLowercaseLetter'), type: 'error' },
       { pattern: /[A-Z]/, message: t('auth.passwordMustContainUppercaseLetter'), type: 'error' },
       { pattern: /\d/, message: t('auth.passwordMustContainNumber'), type: 'error' },
@@ -31,8 +33,6 @@ export function newPasswordRules(
   }
   return [
     ...common,
-    { pattern: /[a-zA-Z]/, message: t('auth.passwordMustContainLetter'), type: 'error' },
-    { pattern: /\d/, message: t('auth.passwordMustContainNumber'), type: 'error' },
     ...extra,
   ]
 }

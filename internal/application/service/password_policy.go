@@ -52,14 +52,20 @@ func IsPasswordPolicyError(err error) bool {
 }
 
 // ValidatePasswordPolicy keeps registration, self-service rotation and
-// administrative password resets aligned with the SPA form. Letter and
-// digit classes are ASCII so they match the frontend regexes; special
-// characters are the documented whitelist. Password bytes are never
-// logged or included in the returned error.
+// administrative password resets aligned with the SPA form. The default
+// intranet policy accepts any nonempty UTF-8 password up to bcrypt's byte limit.
+// Administrators may explicitly opt into the original complex policy.
+// Passwords are never trimmed, rewritten, logged or included in errors.
 func ValidatePasswordPolicy(password string, complexPasswordEnabled bool) error {
+	if password == "" || !utf8.ValidString(password) || len(password) > 72 {
+		return ErrPasswordPolicy
+	}
+	if !complexPasswordEnabled {
+		return nil
+	}
 	length := utf8.RuneCountInString(password)
 	if length < 8 || length > 32 {
-		return ErrPasswordPolicy
+		return ErrComplexPasswordPolicy
 	}
 
 	var (
@@ -82,14 +88,8 @@ func ValidatePasswordPolicy(password string, complexPasswordEnabled bool) error 
 		}
 	}
 
-	if complexPasswordEnabled {
-		if !hasUpper || !hasLower || !hasDigit || !hasSpecial {
-			return ErrComplexPasswordPolicy
-		}
-		return nil
-	}
-	if (!hasUpper && !hasLower) || !hasDigit {
-		return ErrPasswordPolicy
+	if !hasUpper || !hasLower || !hasDigit || !hasSpecial {
+		return ErrComplexPasswordPolicy
 	}
 	return nil
 }

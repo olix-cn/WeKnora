@@ -263,8 +263,6 @@ const formRules = computed(() => ({
   ],
   password: [
     { required: true, message: t('auth.passwordRequired'), type: 'error' },
-    { min: 8, message: t('auth.passwordMinLength'), type: 'error' },
-    { max: 32, message: t('auth.passwordMaxLength'), type: 'error' }
   ],
 }))
 

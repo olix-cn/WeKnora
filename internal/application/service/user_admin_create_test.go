@@ -121,7 +121,7 @@ func TestAdminCreateUserRejectsPolicyViolatingPassword(t *testing.T) {
 	repo := &adminCreateUserRepo{}
 	svc := newAdminCreateUserService(repo)
 
-	for _, pw := range []string{"password", "", "   ", "\t\n", " \u00a0\u00a0 "} {
+	for _, pw := range []string{"", strings.Repeat("a", 73)} {
 		_, generated, err := svc.AdminCreateUser(context.Background(), &types.AdminCreateUserRequest{
 			Username: "alice", Email: "alice@example.com", Password: &pw,
 		}, types.TenantProvisioningTenantless)
@@ -170,7 +170,7 @@ func TestAdminCreateUserRejectsWeakPasswordBeforePersisting(t *testing.T) {
 	repo := &adminCreateUserRepo{}
 	svc := newAdminCreateUserService(repo)
 
-	for _, pw := range []string{"password", ""} {
+	for _, pw := range []string{"", strings.Repeat("a", 73)} {
 		_, _, err := svc.AdminCreateUser(context.Background(), &types.AdminCreateUserRequest{
 			Username: "alice", Email: "alice@example.com", Password: &pw,
 		}, types.TenantProvisioningTenantless)

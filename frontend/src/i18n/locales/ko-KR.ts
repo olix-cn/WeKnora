@@ -785,7 +785,7 @@ export default {
       submit: '비밀번호 업데이트',
       success: '비밀번호가 변경되었습니다. 새 비밀번호로 다시 로그인해 주세요.',
       failed: '비밀번호 변경에 실패했습니다. 현재 비밀번호를 확인해 주세요.',
-      policyFailed: '새 비밀번호는 8-32자이며 문자와 숫자를 포함해야 합니다',
+      policyFailed: '비밀번호는 비어 있지 않고 72바이트 이하여야 합니다. 관리자가 복잡한 규칙을 활성화한 경우 해당 규칙도 준수하세요',
       sameAsCurrent: '새 비밀번호는 현재 비밀번호와 같을 수 없습니다',
       oidcOnlyDescription: 'OIDC로 개설된 계정입니다. 로컬 로그인 비밀번호가 아직 설정되지 않았습니다.',
       oidcOnlyNotice: '시스템 관리자에게 비밀번호 재설정을 요청하거나 OIDC로 계속 로그인하세요. 자가 변경에는 현재 비밀번호가 필요합니다.',
@@ -4650,7 +4650,7 @@ export default {
         emailPlaceholder: '올바른 이메일 주소를 입력하세요',
         autoGenerateLabel: '무작위 비밀번호 자동 생성',
         newPasswordLabel: '새 비밀번호',
-        newPasswordPlaceholder: '8~32자, 문자와 숫자 포함',
+        newPasswordPlaceholder: '비어 있지 않은 비밀번호 입력',
         confirmPasswordLabel: '새 비밀번호 확인',
         confirmPasswordPlaceholder: '새 비밀번호를 다시 입력',
         confirmBtn: '사용자 생성',
@@ -6777,6 +6777,7 @@ export default {
     }
   },
   auth: {
+    passwordMaxBytes: '비밀번호는 UTF-8 기준 72바이트 이하여야 합니다',
     emailOptional: '이메일 (선택)',
     emailOptionalPlaceholder: '선택 사항이며 로그인에도 사용할 수 있습니다',
     account: '사용자 이름 또는 이메일',

@@ -785,7 +785,7 @@ export default {
       submit: '更新密碼',
       success: '密碼已更新，請使用新密碼重新登入',
       failed: '修改密碼失敗，請檢查當前密碼是否正確',
-      policyFailed: '新密碼須為 8-32 個字符，且同時包含字母和數字',
+      policyFailed: '密碼不可為空且不可超過 72 位元組；若管理員啟用複雜密碼，請同時滿足複雜規則',
       sameAsCurrent: '新密碼不能與當前密碼相同',
       oidcOnlyDescription: '您的帳號透過 OIDC 登入開通，尚未設定本地登入密碼。',
       oidcOnlyNotice: '請聯絡系統管理員重設密碼，或繼續使用 OIDC 登入。自助修改密碼需要先知道當前密碼。',
@@ -4652,7 +4652,7 @@ export default {
         emailPlaceholder: '請輸入有效的電子信箱地址',
         autoGenerateLabel: '自動生成隨機密碼',
         newPasswordLabel: '新密碼',
-        newPasswordPlaceholder: '8-32 個字符，包含字母和數字',
+        newPasswordPlaceholder: '請輸入任意非空密碼',
         confirmPasswordLabel: '確認新密碼',
         confirmPasswordPlaceholder: '再次輸入新密碼',
         confirmBtn: '建立使用者',
@@ -6778,6 +6778,7 @@ export default {
     }
   },
   auth: {
+    passwordMaxBytes: '密碼不可超過 72 位元組（中文通常每字 3 位元組）',
     emailOptional: '電子郵件（選填）',
     emailOptionalPlaceholder: '可留空；填寫後也可用於登入',
     account: '使用者名稱或電子郵件',

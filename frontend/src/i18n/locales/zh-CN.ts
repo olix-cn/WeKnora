@@ -785,7 +785,7 @@ export default {
       submit: '更新密码',
       success: '密码已更新，请使用新密码重新登录',
       failed: '修改密码失败，请检查当前密码是否正确',
-      policyFailed: '新密码须为 8-32 个字符，且同时包含字母和数字',
+      policyFailed: '密码不能为空且不能超过 72 字节；若管理员开启复杂密码，请同时满足复杂规则',
       sameAsCurrent: '新密码不能与当前密码相同',
       oidcOnlyDescription: '您的账号通过 OIDC 登录开通，尚未设置本地登录密码。',
       oidcOnlyNotice: '请联系系统管理员重置密码，或继续使用 OIDC 登录。自助修改密码需要先知道当前密码。',
@@ -4652,7 +4652,7 @@ export default {
         emailPlaceholder: '请输入有效的邮箱地址',
         autoGenerateLabel: '自动生成随机密码',
         newPasswordLabel: '新密码',
-        newPasswordPlaceholder: '8-32 个字符，包含字母和数字',
+        newPasswordPlaceholder: '请输入任意非空密码',
         confirmPasswordLabel: '确认新密码',
         confirmPasswordPlaceholder: '再次输入新密码',
         confirmBtn: '创建用户',
@@ -6778,6 +6778,7 @@ export default {
     }
   },
   auth: {
+    passwordMaxBytes: '密码不能超过 72 字节（中文通常每字 3 字节）',
     emailOptional: '邮箱（选填）',
     emailOptionalPlaceholder: '可留空；填写后也可用于登录',
     account: '用户名或邮箱',
