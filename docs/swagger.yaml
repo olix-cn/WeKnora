@@ -1436,6 +1436,17 @@ definitions:
     type: object
   github_com_Tencent_WeKnora_internal_types.AdminCreateUserRequest:
     properties:
+      default_tenant_id:
+        description: Existing active default workspace; must be supplied together with role.
+        type: integer
+      role:
+        description: Workspace role only; does not grant system administration.
+        enum:
+        - viewer
+        - contributor
+        - admin
+        - owner
+        type: string
       email:
         type: string
       password:
@@ -29256,6 +29267,26 @@ paths:
         state and system administrator flag. Follow has_more using offset + limit.
         tenant_id is the home workspace, not a list of memberships. No search or role
         filter is supported: paginate before drawing conclusions.'
+  /system/admin/users/workspaces:
+    get:
+      tags:
+      - System Admin
+      summary: List workspace choices for administrator user creation
+      parameters:
+      - name: keyword
+        in: query
+        type: string
+      - name: page
+        in: query
+        type: integer
+      responses:
+        "200":
+          description: Workspace ID and name choices (100 per page)
+          schema:
+            type: object
+            additionalProperties: true
+        "403":
+          description: System administrator required
   /system/admin/users/create:
     post:
       consumes:
@@ -29266,7 +29297,8 @@ paths:
         password is generated (OIDC-style crypto/rand + base64url)
         and returned once in the response body. Any provided value,
         including empty string, is policy-checked. Tenant provisioning
-        follows the shared auth.default_tenant_mode policy.
+        uses default_tenant_id and role to create active membership without invitation when supplied.
+        Legacy requests without these fields follow auth.default_tenant_mode.
       parameters:
       - description: User creation request
         in: body

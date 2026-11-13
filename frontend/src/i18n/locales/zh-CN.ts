@@ -4643,6 +4643,10 @@ export default {
         failed: '重置密码失败',
       },
       createUser: {
+        defaultWorkspace: '默认空间',
+        workspacePlaceholder: '请选择已有空间（可输入名称搜索）',
+        workspaceRole: '空间权限',
+        workspaceHint: '创建后直接加入并默认进入此空间，无需邀请。默认只读；不授予系统管理员权限。',
         action: '创建用户',
         dialogTitle: '创建新用户',
         warning: '这是高风险操作。请仔细核对用户名和邮箱——它们将作为该用户登录的唯一凭据。',

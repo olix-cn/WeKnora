@@ -1755,7 +1755,8 @@ type CreateSystemUserResponse struct {
 // @Description  password is generated (OIDC-style crypto/rand + base64url)
 // @Description  and returned once in the response body. Any provided value,
 // @Description  including empty string, is policy-checked. Tenant provisioning
-// @Description  follows the shared auth.default_tenant_mode policy.
+// @Description  uses default_tenant_id and role when supplied, atomically creating active membership without invitation.
+// @Description  Legacy requests without these fields follow auth.default_tenant_mode.
 // @Tags         System Admin
 // @Accept       json
 // @Produce      json
@@ -1787,6 +1788,10 @@ func (h *SystemHandler) CreateSystemUser(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Username must be 2-50 characters"})
 		return
 	}
+	if (req.DefaultTenantID == 0 && req.Role != "") || (req.DefaultTenantID != 0 && !req.Role.IsValid()) {
+		c.JSON(http.StatusBadRequest, gin.H{"error": service.ErrAdminUserWorkspace.Error()})
+		return
+	}
 
 	user, generatedPassword, err := h.userSvc.AdminCreateUser(ctx, &req, h.resolveDefaultTenantMode(ctx))
 	if err != nil {
@@ -1803,9 +1808,11 @@ func (h *SystemHandler) CreateSystemUser(c *gin.Context) {
 				"target_username":    user.Username,
 				"password_generated": false,
 				"idempotent":         true,
+				"default_tenant_id":  req.DefaultTenantID,
+				"workspace_role":     req.Role,
 			})
 			c.JSON(http.StatusOK, CreateSystemUserResponse{User: user.ToUserInfo()})
-		case errors.Is(err, service.ErrPasswordPolicy):
+		case service.IsPasswordPolicyError(err), errors.Is(err, service.ErrAdminUserWorkspace):
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		case errors.Is(err, service.ErrUserIdentityConflict):
 			c.JSON(http.StatusConflict, gin.H{"error": err.Error()})
@@ -1822,6 +1829,8 @@ func (h *SystemHandler) CreateSystemUser(c *gin.Context) {
 		"target_username":    user.Username,
 		"password_generated": generatedPassword != "",
 		"idempotent":         false,
+		"default_tenant_id":  req.DefaultTenantID,
+		"workspace_role":     req.Role,
 	})
 	c.JSON(http.StatusCreated, CreateSystemUserResponse{
 		User:              user.ToUserInfo(),

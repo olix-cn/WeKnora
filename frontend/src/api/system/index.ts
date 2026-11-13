@@ -391,6 +391,8 @@ export async function resetUserPassword(req: ResetUserPasswordRequest): Promise<
 }
 
 export interface CreateSystemUserRequest {
+  default_tenant_id?: number
+  role?: 'viewer' | 'contributor' | 'admin' | 'owner'
   /** 2-50 characters. */
   username: string
   /** Optional; must be a valid address when supplied. */
@@ -402,6 +404,10 @@ export interface CreateSystemUserRequest {
    * password policy and can be rejected.
    */
   password?: string
+}
+
+export async function listUserCreationWorkspaces(keyword = ''): Promise<{ items: Array<{ id: number; name: string }>; total: number }> {
+  return get('/api/v1/system/admin/users/workspaces', { params: { keyword } }) as unknown as Promise<{ items: Array<{ id: number; name: string }>; total: number }>
 }
 
 export interface CreateSystemUserResponse {

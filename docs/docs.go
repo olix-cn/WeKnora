@@ -22306,6 +22306,20 @@ const docTemplate = `{
                 "x-agent-hint": "Lists platform users across workspaces, including account enabled state and system administrator flag. Follow has_more using offset + limit. tenant_id is the home workspace, not a list of memberships. No search or role filter is supported: paginate before drawing conclusions."
             }
         },
+        "/system/admin/users/workspaces": {
+            "get": {
+                "tags": ["System Admin"],
+                "summary": "List workspace choices for administrator user creation",
+                "parameters": [
+                    {"name": "keyword", "in": "query", "type": "string"},
+                    {"name": "page", "in": "query", "type": "integer"}
+                ],
+                "responses": {
+                    "200": {"description": "Workspace ID and name choices (100 per page)", "schema": {"type": "object", "additionalProperties": true}},
+                    "403": {"description": "System administrator required"}
+                }
+            }
+        },
         "/system/admin/users/create": {
             "post": {
                 "description": "Provision a new local user account (SystemAdmin only).\nWhen ` + "`" + `password` + "`" + ` is omitted or null, a cryptographically random\npassword is generated (OIDC-style crypto/rand + base64url)\nand returned once in the response body. Any provided value,\nincluding empty string, is policy-checked. Tenant provisioning\nfollows the shared auth.default_tenant_mode policy.",
@@ -27526,6 +27540,15 @@ const docTemplate = `{
                 "username"
             ],
             "properties": {
+                "default_tenant_id": {
+                    "description": "Existing active default workspace; must be supplied together with role.",
+                    "type": "integer"
+                },
+                "role": {
+                    "description": "Workspace role only; does not grant system administration.",
+                    "type": "string",
+                    "enum": ["viewer", "contributor", "admin", "owner"]
+                },
                 "email": {
                     "type": "string"
                 },

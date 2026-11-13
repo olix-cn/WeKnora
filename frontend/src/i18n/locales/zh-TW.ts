@@ -4643,6 +4643,10 @@ export default {
         failed: '重設密碼失敗',
       },
       createUser: {
+        defaultWorkspace: '預設空間',
+        workspacePlaceholder: '請選擇既有空間（可輸入名稱搜尋）',
+        workspaceRole: '空間權限',
+        workspaceHint: '建立後直接加入並預設進入此空間，無需邀請。預設唯讀；不授予系統管理員權限。',
         action: '建立使用者',
         dialogTitle: '建立新使用者',
         warning: '這是高風險操作。請仔細核對使用者名和電子信箱──它們將作為該使用者登入的唯一憑據。',

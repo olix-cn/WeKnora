@@ -4641,6 +4641,10 @@ export default {
         failed: '비밀번호 재설정 실패',
       },
       createUser: {
+        defaultWorkspace: '기본 워크스페이스',
+        workspacePlaceholder: '기존 워크스페이스 선택 (이름으로 검색)',
+        workspaceRole: '워크스페이스 권한',
+        workspaceHint: '초대 없이 즉시 참여하며 첫 로그인 시 이 공간을 엽니다. 기본값은 읽기 전용이며 시스템 관리자 권한은 부여하지 않습니다.',
         action: '사용자 생성',
         dialogTitle: '새 사용자 생성',
         warning: '보안에 민감한 작업입니다. 새 사용자가 로그인할 때 사용할 사용자 이름과 이메일을 신중히 확인하세요.',

@@ -875,6 +875,9 @@ func (s *userService) AdminCreateUser(
 	if req == nil || strings.TrimSpace(req.Username) == "" {
 		return nil, "", errors.New("username is required")
 	}
+	if (req.DefaultTenantID == 0 && req.Role != "") || (req.DefaultTenantID != 0 && !req.Role.IsValid()) {
+		return nil, "", ErrAdminUserWorkspace
+	}
 
 	password := ""
 	generated := false
@@ -895,6 +898,16 @@ func (s *userService) AdminCreateUser(
 	// satisfy the password policy.
 	if err := ValidatePasswordPolicy(password, complexPasswordEnabled); err != nil {
 		return nil, "", err
+	}
+	if req.DefaultTenantID != 0 {
+		user, err := s.adminCreateInWorkspace(ctx, req, password)
+		if err != nil {
+			return user, "", err
+		}
+		if generated {
+			return user, password, nil
+		}
+		return user, "", nil
 	}
 
 	user, err := s.Register(ctx, &types.RegisterRequest{

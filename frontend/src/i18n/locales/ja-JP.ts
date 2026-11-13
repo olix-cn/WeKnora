@@ -5372,6 +5372,10 @@ export default {
         failed: 'パスワードのリセットに失敗しました',
       },
       createUser: {
+        defaultWorkspace: '既定のワークスペース',
+        workspacePlaceholder: '既存のワークスペースを選択（名前で検索可）',
+        workspaceRole: 'ワークスペース権限',
+        workspaceHint: '招待なしで参加し、初回ログイン時にこのワークスペースを開きます。既定は読み取り専用。システム管理者権限は付与しません。',
         action: 'ユーザを作成',
         dialogTitle: '新しいユーザを作成',
         warning: 'これは高リスクの操作です。ユーザ名とメールアドレスをよく確認してください。これらは新しいユーザのログインに使用されます。',

@@ -5372,6 +5372,10 @@ export default {
         failed: 'Failed to reset password',
       },
       createUser: {
+        defaultWorkspace: 'Default workspace',
+        workspacePlaceholder: 'Select an existing workspace (search by name)',
+        workspaceRole: 'Workspace role',
+        workspaceHint: 'Join this workspace immediately and use it on first sign-in. Defaults to read-only; does not grant system administration.',
         action: 'Create user',
         dialogTitle: 'Create a new user',
         warning: 'This is a high-risk action. Verify the username and email carefully — they are how the new user will sign in.',

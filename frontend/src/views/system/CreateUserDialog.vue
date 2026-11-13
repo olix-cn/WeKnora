@@ -77,6 +77,18 @@
                 {{ t('system.globalSettings.createUser.autoGenerateLabel') }}
               </t-checkbox>
             </t-form-item>
+            <t-form-item :label="t('system.globalSettings.createUser.defaultWorkspace')" name="defaultTenantId">
+              <t-select v-model="form.defaultTenantId" filterable :filter="() => true" :options="workspaceOptions"
+                :loading="workspaceLoading" :disabled="submitting" :placeholder="t('system.globalSettings.createUser.workspacePlaceholder')"
+                @search="searchWorkspaces" />
+              <t-button v-if="workspaceError" variant="text" theme="danger" @click="loadWorkspaces('')">
+                {{ t('tenant.retry') }}
+              </t-button>
+            </t-form-item>
+            <t-form-item :label="t('system.globalSettings.createUser.workspaceRole')" name="role">
+              <t-select v-model="form.role" :options="roleOptions" :disabled="submitting" />
+              <p class="system-admin-action-popup-hint">{{ t('system.globalSettings.createUser.workspaceHint') }}</p>
+            </t-form-item>
             <template v-if="!form.autoGenerate">
               <t-form-item :label="t('system.globalSettings.createUser.newPasswordLabel')" name="newPassword">
                 <t-input v-model="form.newPassword" type="password" autocomplete="new-password" :disabled="submitting"
@@ -112,7 +124,7 @@ import { computed, nextTick, onMounted, onUnmounted, reactive, ref, watch } from
 import { MessagePlugin } from 'tdesign-vue-next'
 import type { FormInstanceFunctions, FormRule } from 'tdesign-vue-next'
 import { useI18n } from 'vue-i18n'
-import { createSystemUser, type CreateSystemUserRequest } from '@/api/system'
+import { createSystemUser, listUserCreationWorkspaces, type CreateSystemUserRequest } from '@/api/system'
 import { getAuthConfig } from '@/api/auth'
 import { copyWithToast } from '@/utils/clipboard'
 import { newPasswordRules } from '@/utils/passwordPolicy'
@@ -140,6 +152,8 @@ const formRef = ref<FormInstanceFunctions>()
 const form = reactive({
   username: '',
   email: '',
+  defaultTenantId: undefined as number | undefined,
+  role: 'viewer' as NonNullable<CreateSystemUserRequest['role']>,
   autoGenerate: true,
   newPassword: '',
   confirmPassword: '',
@@ -147,6 +161,36 @@ const form = reactive({
 const createUserSuccess = ref<CreateUserReveal | null>(null)
 const locked = computed(() => submitting.value || createUserSuccess.value !== null)
 const complexPasswordEnabled = ref(false)
+const workspaceOptions = ref<Array<{ label: string; value: number }>>([])
+const workspaceLoading = ref(false)
+const workspaceError = ref(false)
+let workspaceGeneration = 0
+let searchTimer: ReturnType<typeof setTimeout> | undefined
+const roleOptions = computed(() => ['viewer', 'contributor', 'admin', 'owner'].map(value => ({
+  value, label: t(`tenantMember.role.${value}`),
+})))
+async function loadWorkspaces(keyword: string) {
+  const generation = ++workspaceGeneration
+  workspaceLoading.value = true
+  workspaceError.value = false
+  try {
+    const result = await listUserCreationWorkspaces(keyword)
+    if (generation !== workspaceGeneration || !props.visible) return
+    const selected = workspaceOptions.value.find(item => item.value === form.defaultTenantId)
+    const options = result.items.map(item => ({ label: `${item.name} (${item.id})`, value: item.id }))
+    if (selected && !options.some(item => item.value === selected.value)) options.unshift(selected)
+    workspaceOptions.value = options
+  } catch {
+    if (generation === workspaceGeneration && props.visible) workspaceError.value = true
+  } finally {
+    if (generation === workspaceGeneration) workspaceLoading.value = false
+  }
+}
+function searchWorkspaces(keyword: string) {
+  clearTimeout(searchTimer)
+  ++workspaceGeneration
+  searchTimer = setTimeout(() => loadWorkspaces(keyword), 250)
+}
 
 const loadAuthConfig = async () => {
   const resp = await getAuthConfig()
@@ -157,6 +201,7 @@ const loadAuthConfig = async () => {
 }
 
 const rules = computed<Record<string, FormRule[]>>(() => ({
+  defaultTenantId: [{ required: true, message: t('system.globalSettings.createUser.workspacePlaceholder'), trigger: 'change' }],
   username: [
     { required: true, message: t('system.globalSettings.createUser.validation.usernameRequired'), trigger: 'blur' },
     { min: 2, max: 50, message: t('system.globalSettings.createUser.validation.usernameLength'), trigger: 'blur' },
@@ -177,6 +222,8 @@ const rules = computed<Record<string, FormRule[]>>(() => ({
 
 watch(() => props.visible, async (visible) => {
   if (!visible) {
+    ++workspaceGeneration
+    clearTimeout(searchTimer)
     createUserSuccess.value = null
     dismissing.value = false
     resetFormFields()
@@ -185,7 +232,8 @@ watch(() => props.visible, async (visible) => {
   dismissing.value = false
   createUserSuccess.value = null
   resetFormFields()
-  await loadAuthConfig()
+  void loadWorkspaces('')
+  try { await loadAuthConfig() } catch { MessagePlugin.warning(t('system.globalSettings.messages.loadFailed')) }
   await nextTick()
   formRef.value?.clearValidate?.()
 })
@@ -204,12 +252,17 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
+  ++workspaceGeneration
+  clearTimeout(searchTimer)
   window.removeEventListener('keydown', onWindowEscCapture, true)
 })
 
 function resetFormFields() {
   form.username = ''
   form.email = ''
+  form.defaultTenantId = undefined
+  form.role = 'viewer'
+  workspaceOptions.value = []
   form.autoGenerate = true
   form.newPassword = ''
   form.confirmPassword = ''
@@ -235,6 +288,8 @@ async function submit() {
     const payload: CreateSystemUserRequest = {
       username: form.username.trim(),
       email: form.email.trim(),
+      default_tenant_id: form.defaultTenantId,
+      role: form.role,
     }
     if (!form.autoGenerate) {
       payload.password = form.newPassword
