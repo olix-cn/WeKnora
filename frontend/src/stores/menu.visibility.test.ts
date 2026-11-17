@@ -76,3 +76,14 @@ test('command palette agent-list shortcut uses the same minimum role', () => {
   const source = readFileSync(new URL('../components/GlobalCommandPalette.vue', import.meta.url), 'utf8')
   assert.match(source, /if \(command.id === 'open-agents'\) \{\s*return authStore.hasRole\('contributor'\) && deploymentCapabilities.isSupported\('agents'\)/)
 })
+
+test('document center remains visible without a sandbox and does not duplicate artifacts', t => {
+  const { store, auth, flags } = setup(t)
+  flags['settings.sandbox'] = { supported: false }
+  for (const role of ['viewer', 'contributor', 'admin', 'owner']) {
+    auth.currentTenantRole = role
+    const paths = store.visibleMenuArr.map((item: { path: string }) => item.path)
+    assert.equal(paths.filter((path: string) => path === 'documents').length, 1)
+    assert.equal(paths.includes('artifacts'), false)
+  }
+})

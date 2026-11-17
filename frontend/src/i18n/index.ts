@@ -8,14 +8,15 @@ import zhTW from './locales/zh-TW.ts'
 import { BUILT_IN_DEFAULT, resolveDefaultLocale } from './resolveDefaultLocale.ts'
 import { pluralRules } from './pluralizationRules.ts'
 import { brandMessages } from '../config/branding'
+import { documentCenterMessages } from './documentCenter'
 
 const messages = brandMessages({
-  'zh-CN': zhCN,
-  'zh-TW': zhTW,
-  'en-US': enUS,
-  'ru-RU': ruRU,
-  'ko-KR': koKR,
-  'ja-JP': jaJP
+  'zh-CN': { ...zhCN, documentCenter: documentCenterMessages['zh-CN'] },
+  'zh-TW': { ...zhTW, documentCenter: documentCenterMessages['zh-TW'] },
+  'en-US': { ...enUS, documentCenter: documentCenterMessages['en-US'] },
+  'ru-RU': { ...ruRU, documentCenter: documentCenterMessages['ru-RU'] },
+  'ko-KR': { ...koKR, documentCenter: documentCenterMessages['ko-KR'] },
+  'ja-JP': { ...jaJP, documentCenter: documentCenterMessages['ja-JP'] }
 })
 
 // User's explicit past choice wins; otherwise use the deployment default.

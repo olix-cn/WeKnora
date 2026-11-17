@@ -176,6 +176,8 @@ func dataKeys(data map[string]interface{}) []string {
 
 // toolDisplayNames maps internal tool names to user-friendly display labels.
 var toolDisplayNames = map[string]string{
+	agenttools.ToolDocumentTemplates:         "查询模板库",
+	agenttools.ToolGenerateEBOM:              "生成工程 BOM",
 	agenttools.ToolDiscoverMCPTools:          "查看外部工具",
 	agenttools.ToolCallMCPTool:               "调用外部工具",
 	agenttools.ToolThinking:                  "深度思考",

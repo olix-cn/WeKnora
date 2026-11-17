@@ -9,6 +9,7 @@ test('routeTitle names the pages the sidebar names', () => {
   assert.equal(routeTitle({ name: 'automationList' }, t), '<menu.automations>')
   assert.equal(routeTitle({ name: 'knowledgeBaseList' }, t), '<menu.knowledgeBase>')
   assert.equal(routeTitle({ name: 'organizationList' }, t), '<menu.organizations>')
+  assert.equal(routeTitle({ name: 'artifactLibrary' }, t), '<documentCenter.title>')
   assert.equal(routeTitle({ name: 'chat', params: { chatid: 'x' } }, t), '<assistant.context.pages.chat>')
 })
 

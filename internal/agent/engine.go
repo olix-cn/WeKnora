@@ -247,6 +247,22 @@ func (e *AgentEngine) buildSystemPrompt(ctx context.Context) string {
 		logger.Debugf(ctx, "[Agent][Prompt] section=%s bytes=%d", section.Name, len(section.Content))
 	}
 	prompt := renderSystemPromptSections(sections) + e.collaborationGuidance()
+	if e.toolRegistry != nil {
+		if _, err := e.toolRegistry.GetTool(agenttools.ToolGenerateEBOM); err == nil {
+			prompt += "\n\n## YHSJ published-template EBOM workflow\n" +
+				"For a user-requested template-library EBOM, use document_templates and generate_ebom. " +
+				"The library is local to YHSJ, not an external MCP service or sandbox file. " +
+				"This fixed-program path takes precedence over the xlsx skill's script workflow. " +
+				"Read all schema/data pages with columns_mode=all under one result_id, then call generate_ebom; " +
+				"never transcribe cell values, write Python, spawn an Excel subagent " +
+				"or export to a workstation path. " +
+				"Ask for production count when absent. The selected folder must be one drawing set. " +
+				"Confirm quantities are per direct parent before expansion. " +
+				"Use program validation for the root assembly; do not invent links between disconnected drawings. " +
+				"On partial evidence, explain limitations and ask explicit acceptance before accept_partial=true. " +
+				"Return the task's document_link as a clickable link and accurately report its status."
+		}
+	}
 	if e.runNote != "" {
 		prompt += "\n\n" + e.runNote
 	}
@@ -1427,7 +1443,8 @@ func (e *AgentEngine) runRoundTools(
 	sessionID, assistantMessageID string,
 ) bool {
 	e.beginRound(*step, response.ToolCalls)
-	suspended := e.executeToolCalls(ctx, response, step, state.CurrentRound, sessionID, assistantMessageID)
+	toolContext := agenttools.WithDocumentTurn(ctx, assistantMessageID, state.RoundSteps)
+	suspended := e.executeToolCalls(toolContext, response, step, state.CurrentRound, sessionID, assistantMessageID)
 	e.endRound()
 	step.BackgroundSeenIDs = e.takeBackgroundSeen()
 	if suspended == nil {

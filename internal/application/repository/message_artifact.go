@@ -304,8 +304,38 @@ func (r *messageRepository) ListArtifactLibrary(
 		FROM (` + grouped + `) g`
 
 	var total int64
+	// The template generator owns its file directly. It never creates a fake
+	// conversation or a duplicate artifact row. Old databases keep working
+	// until the document migrations are explicitly applied.
+	latest := "SELECT * FROM (" + ranked + ") latest WHERE version_rank = 1"
+	if q.UserID != "" && r.db.WithContext(ctx).Migrator().HasTable(&types.DocumentGeneration{}) &&
+		r.db.WithContext(ctx).Migrator().HasTable(&types.DocumentDataset{}) {
+		chat := `SELECT session_id, message_id, position, url, file_name, file_type, file_size,
+		 source_path, created_at, id, session_title, version_count,
+		 '' AS task_id, '' AS template_id, false AS partial FROM (` + latest + `) chat`
+		docs := `SELECT '' AS session_id, '' AS message_id, 0 AS position, '' AS url,
+		 g.file_name, '.xlsx' AS file_type, g.file_size, '' AS source_path, g.created_at, g.id,
+		 '' AS session_title, 1 AS version_count, g.id AS task_id, g.template_id, g.partial
+		 FROM document_generations g JOIN document_datasets d ON d.id=g.dataset_id
+		 JOIN sessions s ON s.id=d.session_id AND s.deleted_at IS NULL
+		 JOIN messages dm ON dm.id=d.message_id AND dm.session_id=d.session_id AND dm.deleted_at IS NULL
+		 WHERE g.tenant_id=? AND g.user_id=? AND g.status='completed' AND g.expires_at>?
+		 AND d.tenant_id=g.tenant_id AND d.user_id=g.user_id AND d.expires_at>?
+		 AND s.tenant_id=g.tenant_id AND s.user_id=g.user_id`
+		now := time.Now().UTC()
+		args = append(args, q.TenantID, q.UserID, now, now)
+		if kw := strings.TrimSpace(q.Keyword); kw != "" {
+			docs += " AND LOWER(g.file_name) LIKE LOWER(?) ESCAPE ?"
+			args = append(args, "%"+escapeLikeKeyword(kw)+"%", likeEscapeChar)
+		}
+		if len(q.FileTypes) > 0 {
+			docs += " AND '.xlsx' IN ?"
+			args = append(args, q.FileTypes)
+		}
+		latest = chat + " UNION ALL " + docs
+	}
 	if err := r.db.WithContext(ctx).
-		Raw("SELECT COUNT(*) FROM ("+ranked+") latest WHERE version_rank = 1", args...).
+		Raw("SELECT COUNT(*) FROM ("+latest+") items", args...).
 		Scan(&total).Error; err != nil {
 		return nil, 0, err
 	}
@@ -318,7 +348,7 @@ func (r *messageRepository) ListArtifactLibrary(
 	items := make([]*types.ArtifactLibraryItem, 0)
 	listArgs := append(append([]any{}, args...), size, (page-1)*size)
 	if err := r.db.WithContext(ctx).
-		Raw("SELECT * FROM ("+ranked+") latest WHERE version_rank = 1 "+
+		Raw("SELECT * FROM ("+latest+") items "+
 			"ORDER BY created_at DESC, id DESC LIMIT ? OFFSET ?", listArgs...).
 		Scan(&items).Error; err != nil {
 		return nil, 0, err

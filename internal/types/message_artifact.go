@@ -125,6 +125,9 @@ type ArtifactLibraryQuery struct {
 // Versions are the artifacts that share a session and sandbox source path:
 // regenerating report.pptx three times is one item with VersionCount 3.
 type ArtifactLibraryItem struct {
+	TaskID       string    `json:"task_id,omitempty" gorm:"column:task_id"`
+	TemplateID   string    `json:"template_id,omitempty" gorm:"column:template_id"`
+	Partial      bool      `json:"partial" gorm:"column:partial"`
 	SessionID    string    `json:"session_id"    gorm:"column:session_id" extensions:"x-agent"`
 	SessionTitle string    `json:"session_title" gorm:"column:session_title" extensions:"x-agent"`
 	MessageID    string    `json:"message_id"    gorm:"column:message_id" extensions:"x-agent"`

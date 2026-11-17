@@ -7,6 +7,9 @@ import { del, get } from '@/utils/request'
  * re-checks session ownership server side.
  */
 export interface ArtifactLibraryItem {
+  task_id?: string
+  template_id?: string
+  partial?: boolean
   session_id: string
   session_title: string
   message_id: string

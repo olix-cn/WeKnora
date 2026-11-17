@@ -31,8 +31,8 @@ export const useMenuStore = defineStore('menuStore', () => {
       children: createMenuChildren()
     },
     { title: '', titleKey: 'menu.knowledgeBase', icon: 'zhishiku', path: 'knowledge-bases' },
-    // Artifacts only exist where skills run in a sandbox.
-    { title: '', titleKey: 'menu.artifacts', icon: 'artifact', path: 'artifacts', requiredCapability: 'settings.sandbox' },
+    // Existing files remain accessible even when a sandbox is no longer enabled.
+    { title: '', titleKey: 'documentCenter.title', icon: 'artifact', path: 'documents' },
     { title: '', titleKey: 'menu.agents', icon: 'agent', path: 'agents', requiredCapability: 'agents' },
     { title: '', titleKey: 'menu.automations', icon: 'automation', path: 'automations', requiredCapability: 'navigation.automations' },
     { title: '', titleKey: 'toolbox.title', icon: 'toolbox', path: 'toolbox', requiredCapability: 'navigation.toolbox' },

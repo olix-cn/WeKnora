@@ -201,6 +201,8 @@ func SwitchManagedTools() []string {
 		ToolCallMCPTool,
 		ToolRequestSecureForm,
 		ToolBrowserFillSecret,
+		ToolDocumentTemplates,
+		ToolGenerateEBOM,
 	}
 }
 

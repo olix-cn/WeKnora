@@ -133,10 +133,11 @@ const router = createRouter({
           },
         },
         {
-          path: "artifacts",
+          path: "documents",
+          alias: "artifacts",
           name: "artifactLibrary",
-          component: () => import("../views/artifacts/ArtifactLibrary.vue"),
-          meta: { requiresInit: true, requiresAuth: true, requiredCapability: 'settings.sandbox' }
+          component: () => import("../views/documents/DocumentCenter.vue"),
+          meta: { requiresInit: true, requiresAuth: true }
         },
         {
           path: "toolbox/:section?",

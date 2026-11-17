@@ -100,6 +100,7 @@ func knowledgeBaseScopesForPrompt(config *types.AgentConfig) ([]string, map[stri
 
 // agentService implements agent-related business logic
 type agentService struct {
+	documents             *DocumentGenerationService
 	browserSkill          *browserskill.Manager
 	userRepo              interfaces.UserRepository
 	graphRepo             interfaces.RetrieveGraphRepository
@@ -183,8 +184,10 @@ func NewAgentService(
 	operationDispatcher *operations.HandlerDispatcher,
 	customAgentService interfaces.CustomAgentService,
 	collaboration *AgentCollaboration,
+	documents *DocumentGenerationService,
 ) interfaces.AgentService {
 	svc := &agentService{
+		documents:            documents,
 		customAgentService:   customAgentService,
 		operationDispatcher:  operationDispatcher,
 		browserSkill:         browserSkill,
@@ -265,6 +268,7 @@ func (s *agentService) CreateAgentEngine(
 	}
 	s.registerMCPTools(ctx, toolRegistry, config)
 	s.registerOperationTools(ctx, toolRegistry, config)
+	s.registerDocumentCenterTools(ctx, toolRegistry, config, sessionID)
 	registerProductDocTools(ctx, toolRegistry, config)
 
 	// Register the shell first: file discovery needs a separate tool only

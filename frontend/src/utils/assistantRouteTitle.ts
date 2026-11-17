@@ -12,7 +12,7 @@ const ROUTE_TITLE_KEYS: Record<string, string> = {
   knowledgeBaseList: 'menu.knowledgeBase',
   knowledgeBaseDetail: 'menu.knowledgeBase',
   home: 'menu.knowledgeBase',
-  artifactLibrary: 'menu.artifacts',
+  artifactLibrary: 'documentCenter.title',
   agentList: 'menu.agents',
   automationList: 'menu.automations',
   toolbox: 'toolbox.title',

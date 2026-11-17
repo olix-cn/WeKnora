@@ -1,6 +1,6 @@
 <template>
   <div class="artifact-library">
-    <div class="header" style="--wails-draggable: drag">
+    <div v-if="!embedded" class="header" style="--wails-draggable: drag">
       <div class="header-title" style="--wails-draggable: drag">
         <h2 style="--wails-draggable: drag">
           <ResourceIcon type="artifact" :size="24" />
@@ -73,7 +73,7 @@
           <ul class="artifact-rows">
             <li
               v-for="item in section.items"
-              :key="`${item.message_id}:${item.index}`"
+              :key="itemKey(item)"
               class="artifact-row"
               @click="openPreview(item)"
             >
@@ -85,6 +85,11 @@
                     <span>{{ formatArtifactSize(item.file_size) }}</span>
                     <span class="meta-sep">·</span>
                     <span>{{ formatArtifactDateTime(item.created_at) }}</span>
+                    <template v-if="item.task_id">
+                      <span class="meta-sep">·</span>
+                      <span>{{ $t('documentCenter.templateFile') }}</span>
+                      <span v-if="item.partial">{{ $t('documentCenter.partial') }}</span>
+                    </template>
                     <template v-if="item.version_count > 1">
                       <span class="meta-sep">·</span>
                       <span class="version-badge">
@@ -101,7 +106,7 @@
                 @click.stop="openSession(item)"
               >
                 <t-icon name="chat" size="14px" />
-                <span>{{ item.session_title || $t('artifactLibrary.untitledSession') }}</span>
+                <span>{{ item.task_id ? $t('documentCenter.tabs.tasks') : (item.session_title || $t('artifactLibrary.untitledSession')) }}</span>
               </button>
               <t-button
                 class="row-action"
@@ -158,7 +163,7 @@
             <div class="preview-header-title" :title="previewItem.file_name">{{ previewItem.file_name }}</div>
             <button type="button" class="session-link session-link--inline" @click="openSession(previewItem)">
               <t-icon name="chat" size="12px" />
-              <span>{{ previewItem.session_title || $t('artifactLibrary.untitledSession') }}</span>
+              <span>{{ previewItem.task_id ? $t('documentCenter.tabs.tasks') : (previewItem.session_title || $t('artifactLibrary.untitledSession')) }}</span>
             </button>
           </div>
           <div ref="previewActions" class="preview-actions" />
@@ -201,7 +206,8 @@
       </template>
       <div v-if="previewItem" class="preview-body">
         <DocumentPreview
-          :key="`${previewItem.message_id}:${previewItem.index}`"
+          :key="itemKey(previewItem)"
+          :source-blob="previewBlob || undefined"
           :toolbar-target="previewActions"
           :session-id="previewItem.session_id"
           :message-id="previewItem.message_id"
@@ -223,6 +229,7 @@ import { useI18n } from 'vue-i18n'
 import { MessagePlugin } from 'tdesign-vue-next'
 import { downloadArtifact } from '@/api/chat'
 import { deleteArtifactLibraryItem, listArtifactLibrary, type ArtifactLibraryItem } from '@/api/artifacts'
+import { downloadGenerationFile, deleteGenerationFile } from '@/api/documentCenter'
 import {
   ARTIFACT_CATEGORIES,
   artifactCategoryExtensions,
@@ -237,6 +244,8 @@ import EmptyState from '@/components/EmptyState.vue'
 import ResourceIcon from '@/components/icons/ResourceIcon.vue'
 import DocumentPreview from '@/components/document-preview.vue'
 import ArtifactFileIcon from '@/views/chat/components/ArtifactFileIcon.vue'
+
+withDefaults(defineProps<{ embedded?: boolean }>(), { embedded: false })
 
 const PAGE_SIZE = 30
 const SEARCH_DEBOUNCE_MS = 300
@@ -256,6 +265,8 @@ const loadError = ref(false)
 const downloading = reactive<Record<string, boolean>>({})
 const deleting = reactive<Record<string, boolean>>({})
 const previewItem = ref<ArtifactLibraryItem | null>(null)
+const previewBlob = ref<Blob | null>(null)
+let previewRequest = 0
 const previewVisible = ref(false)
 const previewActions = ref<HTMLElement | null>(null)
 const scrollRoot = ref<HTMLElement | null>(null)
@@ -355,17 +366,37 @@ watch(category, () => {
   reload()
 })
 
-function openPreview(item: ArtifactLibraryItem) {
+async function openPreview(item: ArtifactLibraryItem) {
+  const request = ++previewRequest
+  previewVisible.value = false
+  previewItem.value = null
+  previewBlob.value = null
+  if (item.task_id) {
+    try {
+      const blob = await downloadGenerationFile(item.task_id)
+      if (request !== previewRequest) return
+      previewBlob.value = blob
+    }
+    catch {
+      if (request === previewRequest) MessagePlugin.error(t('artifactLibrary.downloadFailed'))
+      return
+    }
+  }
   previewItem.value = item
   previewVisible.value = true
 }
 
 function openSession(item: ArtifactLibraryItem) {
   previewVisible.value = false
+  if (item.task_id) {
+    void router.push({ path: '/platform/documents', query: { tab: 'tasks', task: item.task_id } })
+    return
+  }
   void router.push(`/platform/chat/${item.session_id}`)
 }
 
 function itemKey(item: ArtifactLibraryItem) {
+  if (item.task_id) return `task:${item.task_id}`
   return `${item.message_id}:${item.index}`
 }
 
@@ -378,7 +409,8 @@ async function handleDownload(item: ArtifactLibraryItem) {
   if (downloading[key]) return
   downloading[key] = true
   try {
-    const blob = await downloadArtifact(item.session_id, item.message_id, item.index)
+    const blob = item.task_id ? await downloadGenerationFile(item.task_id)
+      : await downloadArtifact(item.session_id, item.message_id, item.index)
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
@@ -419,7 +451,8 @@ async function performDelete(item: ArtifactLibraryItem) {
   if (deleting[key]) return
   deleting[key] = true
   try {
-    await deleteArtifactLibraryItem(item)
+    if (item.task_id) await deleteGenerationFile(item.task_id)
+    else await deleteArtifactLibraryItem(item)
     // Splice the row out instead of reloading: this is an infinite list, and a
     // reload would throw away everything the user has scrolled past.
     const at = items.value.findIndex((row) => itemKey(row) === key)
@@ -459,6 +492,7 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
+  previewRequest++
   observer?.disconnect()
   if (searchTimer) clearTimeout(searchTimer)
   ticket++
