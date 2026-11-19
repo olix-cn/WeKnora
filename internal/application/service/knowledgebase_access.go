@@ -12,10 +12,37 @@ import (
 // Service reads accept exact upstream grants. Otherwise cross-tenant reads
 // require a user and organization permission resolved for the original caller.
 func kbReadPermissions(ctx context.Context, shares access.KBShareLookup) *access.KBPermissions {
+	members := access.MemberLookup(shares)
 	if types.CallerFromContext(ctx).UserID == "" {
 		shares = nil
 	}
-	return access.NewKBPermissions(ctx, shares)
+	return access.NewKBPermissionsWithMembers(ctx, shares, members)
+}
+
+// filterMemberKnowledgeBases runs before list metadata enrichment, so denied
+// KBs never cause document counts, processing state or pin metadata to surface.
+// Legacy foreign lists keep their existing shared-agent selection upstream.
+func filterMemberKnowledgeBases(
+	ctx context.Context, lookup access.KBMemberLookup, kbs []*types.KnowledgeBase,
+) ([]*types.KnowledgeBase, error) {
+	if lookup == nil {
+		return kbs, nil
+	}
+	caller := types.CallerFromContext(ctx)
+	visible := make([]*types.KnowledgeBase, 0, len(kbs))
+	for _, kb := range kbs {
+		if kb == nil {
+			continue
+		}
+		permission, handled, err := lookup.CheckKBMemberAccess(ctx, kb.ID, kb.TenantID, caller)
+		if err != nil {
+			return nil, err
+		}
+		if !handled || (permission.IsValid() && permission.HasPermission(types.OrgRoleViewer)) {
+			visible = append(visible, kb)
+		}
+	}
+	return visible, nil
 }
 
 // kbWritableIDs returns the target KBs the caller may modify: those of its own
@@ -39,6 +66,7 @@ func kbWritableIDs(
 	} else if roleEnforced && !caller.Role.HasPermission(types.TenantRoleContributor) {
 		return nil
 	}
+	members := access.MemberLookup(shares)
 	if caller.UserID == "" {
 		shares = nil
 	}
@@ -50,6 +78,17 @@ func kbWritableIDs(
 			continue
 		}
 		seen[target.KnowledgeBaseID] = true
+		if members != nil {
+			permission, handled, err := members.CheckKBMemberAccess(
+				ctx, target.KnowledgeBaseID, target.TenantID, caller)
+			if err != nil || (handled && (!permission.IsValid() || !permission.HasPermission(types.OrgRoleEditor))) {
+				continue
+			}
+			if handled {
+				ids = append(ids, target.KnowledgeBaseID)
+				continue
+			}
+		}
 		writable := caller.TenantID != 0 && target.TenantID == caller.TenantID
 		if !writable {
 			writable, _ = permissions.Check(target.KnowledgeBaseID, types.OrgRoleEditor)

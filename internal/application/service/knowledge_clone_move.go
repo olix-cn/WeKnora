@@ -223,6 +223,13 @@ func cleanupCopiedObjects(ctx context.Context, svc interfaces.FileService, relea
 }
 
 func (s *knowledgeService) CloneKnowledgeBase(ctx context.Context, srcID, dstID string) error {
+	return access.RunKBTransferFenced(ctx, s.kbShareService, types.MustTenantIDFromContext(ctx),
+		srcID, dstID, access.TransferTaskID(ctx), func() error {
+			return s.cloneKnowledgeBaseFenced(ctx, srcID, dstID)
+		})
+}
+
+func (s *knowledgeService) cloneKnowledgeBaseFenced(ctx context.Context, srcID, dstID string) error {
 	source, target, err := s.kbService.CopyKnowledgeBase(ctx, srcID, dstID)
 	if err != nil {
 		return err
@@ -265,6 +272,9 @@ func (s *knowledgeService) CloneChunk(ctx context.Context, src, dst *types.Knowl
 		return err
 	}
 	if err := access.RequireKBTransfer(ctx, sourceKB, targetKB, access.KBTransferClone); err != nil {
+		return err
+	}
+	if err := access.CheckKBTransferPolicy(ctx, s.kbShareService, sourceKB); err != nil {
 		return err
 	}
 	stored, err := s.repo.GetKnowledgeByID(ctx, dst.TenantID, dst.ID)
@@ -477,6 +487,21 @@ func (s *knowledgeService) ProcessKBClone(ctx context.Context, t *asynq.Task) er
 	if err := json.Unmarshal(t.Payload(), &payload); err != nil {
 		return fmt.Errorf("failed to unmarshal KB clone payload: %w", err)
 	}
+	if payload.TenantID == 0 || payload.SourceID == "" || payload.TaskID == "" {
+		return fmt.Errorf("invalid clone task: %w", asynq.SkipRetry)
+	}
+	if payload.TargetID == "" {
+		payload.CreateTarget = true
+		payload.TargetID = uuid.NewSHA1(uuid.NameSpaceOID,
+			[]byte(fmt.Sprintf("kb-clone:%d:%s:%s", payload.TenantID, payload.SourceID, payload.TaskID))).String()
+	}
+	return access.RunKBTransferFenced(ctx, s.kbShareService, payload.TenantID,
+		payload.SourceID, payload.TargetID, payload.TaskID, func() error {
+			return s.processKBCloneFenced(ctx, payload)
+		})
+}
+
+func (s *knowledgeService) processKBCloneFenced(ctx context.Context, payload types.KBClonePayload) error {
 	ctx = payload.Initiator.Apply(ctx)
 	ctx = withKBActivityTask(ctx, payload.TaskID, kbActivityTrigger(ctx))
 
@@ -489,16 +514,6 @@ func (s *knowledgeService) ProcessKBClone(ctx context.Context, t *asynq.Task) er
 		return err
 	}
 	create := payload.CreateTarget || payload.TargetID == ""
-	if payload.TargetID == "" {
-		// Compatibility for tasks admitted before destination IDs were reserved at
-		// enqueue time. The same legacy task always resolves the same target.
-		payload.TargetID = uuid.NewSHA1(uuid.NameSpaceOID,
-			[]byte(fmt.Sprintf("kb-clone:%d:%s:%s",
-				payload.TenantID,
-				payload.SourceID,
-				payload.TaskID))).
-			String()
-	}
 	target := &types.KnowledgeBase{ID: payload.TargetID, TenantID: payload.TenantID, CreatorID: payload.CreatorID}
 	if !create {
 		target, err = s.kbService.GetKnowledgeBaseByID(ctx, payload.TargetID)
@@ -508,6 +523,9 @@ func (s *knowledgeService) ProcessKBClone(ctx context.Context, t *asynq.Task) er
 	}
 	if source == nil || source.ID != payload.SourceID || target == nil || target.ID != payload.TargetID {
 		return fmt.Errorf("invalid clone binding: %w", asynq.SkipRetry)
+	}
+	if err := access.CheckKBTransferPolicy(ctx, s.kbShareService, source); err != nil {
+		return fmt.Errorf("clone source policy forbids transfer: %v: %w", err, asynq.SkipRetry)
 	}
 	ctx, err = access.WithKBTransferTask(
 		ctx,
@@ -1127,6 +1145,13 @@ func (s *knowledgeService) ProcessKnowledgeMove(ctx context.Context, t *asynq.Ta
 	if payload.TenantID == 0 || payload.TaskID == "" || payload.SourceKBID == "" || payload.TargetKBID == "" {
 		return fmt.Errorf("invalid move scope: %w", asynq.SkipRetry)
 	}
+	return access.RunKBTransferFenced(ctx, s.kbShareService, payload.TenantID,
+		payload.SourceKBID, payload.TargetKBID, payload.TaskID, func() error {
+			return s.processKnowledgeMoveFenced(ctx, payload)
+		})
+}
+
+func (s *knowledgeService) processKnowledgeMoveFenced(ctx context.Context, payload types.KnowledgeMovePayload) error {
 	ctx = payload.Initiator.Apply(ctx)
 	ctx = withKBActivityTask(ctx, payload.TaskID, kbActivityTrigger(ctx))
 	ctx = types.WithExecutionTenant(ctx, payload.TenantID)
@@ -1140,6 +1165,9 @@ func (s *knowledgeService) ProcessKnowledgeMove(ctx context.Context, t *asynq.Ta
 	}
 	if sourceKB == nil || sourceKB.ID != payload.SourceKBID || targetKB == nil || targetKB.ID != payload.TargetKBID {
 		return fmt.Errorf("invalid move binding: %w", asynq.SkipRetry)
+	}
+	if err := access.CheckKBTransferPolicy(ctx, s.kbShareService, sourceKB); err != nil {
+		return fmt.Errorf("move source policy forbids transfer: %v: %w", err, asynq.SkipRetry)
 	}
 	ctx, err = access.WithKBTransferTask(
 		ctx,

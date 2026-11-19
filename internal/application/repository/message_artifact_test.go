@@ -154,6 +154,7 @@ func TestCreateForkedCopiesArtifactRows(t *testing.T) {
 		ID: "copy-1", SessionID: "fork-1", Role: "assistant", CreatedAt: created,
 		Artifacts: types.MessageArtifacts{testArtifact("a.pptx", "/w/a.pptx", created)},
 	}}
+	require.NoError(t, db.AutoMigrate(&sessionKnowledgeSource{}, &sessionKnowledgeRevision{}))
 	require.NoError(t, sessions.CreateForked(ctx, fork, copied))
 
 	got, err := messages.GetMessage(ctx, "fork-1", "copy-1")

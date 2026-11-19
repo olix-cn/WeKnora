@@ -105,6 +105,9 @@ func (s *sessionService) AgentQA(
 	if err != nil {
 		return err
 	}
+	if err := s.registerTurnKnowledgeSources(ctx, req, agentConfig.SearchTargets); err != nil {
+		return fmt.Errorf("record admitted knowledge sources: %w", err)
+	}
 	if delegated, err := delegatedConfigFromBinding(ctx); err != nil {
 		return err
 	} else if delegated != nil {

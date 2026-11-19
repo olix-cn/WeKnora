@@ -570,6 +570,11 @@ func (s *messageService) ListArtifactLibrary(
 	pagination.PageSize = query.PageSize
 	query.FileTypes = normalizeArtifactFileTypes(query.FileTypes)
 
+	denied, err := deniedSessionIDs(ctx, s.sessionRepo, query.TenantID, query.UserID)
+	if err != nil {
+		return nil, err
+	}
+	query.ExcludedSessionIDs = denied
 	items, total, err := s.messageRepo.ListArtifactLibrary(ctx, query)
 	if err != nil {
 		logger.ErrorWithFields(ctx, err, map[string]interface{}{
@@ -684,6 +689,26 @@ func (s *messageService) SearchMessages(ctx context.Context, params *types.Messa
 
 	// Step 4: Fetch partner messages (Q&A counterparts) to ensure complete pairs
 	items = s.fetchPartnerMessages(ctx, items)
+	if guard, ok := s.sessionRepo.(interface {
+		CheckSessionKBMemberAccess(context.Context, string, types.Caller) error
+	}); ok {
+		checked := make(map[string]error)
+		visible := make([]*types.MessageSearchResultItem, 0, len(items))
+		for _, item := range items {
+			if item == nil {
+				continue
+			}
+			err, exists := checked[item.SessionID]
+			if !exists {
+				err = guard.CheckSessionKBMemberAccess(ctx, item.SessionID, types.CallerFromContext(ctx))
+				checked[item.SessionID] = err
+			}
+			if err == nil {
+				visible = append(visible, item)
+			}
+		}
+		items = visible
+	}
 
 	// Step 5: Group by request_id to merge Q&A pairs
 	grouped := groupByRequestID(items)

@@ -182,6 +182,12 @@ func newFileServeHandler(
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized: workspace context missing"})
 			return
 		}
+		if guard, ok := resourceCatalog.(interfaces.ResourceMemberAccessGuard); ok {
+			if err := guard.AuthorizeResourceMemberAccess(c.Request.Context(), tenant.ID, filePath, false); err != nil {
+				fileAccessError(c, err)
+				return
+			}
+		}
 		filePath, resourceResolved, ok := resolveCatalogResource(c, resourceCatalog, filePath, tenant.ID)
 		if !ok {
 			return
@@ -217,7 +223,7 @@ func newFileServeHandler(
 		}
 
 		contentType, inline := secutils.SafeContentTypeByFilename(filePath)
-		streamStoredFile(c, reader, contentType, inline, "public, max-age=86400", "/files", filePath)
+		streamStoredFile(c, reader, contentType, inline, "private, no-store", "/files", filePath)
 	}
 }
 
@@ -306,7 +312,7 @@ func serveResourceGrants(
 			fileName = resource.PhysicalPath
 		}
 		contentType, inline := secutils.SafeContentTypeByFilename(fileName)
-		streamStoredFile(c, reader, contentType, inline, "private, max-age=300",
+		streamStoredFile(c, reader, contentType, inline, "private, no-store",
 			"resource grant (resource_id="+resource.ID+")", fileName)
 	}
 	r.GET("/r/:token", handler)
@@ -531,8 +537,27 @@ func serveMessageScopedFiles(
 // Without this it is otherwise impossible to tell whether a "broken image" is
 // caused by an expired signature, a stale URL cached by the platform, the
 // platform's IP being blocked, or the URL simply never reaching us.
-func servePresignedFiles(r *gin.Engine, tenantService interfaces.TenantService, storageResolver interfaces.StorageBackendResolver) {
+func servePresignedFiles(r *gin.Engine, tenantService interfaces.TenantService,
+	storageResolver interfaces.StorageBackendResolver, catalogs ...interfaces.ResourceCatalog,
+) {
 	handler := presignedFileHandler(tenantService, localStorageAbsDir(), storageResolver)
+	if guard, ok := firstResourceCatalog(catalogs).(interfaces.ResourceMemberAccessGuard); ok {
+		next := handler
+		handler = func(c *gin.Context) {
+			tenantID, err := strconv.ParseUint(c.Query("tenant_id"), 10, 64)
+			if err != nil || !secutils.VerifyFileURLSig(c.Query("file_path"), tenantID,
+				c.Query("expires"), c.Query("sig")) {
+				next(c) // Preserve the existing signature validation response.
+				return
+			}
+			if err := guard.AuthorizeResourceMemberAccess(c.Request.Context(), tenantID,
+				c.Query("file_path"), true); err != nil {
+				fileAccessError(c, err)
+				return
+			}
+			next(c)
+		}
+	}
 	r.GET("/api/v1/files/presigned", handler)
 	r.HEAD("/api/v1/files/presigned", handler)
 }
@@ -616,7 +641,7 @@ func presignedFileHandler(tenantService interfaces.TenantService, absDir string,
 		}
 
 		contentType, inline := secutils.SafeContentTypeByFilename(filePath)
-		streamStoredFile(c, reader, contentType, inline, "public, max-age=86400", "/files/presigned")
+		streamStoredFile(c, reader, contentType, inline, "private, no-store", "/files/presigned")
 	}
 }
 
@@ -659,6 +684,12 @@ func servePresignedPreview(
 			if tenant == nil {
 				c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized: workspace context missing"})
 				return
+			}
+			if guard, ok := resourceCatalog.(interfaces.ResourceMemberAccessGuard); ok {
+				if err := guard.AuthorizeResourceMemberAccess(ctx, tenant.ID, filePath, true); err != nil {
+					fileAccessError(c, err)
+					return
+				}
 			}
 
 			// Sign the original reference so a resource keeps its /r/ grant

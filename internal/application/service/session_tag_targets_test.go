@@ -246,7 +246,7 @@ func TestBuildSearchTargets_FullKBWithTagScopeSkipsFullKBTarget(t *testing.T) {
 	assert.NotEqual(t, types.SearchTargetTypeKnowledgeBase, targets[0].Type)
 }
 
-func TestBuildSearchTargets_DocumentTagScopeWithMissingKBMetadata(t *testing.T) {
+func TestBuildSearchTargets_MissingKBMetadataCannotAuthorizeTagScope(t *testing.T) {
 	svc := &sessionService{
 		knowledgeBaseService: &tagTargetKnowledgeBaseService{kbs: map[string]*types.KnowledgeBase{}},
 		knowledgeService: &tagTargetKnowledgeService{
@@ -270,10 +270,7 @@ func TestBuildSearchTargets_DocumentTagScopeWithMissingKBMetadata(t *testing.T) 
 	)
 
 	require.NoError(t, err)
-	require.Len(t, targets, 1)
-	assert.Equal(t, types.SearchTargetTypeKnowledge, targets[0].Type)
-	assert.ElementsMatch(t, []string{"doc-1", "doc-3"}, targets[0].KnowledgeIDs)
-	assert.True(t, targets[0].DisableRecallThresholds)
+	require.Empty(t, targets, "tag membership alone cannot prove access when the owning KB cannot be loaded")
 }
 
 func TestMergeResolvedTagKnowledgeIDs_OnlyIncludesTagScopedTargets(t *testing.T) {

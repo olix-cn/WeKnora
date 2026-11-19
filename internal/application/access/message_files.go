@@ -99,6 +99,11 @@ func (a MessageKBShareAuthorizer) resourceAccessibleViaSharedKB(
 		if kb == nil || kb.TenantID != resource.TenantID {
 			continue
 		}
+		permission, handled, memberErr := checkKBMemberAccess(
+			ctx, MemberLookup(a.ShareGuard), kb.ID, kb.TenantID, types.CallerFromContext(ctx))
+		if memberErr != nil || (handled && (!permission.IsValid() || !permission.HasPermission(types.OrgRoleViewer))) {
+			continue
+		}
 		shared, err := permissions.Check(kb.ID, types.OrgRoleViewer)
 		if err == nil && shared {
 			bound, bindingErr := a.Bindings.IsReferencedByKnowledgeBase(

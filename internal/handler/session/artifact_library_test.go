@@ -73,12 +73,13 @@ func TestListArtifactLibraryResponse(t *testing.T) {
 					{
 						"session_id":"session-1","session_title":"Report","message_id":"message-1","index":2,
 						"handle":"resource://artifact-1","file_name":"report.pdf","file_type":".pdf","file_size":123,
-						"source_path":"/workspace/report.pdf","created_at":"2026-10-28T10:00:00Z","version_count":4
+						"source_path":"/workspace/report.pdf","created_at":"2026-10-28T10:00:00Z",
+						"version_count":4,"partial":false
 					},
 					{
 						"session_id":"","session_title":"","message_id":"","index":0,
 						"file_name":"","file_type":"","file_size":0,"source_path":"",
-						"created_at":"0001-01-01T00:00:00Z","version_count":0
+						"created_at":"0001-01-01T00:00:00Z","version_count":0,"partial":false
 					},
 					null
 				]

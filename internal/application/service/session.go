@@ -99,6 +99,14 @@ func loadSessionForRead(
 	ownerID, sessionID string,
 ) (*types.Session, error) {
 	isAdmin := types.TenantRoleFromContext(ctx).HasPermission(types.TenantRoleAdmin)
+	checkMembers := func() error {
+		if guard, ok := repo.(interface {
+			CheckSessionKBMemberAccess(context.Context, string, types.Caller) error
+		}); ok {
+			return guard.CheckSessionKBMemberAccess(ctx, sessionID, types.CallerFromContext(ctx))
+		}
+		return nil
+	}
 
 	session, err := repo.Get(ctx, tenantID, ownerID, sessionID)
 	if err == nil {
@@ -110,6 +118,9 @@ func loadSessionForRead(
 		}
 		if imPlatform != "" {
 			session.IMPlatform = imPlatform
+		}
+		if err := checkMembers(); err != nil {
+			return nil, err
 		}
 		return session, nil
 	}
@@ -129,6 +140,9 @@ func loadSessionForRead(
 	}
 	if imPlatform != "" {
 		s.IMPlatform = imPlatform
+	}
+	if err := checkMembers(); err != nil {
+		return nil, err
 	}
 	return s, nil
 }
@@ -316,7 +330,18 @@ func (s *sessionService) GetOwnedSession(ctx context.Context, id string) (*types
 	}
 	tenantID := types.MustTenantIDFromContext(ctx)
 	userID := sessionUserIDFromContext(ctx)
-	return s.sessionRepo.Get(ctx, tenantID, userID, id)
+	session, err := s.sessionRepo.Get(ctx, tenantID, userID, id)
+	if err != nil {
+		return nil, err
+	}
+	if guard, ok := s.sessionRepo.(interface {
+		CheckSessionKBMemberAccess(context.Context, string, types.Caller) error
+	}); ok {
+		if err := guard.CheckSessionKBMemberAccess(ctx, id, types.CallerFromContext(ctx)); err != nil {
+			return nil, err
+		}
+	}
+	return session, nil
 }
 
 // GetSessionByID loads a session by tenant and id without user scoping.
@@ -417,6 +442,11 @@ func (s *sessionService) ListSessions(
 		query.UserID = uid
 	}
 
+	denied, err := deniedSessionIDs(ctx, s.sessionRepo, query.TenantID, query.UserID)
+	if err != nil {
+		return nil, err
+	}
+	query.ExcludedSessionIDs = denied
 	items, total, err := s.sessionRepo.QueryPaged(ctx, query)
 	if err != nil {
 		logger.ErrorWithFields(ctx, err, map[string]interface{}{
@@ -450,6 +480,11 @@ func (s *sessionService) CountSessionsBySource(
 	} else if uid := types.SessionOwnerIDFromContext(ctx); uid != "" {
 		query.UserID = uid
 	}
+	denied, err := deniedSessionIDs(ctx, s.sessionRepo, query.TenantID, query.UserID)
+	if err != nil {
+		return 0, err
+	}
+	query.ExcludedSessionIDs = denied
 	_, total, err := s.sessionRepo.QueryPaged(ctx, query)
 	if err != nil {
 		logger.ErrorWithFields(ctx, err, map[string]interface{}{

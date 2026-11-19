@@ -191,6 +191,9 @@ func (r *sessionRepository) QueryPaged(
 	// Base filter shared by count and list queries.
 	applyBase := func(db *gorm.DB) *gorm.DB {
 		db = db.Where("s.tenant_id = ? AND s.deleted_at IS NULL AND s.kind = ?", q.TenantID, q.Kind)
+		if len(q.ExcludedSessionIDs) > 0 {
+			db = db.Where("s.id NOT IN ?", q.ExcludedSessionIDs)
+		}
 		if q.Kind == types.SessionKindAssistant {
 			db = db.Where("s.user_id = ? AND s.user_id <> ''", q.UserID)
 		} else if q.UserID != "" {
@@ -449,6 +452,34 @@ func (r *sessionRepository) CreateForkedWithAssignment(
 		// the hook skipped.
 		if err := tx.Session(&gorm.Session{SkipHooks: true}).Create(session).Error; err != nil {
 			return err
+		}
+		if session.ParentSessionID != "" {
+			var parentCount int64
+			if err := tx.Model(&types.Session{}).Where("id = ? AND tenant_id = ? AND user_id = ?",
+				session.ParentSessionID, session.TenantID, session.UserID).Count(&parentCount).Error; err != nil {
+				return err
+			}
+			if parentCount > 0 {
+				if _, err := (&sessionRepository{db: tx}).sessionSourceIDs(ctx, session.ParentSessionID); err != nil {
+					return err
+				}
+			}
+			// A fork can contain paraphrases after the source citations were
+			// removed. Inherit the parent's monotonic dependencies, not just the
+			// copied messages' currently visible references.
+			if err := tx.Exec(`INSERT INTO session_knowledge_sources (session_id, knowledge_base_id)
+				SELECT ?, knowledge_base_id FROM session_knowledge_sources WHERE session_id = ?
+				ON CONFLICT (session_id, knowledge_base_id) DO NOTHING`,
+				session.ID, session.ParentSessionID).Error; err != nil {
+				return err
+			}
+			if err := tx.Exec(`INSERT INTO session_knowledge_revisions
+				(session_id, revision, indexed_revision, legacy_unverified)
+				SELECT ?, 1, 0, legacy_unverified FROM session_knowledge_revisions WHERE session_id = ?
+				ON CONFLICT (session_id) DO UPDATE SET legacy_unverified = excluded.legacy_unverified`,
+				session.ID, session.ParentSessionID).Error; err != nil {
+				return err
+			}
 		}
 		if len(messages) > 0 {
 			if err := tx.Session(&gorm.Session{SkipHooks: true}).

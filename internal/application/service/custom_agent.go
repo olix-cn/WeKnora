@@ -1203,7 +1203,6 @@ func (s *customAgentService) groupKBIDsByEffectiveTenant(
 	ctx context.Context,
 	kbIDs []string,
 ) map[uint64][]string {
-	callerTenantID := types.CallerFromContext(ctx).TenantID
 	out := make(map[uint64][]string)
 	if len(kbIDs) == 0 {
 		return out
@@ -1213,9 +1212,8 @@ func (s *customAgentService) groupKBIDsByEffectiveTenant(
 		logger.ErrorWithFields(ctx, err, map[string]interface{}{
 			"kb_ids": kbIDs,
 		})
-		// Fall back to caller's tenant so at least in-tenant KBs are queryable;
-		// chunk repo filtering will drop anything that doesn't match.
-		out[callerTenantID] = append(out[callerTenantID], kbIDs...)
+		// A tenant filter alone no longer proves visibility: a KB may be
+		// restricted to other members of that very same workspace.
 		return out
 	}
 	kbByID := make(map[string]*types.KnowledgeBase, len(kbs))

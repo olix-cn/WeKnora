@@ -6164,6 +6164,8 @@ export default {
       actions: {
         'kb.created': '创建知识库',
         'kb.updated': '更新知识库',
+        'kb.member_access_changed': '修改知识库成员权限',
+        'kb.transfer_recovered': '确认知识库转存恢复',
         'kb.deleted': '删除知识库',
         'kb.duplicated': '复制知识库',
         'kb.clone_started': '开始克隆',
@@ -8653,6 +8655,7 @@ export default {
     }
   },
   knowledgeBase: {
+    memberAccess: '访问权限',
     tagAddAction: '添加标签',
     documentCount: '{count} 个文档',
     filters: '筛选',

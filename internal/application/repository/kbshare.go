@@ -7,6 +7,7 @@ import (
 	"github.com/Tencent/WeKnora/internal/types"
 	"github.com/Tencent/WeKnora/internal/types/interfaces"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 var (
@@ -26,17 +27,26 @@ func NewKBShareRepository(db *gorm.DB) interfaces.KBShareRepository {
 
 // Create creates a new share record
 func (r *kbShareRepository) Create(ctx context.Context, share *types.KnowledgeBaseShare) error {
-	// Check if share already exists
-	var count int64
-	r.db.WithContext(ctx).Model(&types.KnowledgeBaseShare{}).
-		Where("knowledge_base_id = ? AND organization_id = ? AND deleted_at IS NULL", share.KnowledgeBaseID, share.OrganizationID).
-		Count(&count)
-
-	if count > 0 {
-		return ErrKBShareAlreadyExists
-	}
-
-	return r.db.WithContext(ctx).Create(share).Error
+	return withKBSharingLock(ctx, r.db, share.SourceTenantID, func(tx *gorm.DB) error {
+		var kb types.KnowledgeBase
+		if err := tx.Where("id = ? AND tenant_id = ?", share.KnowledgeBaseID, share.SourceTenantID).
+			First(&kb).Error; err != nil {
+			return err
+		}
+		if err := requirePublicKBPolicy(tx, kb.ID, kb.TenantID); err != nil {
+			return err
+		}
+		var count int64
+		if err := tx.Model(&types.KnowledgeBaseShare{}).
+			Where("knowledge_base_id = ? AND organization_id = ?", share.KnowledgeBaseID, share.OrganizationID).
+			Count(&count).Error; err != nil {
+			return err
+		}
+		if count > 0 {
+			return ErrKBShareAlreadyExists
+		}
+		return tx.Omit(clause.Associations).Create(share).Error
+	})
 }
 
 // GetByID gets a share record by ID
@@ -75,7 +85,7 @@ func (r *kbShareRepository) GetByKBAndOrg(ctx context.Context, kbID string, orgI
 func (r *kbShareRepository) Update(ctx context.Context, share *types.KnowledgeBaseShare) error {
 	return r.db.WithContext(ctx).Model(&types.KnowledgeBaseShare{}).
 		Where("id = ?", share.ID).
-		Updates(share).Error
+		Updates(map[string]any{"permission": share.Permission, "updated_at": share.UpdatedAt}).Error
 }
 
 // Delete soft deletes a share record

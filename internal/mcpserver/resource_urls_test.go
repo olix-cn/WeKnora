@@ -93,6 +93,7 @@ func newResourceURLFixture(t *testing.T) *resourceURLFixture {
 	require.NoError(t, db.AutoMigrate(
 		&types.StoredResource{}, &types.ResourceBinding{}, &types.ResourceAccessGrant{},
 		&types.Knowledge{}, &types.KnowledgeBase{}, &types.Chunk{}, &types.StorageBackend{},
+		&types.KnowledgeBaseAccessPolicy{}, &types.KnowledgeBaseMemberGrant{},
 	))
 	kb := &types.KnowledgeBase{ID: "kb-1", TenantID: 2, Name: "Shared"}
 	require.NoError(t, db.Create(kb).Error)

@@ -15,3 +15,11 @@
 - `poc/docker-sandbox/`：独立 Go 实验模块，保留源码和运行说明，不作为当前产品指南。
 
 这些资源尚有编译、发布或历史实验用途，不能直接整目录删除。新的产品说明不要再放入此处。
+
+## 知识库成员权限工程验收记录
+
+- [规则与设计](design/knowledge-base-member-access.md)
+- [验证记录](knowledge-base-member-access-verification.md)
+- [测试部署与回退清单](knowledge-base-member-access-deployment.md)
+- [转存异常恢复](knowledge-base-transfer-recovery.md)
+- [会话来源与撤权边界](session-knowledge-provenance.md)

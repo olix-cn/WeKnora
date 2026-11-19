@@ -161,13 +161,15 @@ const (
 	// Knowledge-base activity actions. These rows use scope_type=knowledge_base
 	// and scope_id=<kb id>; TargetType/TargetID identify the concrete child
 	// resource when the operation is about a document, tag, data source, or share.
-	AuditActionKBCreated        AuditAction = "kb.created"
-	AuditActionKBUpdated        AuditAction = "kb.updated"
-	AuditActionKBDeleted        AuditAction = "kb.deleted"
-	AuditActionKBDuplicated     AuditAction = "kb.duplicated"
-	AuditActionKBCloneStarted   AuditAction = "kb.clone_started"
-	AuditActionKBCloneCompleted AuditAction = "kb.clone_completed"
-	AuditActionKBCloneFailed    AuditAction = "kb.clone_failed"
+	AuditActionKBCreated             AuditAction = "kb.created"
+	AuditActionKBUpdated             AuditAction = "kb.updated"
+	AuditActionKBMemberAccessChanged AuditAction = "kb.member_access_changed"
+	AuditActionKBTransferRecovered   AuditAction = "kb.transfer_recovered"
+	AuditActionKBDeleted             AuditAction = "kb.deleted"
+	AuditActionKBDuplicated          AuditAction = "kb.duplicated"
+	AuditActionKBCloneStarted        AuditAction = "kb.clone_started"
+	AuditActionKBCloneCompleted      AuditAction = "kb.clone_completed"
+	AuditActionKBCloneFailed         AuditAction = "kb.clone_failed"
 
 	AuditActionKnowledgeCreated        AuditAction = "knowledge.created"
 	AuditActionKnowledgeUpdated        AuditAction = "knowledge.updated"

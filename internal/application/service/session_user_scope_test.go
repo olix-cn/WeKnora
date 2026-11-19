@@ -46,6 +46,7 @@ func newTestSessionService(t *testing.T) (*sessionService, *gorm.DB) {
 	db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
 	require.NoError(t, err)
 	require.NoError(t, db.AutoMigrate(&types.Session{}))
+	require.NoError(t, db.AutoMigrate(&types.KnowledgeBaseAccessPolicy{}))
 
 	return &sessionService{
 		sessionRepo: repository.NewSessionRepository(db),

@@ -51,3 +51,23 @@ func TestListArtifactLibraryScopesToCallerAndNormalizesQuery(t *testing.T) {
 	require.Equal(t, handle, items[0].Handle)
 	require.Empty(t, items[1].Handle, "non-resource URLs never leak as handles")
 }
+
+type libraryVisibilitySessions struct {
+	interfaces.SessionRepository
+}
+
+func (*libraryVisibilitySessions) DeniedSessionIDs(context.Context, uint64, string) ([]string, error) {
+	return []string{"revoked-session"}, nil
+}
+
+func TestLibraryCannotAcceptClientSuppliedVisibilityExclusions(t *testing.T) {
+	repo := &libraryMessageRepo{}
+	s := &messageService{messageRepo: repo, sessionRepo: &libraryVisibilitySessions{}}
+	ctx := types.WithExecutionTenant(types.WithCaller(context.Background(), types.Caller{
+		TenantID: 7, UserID: "user",
+	}), 7)
+	_, err := s.ListArtifactLibrary(ctx, &types.ArtifactLibraryQuery{ExcludedSessionIDs: []string{"forged"}})
+	require.NoError(t, err)
+	require.Equal(t, []string{"revoked-session"}, repo.query.ExcludedSessionIDs,
+		"visibility filters are always recomputed from the authenticated context")
+}

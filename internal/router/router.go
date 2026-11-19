@@ -44,6 +44,7 @@ type RouterParams struct {
 	KBShareService               interfaces.KBShareService
 	AgentShareService            interfaces.AgentShareService
 	KBHandler                    *handler.KnowledgeBaseHandler
+	KBMemberHandler              *handler.KnowledgeBaseMemberHandler `optional:"true"`
 	GraphSearchHandler           *handler.GraphSearchHandler
 	KnowledgeHandler             *handler.KnowledgeHandler
 	TenantHandler                *handler.TenantHandler
@@ -217,7 +218,7 @@ func NewRouter(params RouterParams) *gin.Engine {
 	serveFilesWithResources(r, params.FileService, params.StorageBackendResolver, params.ResourceCatalog)
 
 	// Presigned file access: no auth required, signature-verified.
-	servePresignedFiles(r, params.TenantService, params.StorageBackendResolver)
+	servePresignedFiles(r, params.TenantService, params.StorageBackendResolver, params.ResourceCatalog)
 
 	// Diagnostic preview of presigned URLs (Admin only, behind auth middleware).
 	servePresignedPreview(r, params.Config, params.StorageBackendResolver, params.ResourceCatalog)
@@ -266,6 +267,7 @@ func NewRouter(params RouterParams) *gin.Engine {
 		RegisterTenantRoutes(v1, params.TenantHandler, params.TenantMemberHandler, params.TenantInvitationHandler, params.AuditLogHandler, rbacGuards)
 		RegisterMyInvitationRoutes(v1, params.TenantInvitationHandler)
 		RegisterKnowledgeBaseRoutes(v1, params.KBHandler, rbacGuards)
+		RegisterKnowledgeBaseMemberRoutes(v1, params.KBMemberHandler, rbacGuards)
 		RegisterImageAttrRoutes(v1, params.KBHandler, rbacGuards)
 		RegisterKnowledgeBaseActivityRoutes(v1, params.AuditLogHandler, rbacGuards)
 		// KB-scoped image proxy: lets tenants render images embedded in

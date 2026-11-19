@@ -181,7 +181,18 @@ func (h *KnowledgeBaseHandler) buildKBListResponse(
 				view = v
 			}
 		}
-		out = append(out, buildKBResponse(kb, view, nil))
+		var extras map[string]interface{}
+		if lookup := access.MemberLookup(h.kbShareService); lookup != nil {
+			permission, handled, err := lookup.CheckKBMemberAccess(ctx, kb.ID, kb.TenantID,
+				types.CallerFromContext(ctx))
+			if err != nil || (handled && !permission.IsValid()) {
+				continue
+			}
+			if handled {
+				extras = map[string]interface{}{"my_permission": permission}
+			}
+		}
+		out = append(out, buildKBResponse(kb, view, extras))
 	}
 	return out
 }
@@ -597,6 +608,19 @@ func (h *KnowledgeBaseHandler) GetKnowledgeBase(c *gin.Context) {
 	if kb.TenantID != tenantID && permission != "" {
 		// Include my_permission in data so frontend can show role (e.g. "只读") instead of "--" for agent-visible KBs
 		extras = map[string]interface{}{"my_permission": permission}
+	}
+	if kb.TenantID == tenantID {
+		if lookup := access.MemberLookup(h.kbShareService); lookup != nil {
+			memberPermission, handled, err := lookup.CheckKBMemberAccess(c.Request.Context(), kb.ID, kb.TenantID,
+				types.CallerFromContext(c.Request.Context()))
+			if err != nil {
+				_ = c.Error(err)
+				return
+			}
+			if handled {
+				extras = map[string]interface{}{"my_permission": memberPermission}
+			}
+		}
 	}
 	c.JSON(http.StatusOK, gin.H{"success": true, "data": buildKBResponse(kb, storeView, extras)})
 }
@@ -1494,12 +1518,17 @@ func (h *KnowledgeBaseHandler) CopyKnowledgeBase(c *gin.Context) {
 		return
 	}
 	tenantID := caller.TenantID
-	sourceGrant, err := resolveHandlerKBAccessFor(c, req.SourceID, h.service, nil, nil, types.OrgRoleViewer)
+	sourceGrant, err := resolveHandlerKBAccessFor(c, req.SourceID, h.service,
+		h.kbShareService, nil, types.OrgRoleViewer)
 	if err != nil {
 		c.Error(err)
 		return
 	}
 	sourceKB := sourceGrant.KnowledgeBase
+	if err := access.CheckKBTransferPolicy(ctx, h.kbShareService, sourceKB); err != nil {
+		_ = c.Error(kbAccessHTTPError(err))
+		return
+	}
 	if sourceKB.TenantID != caller.TenantID {
 		_ = c.Error(errors.NewForbiddenError("No permission to copy this knowledge base"))
 		return
@@ -1518,7 +1547,8 @@ func (h *KnowledgeBaseHandler) CopyKnowledgeBase(c *gin.Context) {
 			targetKB.CreatorID = caller.UserID
 		}
 	} else {
-		targetGrant, err := resolveHandlerKBAccessFor(c, req.TargetID, h.service, nil, nil, types.OrgRoleEditor)
+		targetGrant, err := resolveHandlerKBAccessFor(c, req.TargetID, h.service,
+			h.kbShareService, nil, types.OrgRoleEditor)
 		if err != nil {
 			_ = c.Error(err)
 			return

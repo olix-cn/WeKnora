@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/Tencent/WeKnora/internal/application/access"
 	"github.com/Tencent/WeKnora/internal/errors"
 	"github.com/Tencent/WeKnora/internal/event"
 	"github.com/Tencent/WeKnora/internal/logger"
@@ -68,6 +69,10 @@ func (h *Handler) ContinueStream(c *gin.Context) {
 
 	// Verify that the session exists and belongs to this tenant
 	if _, err := h.sessionService.GetSession(ctx, sessionID); err != nil {
+		if stderrors.Is(err, access.ErrForbidden) {
+			_ = c.Error(errors.NewForbiddenError("conversation knowledge access has been revoked"))
+			return
+		}
 		if stderrors.Is(err, errors.ErrSessionNotFound) {
 			logger.Warnf(ctx, "Session not found, ID: %s", sessionID)
 			c.Error(errors.NewNotFoundError(err.Error()))
@@ -81,6 +86,10 @@ func (h *Handler) ContinueStream(c *gin.Context) {
 	// Get the incomplete message
 	message, err := h.messageService.GetMessage(ctx, sessionID, messageID)
 	if err != nil {
+		if stderrors.Is(err, access.ErrForbidden) {
+			_ = c.Error(errors.NewForbiddenError("conversation knowledge access has been revoked"))
+			return
+		}
 		if stderrors.Is(err, errors.ErrSessionNotFound) {
 			// PR #1309 plumbed user-scope into messageService.GetMessage's
 			// session existence check; non-owner / wrong-user lookups now
@@ -167,6 +176,9 @@ func (h *Handler) ContinueStream(c *gin.Context) {
 
 	// Replay existing events, a segment's worth of chunks per frame
 	replay := coalesceReplayEvents(events)
+	if len(replay) > 0 && !h.streamMemberAccess(c, sessionID) {
+		return
+	}
 	logger.Debugf(ctx, "Replaying %d existing events as %d frames", len(events), len(replay))
 	for _, evt := range replay {
 		emitStreamEvent(ctx, c, evt, message.RequestID, resourceRewriter)
@@ -205,6 +217,9 @@ func (h *Handler) ContinueStream(c *gin.Context) {
 			}
 
 			// Send new events
+			if len(newEvents) > 0 && !h.streamMemberAccess(c, sessionID) {
+				return
+			}
 			streamCompletedNow := false
 			for _, evt := range newEvents {
 				// Check for completion event
@@ -409,6 +424,9 @@ func (h *Handler) handleAgentEventsForSSE(
 			}
 
 			// Send any new events
+			if len(events) > 0 && !h.streamMemberAccess(c, sessionID) {
+				return
+			}
 			streamCompleted := false
 			for _, evt := range events {
 				// Check for stop event

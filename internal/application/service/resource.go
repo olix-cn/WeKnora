@@ -318,6 +318,9 @@ func (s *resourceCatalog) CreateAccessGrant(ctx context.Context, reference strin
 	if err != nil {
 		return "", err
 	}
+	if err := s.AuthorizeResourceMemberAccess(ctx, resource.TenantID, reference, true); err != nil {
+		return "", err
+	}
 	if ttl <= 0 {
 		ttl = defaultResourceGrantTTL
 	}
@@ -462,6 +465,10 @@ func (s *resourceCatalog) ResolveAccessGrant(ctx context.Context, token string) 
 	}
 	if resource == nil {
 		return nil, fmt.Errorf("resource not found")
+	}
+	if err := s.AuthorizeResourceMemberAccess(ctx, resource.TenantID,
+		types.BuildResourcePath(resource.Handle), true); err != nil {
+		return nil, err
 	}
 	return resource, nil
 }

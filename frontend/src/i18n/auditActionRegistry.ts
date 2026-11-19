@@ -50,6 +50,8 @@ export const SYSTEM_GLOBAL_AUDIT_ACTIONS = [
 export const KB_ACTIVITY_ACTIONS = [
   'kb.created',
   'kb.updated',
+  'kb.member_access_changed',
+  'kb.transfer_recovered',
   'kb.deleted',
   'kb.duplicated',
   'kb.clone_started',

@@ -56,22 +56,61 @@ func HasKBGrant(ctx context.Context, kbID string, tenantID uint64, required type
 		grant.scope.Allows(kbID, tenantID)
 }
 
+// HasKBTaskGrant is deliberately narrower than HasKBGrant: a shared-agent or
+// user operation grant cannot become a trusted continuation scope.
+func HasKBTaskGrant(ctx context.Context, kbID string, tenantID uint64, required types.OrgMemberRole) bool {
+	if kbID == "" || tenantID == 0 || !required.IsValid() ||
+		types.AuthorizeTenantAPIKeyKnowledgeBases(ctx, kbID) != nil {
+		return false
+	}
+	caller := types.CallerFromContext(ctx)
+	grants, _ := ctx.Value(types.KBGrantsContextKey).([]kbGrant)
+	for _, grant := range grants {
+		if grant.task && grant.caller == caller && grant.kbID == kbID && grant.tenantID == tenantID &&
+			grant.permission.IsValid() && grant.permission.HasPermission(required) {
+			return true
+		}
+	}
+	return false
+}
+
 // KBPermissions combines caller ownership, exact context grants and organization
 // shares for one service operation. Pass nil shares when that entry point does
 // not permit organization expansion (for example, a caller without a user).
 type KBPermissions struct {
-	ctx    context.Context
-	caller types.Caller
-	shares *KBSharePermissions
+	ctx           context.Context
+	caller        types.Caller
+	shares        *KBSharePermissions
+	members       KBMemberLookup
+	memberResults map[kbMemberKey]kbMemberResult
+}
+
+type kbMemberKey struct {
+	id       string
+	tenantID uint64
+}
+
+type kbMemberResult struct {
+	permission types.OrgMemberRole
+	handled    bool
+	err        error
 }
 
 // NewKBPermissions resolves reads for one caller and operation.
 func NewKBPermissions(ctx context.Context, shares KBShareLookup) *KBPermissions {
+	return NewKBPermissionsWithMembers(ctx, shares, MemberLookup(shares))
+}
+
+// NewKBPermissionsWithMembers retains policy checks when organization expansion
+// is disabled (for example for a machine caller without a human identity).
+func NewKBPermissionsWithMembers(ctx context.Context, shares KBShareLookup, members KBMemberLookup) *KBPermissions {
 	caller := types.CallerFromContext(ctx)
 	return &KBPermissions{
-		ctx:    ctx,
-		caller: caller,
-		shares: NewKBSharePermissions(ctx, shares, caller.TenantID, caller.Role),
+		ctx:           ctx,
+		caller:        caller,
+		shares:        NewKBSharePermissions(ctx, shares, caller.TenantID, caller.Role),
+		members:       members,
+		memberResults: make(map[kbMemberKey]kbMemberResult),
 	}
 }
 
@@ -82,6 +121,22 @@ func (p *KBPermissions) Check(kbID string, ownerTenantID uint64, required types.
 	}
 	if err := types.AuthorizeTenantAPIKeyKnowledgeBases(p.ctx, kbID); err != nil {
 		return false, err
+	}
+	if HasKBTaskGrant(p.ctx, kbID, ownerTenantID, required) {
+		return true, nil
+	}
+	key := kbMemberKey{id: kbID, tenantID: ownerTenantID}
+	member, cached := p.memberResults[key]
+	if !cached {
+		member.permission, member.handled, member.err = checkKBMemberAccess(
+			p.ctx, p.members, kbID, ownerTenantID, p.caller)
+		p.memberResults[key] = member
+	}
+	if member.err != nil {
+		return false, member.err
+	}
+	if member.handled {
+		return member.permission.IsValid() && member.permission.HasPermission(required), nil
 	}
 	if (p.caller.TenantID == ownerTenantID && required == types.OrgRoleViewer) ||
 		HasKBGrant(p.ctx, kbID, ownerTenantID, required) {

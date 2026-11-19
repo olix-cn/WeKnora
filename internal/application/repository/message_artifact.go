@@ -267,6 +267,10 @@ func (r *messageRepository) ListArtifactLibrary(
 	)
 	where = append(where, "s.tenant_id = ?", "s.kind = ''", "s.deleted_at IS NULL", "ma.deleted_at IS NULL")
 	args = append(args, q.TenantID)
+	if len(q.ExcludedSessionIDs) > 0 {
+		where = append(where, "s.id NOT IN ?")
+		args = append(args, q.ExcludedSessionIDs)
+	}
 	if q.UserID != "" {
 		where = append(where, "(s.user_id = ? OR s.user_id IS NULL OR s.user_id = '')")
 		args = append(args, q.UserID)
@@ -324,6 +328,10 @@ func (r *messageRepository) ListArtifactLibrary(
 		 AND s.tenant_id=g.tenant_id AND s.user_id=g.user_id`
 		now := time.Now().UTC()
 		args = append(args, q.TenantID, q.UserID, now, now)
+		if len(q.ExcludedSessionIDs) > 0 {
+			docs += " AND s.id NOT IN ?"
+			args = append(args, q.ExcludedSessionIDs)
+		}
 		if kw := strings.TrimSpace(q.Keyword); kw != "" {
 			docs += " AND LOWER(g.file_name) LIKE LOWER(?) ESCAPE ?"
 			args = append(args, "%"+escapeLikeKeyword(kw)+"%", likeEscapeChar)

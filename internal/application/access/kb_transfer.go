@@ -10,6 +10,42 @@ import (
 // KBTransferOperation selects the source and destination permission contract.
 type KBTransferOperation string
 
+// KBTransferPolicyLookup checks information-flow restrictions independently of
+// read/editor grants. Reading a restricted source is not permission to publish
+// its contents into a destination with a different audience.
+type KBTransferPolicyLookup interface {
+	CheckKBTransferPolicy(context.Context, string, uint64) error
+}
+
+// KBTransferFenceLookup executes one admitted transfer attempt inside a durable
+// policy fence. Implementations must retain failed/unknown attempts for recovery.
+type KBTransferFenceLookup interface {
+	RunKBTransferFenced(context.Context, uint64, string, string, string, func() error) error
+}
+
+// RunKBTransferFenced uses the live repository adapter, never a caller-supplied
+// scope. Legacy test adapters without policy storage keep their existing path.
+func RunKBTransferFenced(
+	ctx context.Context, lookup any, tenantID uint64, source, target, taskID string, run func() error,
+) error {
+	if fence, ok := lookup.(KBTransferFenceLookup); ok {
+		return fence.RunKBTransferFenced(ctx, tenantID, source, target, taskID, run)
+	}
+	return run()
+}
+
+// CheckKBTransferPolicy is used both before enqueue and by task workers. Until
+// audience-preserving copy semantics exist, restricted sources fail closed.
+func CheckKBTransferPolicy(ctx context.Context, lookup any, source *types.KnowledgeBase) error {
+	if source == nil || source.ID == "" || source.TenantID == 0 {
+		return ErrForbidden
+	}
+	if policy, ok := lookup.(KBTransferPolicyLookup); ok {
+		return policy.CheckKBTransferPolicy(ctx, source.ID, source.TenantID)
+	}
+	return nil
+}
+
 // Supported knowledge-base transfer operations.
 const (
 	KBTransferClone KBTransferOperation = "clone"

@@ -7,6 +7,7 @@ import (
 	"github.com/Tencent/WeKnora/internal/types"
 	"github.com/Tencent/WeKnora/internal/types/interfaces"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 var (
@@ -26,15 +27,26 @@ func NewAgentShareRepository(db *gorm.DB) interfaces.AgentShareRepository {
 
 // Create creates a new agent share record
 func (r *agentShareRepository) Create(ctx context.Context, share *types.AgentShare) error {
-	var count int64
-	r.db.WithContext(ctx).Model(&types.AgentShare{}).
-		Where("agent_id = ? AND source_tenant_id = ? AND organization_id = ? AND deleted_at IS NULL",
-			share.AgentID, share.SourceTenantID, share.OrganizationID).
-		Count(&count)
-	if count > 0 {
-		return ErrAgentShareAlreadyExists
-	}
-	return r.db.WithContext(ctx).Create(share).Error
+	return withKBSharingLock(ctx, r.db, share.SourceTenantID, func(tx *gorm.DB) error {
+		var agent types.CustomAgent
+		if err := tx.Where("id = ? AND tenant_id = ?", share.AgentID, share.SourceTenantID).
+			First(&agent).Error; err != nil {
+			return err
+		}
+		if err := requirePublicAgentScope(tx, &agent); err != nil {
+			return err
+		}
+		var count int64
+		if err := tx.Model(&types.AgentShare{}).
+			Where("agent_id = ? AND source_tenant_id = ? AND organization_id = ?",
+				share.AgentID, share.SourceTenantID, share.OrganizationID).Count(&count).Error; err != nil {
+			return err
+		}
+		if count > 0 {
+			return ErrAgentShareAlreadyExists
+		}
+		return tx.Omit(clause.Associations).Create(share).Error
+	})
 }
 
 // GetByID gets a share record by ID
@@ -68,7 +80,8 @@ func (r *agentShareRepository) GetByAgentAndOrg(ctx context.Context, agentID str
 // Update updates a share record
 func (r *agentShareRepository) Update(ctx context.Context, share *types.AgentShare) error {
 	return r.db.WithContext(ctx).Model(&types.AgentShare{}).
-		Where("id = ?", share.ID).Updates(share).Error
+		Where("id = ?", share.ID).
+		Updates(map[string]any{"permission": share.Permission, "updated_at": share.UpdatedAt}).Error
 }
 
 // Delete soft deletes a share record

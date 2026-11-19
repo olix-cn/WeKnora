@@ -204,6 +204,22 @@ func (s *resourceCatalogFileService) GetFileURL(ctx context.Context, filePath st
 	if err != nil {
 		return "", err
 	}
+	if guard, ok := s.catalog.(interfaces.ResourceMemberAccessGuard); ok {
+		owner, _ := types.TenantIDFromContext(ctx)
+		if isResource {
+			resource, err := s.catalog.Resolve(ctx, filePath)
+			if err != nil {
+				return "", err
+			}
+			if resource == nil {
+				return "", fmt.Errorf("resource not found")
+			}
+			owner = resource.TenantID
+		}
+		if err := guard.AuthorizeResourceMemberAccess(ctx, owner, filePath, true); err != nil {
+			return "", err
+		}
+	}
 	if isResource && s.externalURL != "" {
 		token, grantErr := s.catalog.CreateAccessGrant(ctx, filePath, 2*time.Hour)
 		if grantErr != nil {

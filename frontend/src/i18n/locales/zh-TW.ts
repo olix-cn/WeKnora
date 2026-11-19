@@ -6164,6 +6164,8 @@ export default {
       actions: {
         'kb.created': '建立知識庫',
         'kb.updated': '更新知識庫',
+        'kb.member_access_changed': '修改知識庫成員權限',
+        'kb.transfer_recovered': '確認知識庫轉存恢復',
         'kb.deleted': '刪除知識庫',
         'kb.duplicated': '複製知識庫',
         'kb.clone_started': '開始克隆',
@@ -8653,6 +8655,7 @@ export default {
     }
   },
   knowledgeBase: {
+    memberAccess: '存取權限',
     tagAddAction: '新增標籤',
     documentCount: '{count} 個文件',
     filters: '篩選',

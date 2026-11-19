@@ -13,6 +13,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/Tencent/WeKnora/internal/application/access"
 	"github.com/Tencent/WeKnora/internal/application/repository"
 	appsvc "github.com/Tencent/WeKnora/internal/application/service"
 	filesvc "github.com/Tencent/WeKnora/internal/application/service/file"
@@ -65,6 +66,7 @@ func newIMResourceStorageFixture(t *testing.T) *imResourceStorageFixture {
 		&types.ResourceBinding{}, &types.ResourceAccessGrant{},
 		&types.KnowledgeBase{}, &types.Knowledge{}, &types.Organization{},
 		&types.OrganizationTenantMember{}, &types.KnowledgeBaseShare{},
+		&types.KnowledgeBaseAccessPolicy{}, &types.KnowledgeBaseMemberGrant{},
 	))
 	for _, id := range []uint64{7, 9} {
 		require.NoError(t, db.Create(&types.Tenant{ID: id, Name: fmt.Sprintf("Workspace %d", id)}).Error)
@@ -168,6 +170,23 @@ func TestIMDeliveryDoesNotSignUnsharedResourcesAcrossPlatformsAndModes(t *testin
 	checkIMDeliveryModes(t, f, func(t *testing.T, content string) {
 		require.Equal(t, f.answer, content)
 	})
+}
+
+func TestIMSameWorkspaceFileCannotBypassRestrictedMemberPolicy(t *testing.T) {
+	f := newIMResourceStorageFixture(t)
+	require.NoError(t, f.db.AutoMigrate(&types.User{}, &types.TenantMember{}))
+	ctx := f.context()
+	require.NoError(t, f.db.Create(&types.KnowledgeBase{ID: "private", TenantID: 7}).Error)
+	require.NoError(t, f.db.Create(&types.Knowledge{ID: "private-doc", TenantID: 7, KnowledgeBaseID: "private"}).Error)
+	require.NoError(t, f.catalog.Bind(ctx, f.refs[0], types.ResourceOwnerKnowledge, "private-doc",
+		types.ResourceRelationExtractedImage))
+	require.NoError(t, f.db.Create(&types.KnowledgeBaseAccessPolicy{
+		KnowledgeBaseID: "private", TenantID: 7, Mode: types.KBAccessRestricted, Version: 1,
+	}).Error)
+	s := &Service{}
+	f.wire(s)
+	err := s.authorizeOutboundResource(ctx, f.tenant, nil, nil, f.refs[0])
+	require.ErrorIs(t, err, access.ErrForbidden)
 }
 
 func checkIMDeliveryModes(t *testing.T, f *imResourceStorageFixture, check func(*testing.T, string)) {

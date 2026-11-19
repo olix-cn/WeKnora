@@ -43,6 +43,41 @@ type kbShareService struct {
 	audit     interfaces.AuditLogService
 }
 
+// CheckKBMemberAccess keeps per-member policy on the same authorization adapter
+// used by HTTP, retrieval, IM and MCP. Real repositories implement this surface;
+// small legacy test doubles may omit it without changing legacy semantics.
+func (s *kbShareService) CheckKBMemberAccess(
+	ctx context.Context, kbID string, ownerTenantID uint64, caller types.Caller,
+) (types.OrgMemberRole, bool, error) {
+	if lookup, ok := s.kbRepo.(access.KBMemberLookup); ok {
+		return lookup.CheckKBMemberAccess(ctx, kbID, ownerTenantID, caller)
+	}
+	return "", false, nil
+}
+
+// CheckKBTransferPolicy retains the source's information-flow boundary when a
+// handler or worker uses the existing knowledge-base authorization adapter.
+func (s *kbShareService) CheckKBTransferPolicy(ctx context.Context, kbID string, tenantID uint64) error {
+	if policy, ok := s.kbRepo.(access.KBTransferPolicyLookup); ok {
+		return policy.CheckKBTransferPolicy(ctx, kbID, tenantID)
+	}
+	return nil
+}
+
+// RunKBTransferFenced delegates durable execution fencing to the policy store.
+func (s *kbShareService) RunKBTransferFenced(
+	ctx context.Context, tenantID uint64, source, target, taskID string, run func() error,
+) error {
+	return access.RunKBTransferFenced(ctx, s.kbRepo, tenantID, source, target, taskID, run)
+}
+
+func (s *kbShareService) memberPolicyAllowsSharedRead(
+	ctx context.Context, kbID string, ownerTenantID uint64, caller types.Caller,
+) (bool, error) {
+	permission, handled, err := s.CheckKBMemberAccess(ctx, kbID, ownerTenantID, caller)
+	return err == nil && (!handled || (permission.IsValid() && permission.HasPermission(types.OrgRoleViewer))), err
+}
+
 // NewKBShareService creates a new knowledge base share service
 func NewKBShareService(
 	shareRepo interfaces.KBShareRepository,
@@ -85,6 +120,17 @@ func (s *kbShareService) ShareKnowledgeBase(ctx context.Context, kbID string, or
 	}
 	if kb.TenantID != tenantID {
 		return nil, ErrNotKBOwner
+	}
+	// External sharing is never a way to disclose a member-restricted KB,
+	// including when the sharer is a workspace administrator.
+	if lookup, ok := s.kbRepo.(access.KBMemberLookup); ok {
+		_, blocked, err := lookup.CheckKBMemberAccess(ctx, kb.ID, kb.TenantID, types.Caller{})
+		if err != nil {
+			return nil, err
+		}
+		if blocked {
+			return nil, ErrSharePermissionDenied
+		}
 	}
 
 	_, err = s.orgRepo.GetByID(ctx, orgID)
@@ -299,6 +345,15 @@ func (s *kbShareService) ListSharedKnowledgeBases(ctx context.Context, tenantID 
 		}
 
 		kbID := share.KnowledgeBase.ID
+		caller := types.CallerFromContext(ctx)
+		caller.TenantID, caller.Role = tenantID, callerTenantRole
+		allowed, err := s.memberPolicyAllowsSharedRead(ctx, kbID, share.KnowledgeBase.TenantID, caller)
+		if err != nil {
+			return nil, err
+		}
+		if !allowed {
+			continue
+		}
 
 		tm, err := s.orgRepo.GetTenantMember(ctx, share.OrganizationID, tenantID)
 		if err != nil {
@@ -386,6 +441,15 @@ func (s *kbShareService) ListSharedKnowledgeBasesInOrganization(ctx context.Cont
 		effective = applyTenantRoleCap(effective, callerTenantRole)
 
 		kb := share.KnowledgeBase
+		caller := types.CallerFromContext(ctx)
+		caller.TenantID, caller.Role = tenantID, callerTenantRole
+		allowed, err := s.memberPolicyAllowsSharedRead(ctx, kb.ID, kb.TenantID, caller)
+		if err != nil {
+			return nil, err
+		}
+		if !allowed {
+			continue
+		}
 		switch kb.Type {
 		case types.KnowledgeBaseTypeDocument:
 			if count, err := s.kgRepo.CountKnowledgeByKnowledgeBaseID(ctx, share.SourceTenantID, kb.ID); err == nil {
@@ -442,6 +506,15 @@ func (s *kbShareService) ListSharedKnowledgeBaseIDsByOrganizations(ctx context.C
 			kbID = share.KnowledgeBase.ID
 		}
 		if kbID != "" {
+			caller := types.CallerFromContext(ctx)
+			caller.TenantID = tenantID
+			allowed, err := s.memberPolicyAllowsSharedRead(ctx, kbID, share.SourceTenantID, caller)
+			if err != nil {
+				return nil, err
+			}
+			if !allowed {
+				continue
+			}
 			byOrg[share.OrganizationID] = append(byOrg[share.OrganizationID], kbID)
 		}
 	}
@@ -488,6 +561,15 @@ func (s *kbShareService) CheckTenantKBPermission(ctx context.Context, kbID strin
 	isShared := false
 
 	for _, share := range shares {
+		caller := types.CallerFromContext(ctx)
+		caller.TenantID, caller.Role = callerTenantID, callerTenantRole
+		allowed, err := s.memberPolicyAllowsSharedRead(ctx, kbID, share.SourceTenantID, caller)
+		if err != nil {
+			return "", false, err
+		}
+		if !allowed {
+			continue
+		}
 		// A share lapses with its organization and with its source tenant's
 		// membership (see kbShareSourceMemberJoin).
 		if share.Organization == nil {

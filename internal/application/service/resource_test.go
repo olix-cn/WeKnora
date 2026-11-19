@@ -18,6 +18,7 @@ func newResourceCatalogForTest(t *testing.T) (interfaces.ResourceCatalog, *gorm.
 	db, err := gorm.Open(sqlite.Open("file:"+t.Name()+"?mode=memory&cache=shared"), &gorm.Config{})
 	require.NoError(t, err)
 	require.NoError(t, db.AutoMigrate(&types.StoredResource{}, &types.ResourceBinding{}, &types.ResourceAccessGrant{}))
+	require.NoError(t, db.AutoMigrate(&types.KnowledgeBaseAccessPolicy{}, &types.KnowledgeBaseMemberGrant{}))
 	return NewResourceCatalog(repository.NewResourceRepository(db)), db
 }
 

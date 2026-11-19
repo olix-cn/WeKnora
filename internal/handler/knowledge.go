@@ -120,6 +120,26 @@ func NewKnowledgeHandler(
 // requireKBOwnershipOrAdmin enforces the same "KB creator OR Admin+" matrix
 // used by OwnedKBOrAdmin for routes whose KB id comes from the request body.
 func (h *KnowledgeHandler) requireKBOwnershipOrAdmin(c *gin.Context, kbID string) error {
+	if lookup := access.MemberLookup(h.kbShareService); lookup != nil {
+		ctx := c.Request.Context()
+		kb, err := h.kbService.GetKnowledgeBaseByID(ctx, kbID)
+		if err != nil {
+			return kbAccessHTTPError(err)
+		}
+		if kb == nil {
+			return errors.NewNotFoundError("knowledge base not found")
+		}
+		permission, handled, err := lookup.CheckKBMemberAccess(ctx, kb.ID, kb.TenantID, types.CallerFromContext(ctx))
+		if err != nil {
+			return errors.NewServiceUnavailableError("cannot verify knowledge base member access")
+		}
+		if handled {
+			if permission.IsValid() && permission.HasPermission(types.OrgRoleEditor) {
+				return nil
+			}
+			return errors.NewForbiddenError("insufficient knowledge base permission")
+		}
+	}
 	evalErr := middleware.EvaluateOwnershipOrRole(
 		c.Request.Context(),
 		h.cfg,
@@ -3126,12 +3146,18 @@ func (h *KnowledgeHandler) MoveKnowledge(c *gin.Context) {
 		return
 	}
 
+	if err := access.CheckKBTransferPolicy(ctx, h.kbShareService, sourceKB); err != nil {
+		_ = c.Error(kbAccessHTTPError(err))
+		return
+	}
 	// Resolve explicit write grants independently for both body IDs.
-	if _, err := resolveHandlerKBAccessFor(c, req.SourceKBID, h.kbService, nil, nil, types.OrgRoleEditor); err != nil {
+	if _, err := resolveHandlerKBAccessFor(c, req.SourceKBID, h.kbService,
+		h.kbShareService, nil, types.OrgRoleEditor); err != nil {
 		_ = c.Error(err)
 		return
 	}
-	if _, err := resolveHandlerKBAccessFor(c, req.TargetKBID, h.kbService, nil, nil, types.OrgRoleEditor); err != nil {
+	if _, err := resolveHandlerKBAccessFor(c, req.TargetKBID, h.kbService,
+		h.kbShareService, nil, types.OrgRoleEditor); err != nil {
 		_ = c.Error(err)
 		return
 	}

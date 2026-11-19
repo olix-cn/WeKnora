@@ -293,6 +293,13 @@ func (s *embedChannelService) chunkAllowedForEmbed(
 	if ch == nil || chunk.TenantID != ch.TenantID {
 		return false
 	}
+	if guard, ok := s.chunkService.(interface {
+		CheckChunkMemberAccess(context.Context, string, uint64) error
+	}); ok {
+		if err := guard.CheckChunkMemberAccess(ctx, chunk.KnowledgeBaseID, chunk.TenantID); err != nil {
+			return false
+		}
+	}
 	allowedKBs := s.resolveKnowledgeBaseIDs(ctx, ch)
 	if len(allowedKBs) > 0 {
 		for _, kbID := range allowedKBs {

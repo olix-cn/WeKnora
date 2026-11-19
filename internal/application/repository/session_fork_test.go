@@ -20,6 +20,8 @@ func newSessionRepositoryForForkTest(t *testing.T) (interfaces.SessionRepository
 	require.NoError(t, err)
 	require.NoError(t, db.AutoMigrate(
 		&types.Session{}, &types.Message{}, &types.MessageArtifactRecord{}, &types.ForkSnapshotLease{},
+		&sessionKnowledgeSource{},
+		&sessionKnowledgeRevision{},
 	))
 
 	return NewSessionRepository(db), db
@@ -28,6 +30,10 @@ func newSessionRepositoryForForkTest(t *testing.T) (interfaces.SessionRepository
 func TestCreateForkedPersistsSessionAndCopiedMessages(t *testing.T) {
 	repo, db := newSessionRepositoryForForkTest(t)
 	ctx := context.Background()
+	require.NoError(t, db.Create(&sessionKnowledgeSource{SessionID: "src", KnowledgeBaseID: "removed-reference"}).Error)
+	require.NoError(t, db.Create(&sessionKnowledgeRevision{
+		SessionID: "src", Revision: 1, LegacyUnverified: true,
+	}).Error)
 	createdAt := time.Date(2026, 9, 10, 9, 0, 0, 0, time.UTC)
 
 	session := &types.Session{
@@ -51,6 +57,12 @@ func TestCreateForkedPersistsSessionAndCopiedMessages(t *testing.T) {
 	}
 
 	require.NoError(t, repo.CreateForked(ctx, session, messages))
+	var inherited []sessionKnowledgeSource
+	require.NoError(t, db.Where("session_id = ?", session.ID).Find(&inherited).Error)
+	require.Equal(t, []sessionKnowledgeSource{{SessionID: session.ID, KnowledgeBaseID: "removed-reference"}}, inherited)
+	var revision sessionKnowledgeRevision
+	require.NoError(t, db.Where("session_id = ?", session.ID).Take(&revision).Error)
+	require.True(t, revision.LegacyUnverified, "fork cannot declassify an unverified legacy transcript")
 
 	got, err := repo.GetByID(ctx, 1, "fork-1")
 	require.NoError(t, err)

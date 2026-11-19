@@ -943,6 +943,7 @@ export default {
     sharedTooltip: 'Accessed from an external workspace via a shared space'
   },
   knowledgeBase: {
+    memberAccess: 'Access permissions',
     tagAddAction: 'Add tags',
     documentCount: '{count} document | {count} documents',
     filters: 'Filters',
@@ -3783,6 +3784,8 @@ export default {
       actions: {
         'kb.created': 'Knowledge base created',
         'kb.updated': 'Knowledge base updated',
+        'kb.member_access_changed': 'Knowledge base member permissions changed',
+        'kb.transfer_recovered': 'Knowledge base transfer recovery confirmed',
         'kb.deleted': 'Knowledge base deleted',
         'kb.duplicated': 'Knowledge base duplicated',
         'kb.clone_started': 'Clone started',

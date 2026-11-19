@@ -93,6 +93,10 @@ func authorizeLoadedKnowledge(
 	if !searchTargets.ContainsKB(knowledge.KnowledgeBaseID) {
 		return nil, fmt.Errorf("knowledge base %s is not within the current Agent scope", knowledge.KnowledgeBaseID)
 	}
+	if err := checkKnowledgeMemberAccess(ctx, knowledgeService,
+		knowledge.KnowledgeBaseID, knowledge.TenantID); err != nil {
+		return nil, err
+	}
 	allowed, err := searchTargetsAllowKnowledgeID(
 		ctx, searchTargets, knowledge.ID, knowledge.KnowledgeBaseID, knowledgeService,
 	)
@@ -136,6 +140,9 @@ func authorizeChunkInSearchTargets(
 	if !searchTargets.ContainsKB(chunk.KnowledgeBaseID) {
 		return nil, fmt.Errorf("knowledge base %s is not within the current Agent scope", chunk.KnowledgeBaseID)
 	}
+	if err := checkKnowledgeMemberAccess(ctx, knowledgeService, chunk.KnowledgeBaseID, chunk.TenantID); err != nil {
+		return nil, err
+	}
 	allowed, err := searchTargetsAllowKnowledgeID(
 		ctx, searchTargets, chunk.KnowledgeID, chunk.KnowledgeBaseID, knowledgeService,
 	)
@@ -146,6 +153,17 @@ func authorizeChunkInSearchTargets(
 		return nil, fmt.Errorf("chunk %s is not within the current @mention scope", chunk.ID)
 	}
 	return chunk, nil
+}
+
+func checkKnowledgeMemberAccess(
+	ctx context.Context, service interfaces.KnowledgeService, kbID string, tenantID uint64,
+) error {
+	if lookup, ok := service.(interface {
+		CheckKnowledgeMemberAccess(context.Context, string, uint64) error
+	}); ok {
+		return lookup.CheckKnowledgeMemberAccess(ctx, kbID, tenantID)
+	}
+	return nil
 }
 
 // validateKnowledgeBaseIDsInSearchTargets rejects hallucinated, stale, or

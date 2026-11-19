@@ -287,14 +287,16 @@ func SanitizeClientSessionDescription(incoming, existing string) string {
 // (e.g. "feishu", "wechat"). IM and embed sources are also Admin+ only.
 // AgentID currently only filters sessions that have an IM channel mapping.
 type SessionListQuery struct {
-	Kind     string
-	TenantID uint64
-	UserID   string
-	Keyword  string
-	Source   string
-	AgentID  string
-	Page     int
-	PageSize int
+	// ExcludedSessionIDs is populated only by the service's live policy check.
+	ExcludedSessionIDs []string `json:"-"`
+	Kind               string
+	TenantID           uint64
+	UserID             string
+	Keyword            string
+	Source             string
+	AgentID            string
+	Page               int
+	PageSize           int
 }
 
 // SessionListItem is a session row enriched with its IM origin (when any).

@@ -51,6 +51,12 @@ var versionedSQLiteTables = []string{
 	"document_datasets",
 	"document_generations",
 	"document_template_versions",
+	"knowledge_base_access_policies",
+	"knowledge_base_member_grants",
+	"knowledge_base_transfer_fences",
+	"session_knowledge_revisions",
+	"session_knowledge_sources",
+	"session_knowledge_evidence",
 }
 
 // versionedSQLiteColumns maps each existing table to the columns that the
@@ -92,7 +98,7 @@ var versionedSQLiteColumns = map[string][]string{
 	}, // 000028
 }
 
-const expectedSQLiteMigrationVersion = 55
+const expectedSQLiteMigrationVersion = 57
 
 func TestSQLiteMigrationsCreateVersionedSchema(t *testing.T) {
 	repoRoot := sqliteRepoRoot(t)

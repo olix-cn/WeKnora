@@ -91,6 +91,11 @@ func ResolveKBFile(
 	if !bound {
 		return empty, ErrForbidden
 	}
+	if guard, ok := catalog.(interfaces.ResourceMemberAccessGuard); ok {
+		if err := guard.AuthorizeResourceMemberAccess(ctx, owner, reference, false); err != nil {
+			return empty, err
+		}
+	}
 	file.OwnerTenantID = owner
 	return file, nil
 }
@@ -208,6 +213,11 @@ func AuthorizeMessageFile(ctx context.Context, message *types.Message, reference
 	if owner == 0 {
 		return FileAccess{}, ErrForbidden
 	}
+	if guard, ok := catalog.(interfaces.ResourceMemberAccessGuard); ok {
+		if err := guard.AuthorizeResourceMemberAccess(ctx, owner, reference, false); err != nil {
+			return FileAccess{}, err
+		}
+	}
 	if message.Role == "user" && owner != caller.TenantID {
 		return FileAccess{}, ErrForbidden
 	}
@@ -284,6 +294,15 @@ func ResolveMessageArtifact(ctx context.Context, message *types.Message, index i
 	file, resource, err := resolveFile(ctx, catalog, artifact.URL)
 	if err != nil {
 		return FileAccess{}, err
+	}
+	owner := caller.TenantID
+	if resource != nil {
+		owner = resource.TenantID
+	}
+	if guard, ok := catalog.(interfaces.ResourceMemberAccessGuard); ok {
+		if err := guard.AuthorizeResourceMemberAccess(ctx, owner, artifact.URL, false); err != nil {
+			return FileAccess{}, err
+		}
 	}
 	if (resource != nil && resource.TenantID == caller.TenantID) ||
 		(resource == nil && secutils.ValidateStoragePathTenant(file.Path, caller.TenantID) == nil) {

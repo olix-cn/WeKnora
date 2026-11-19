@@ -42,6 +42,8 @@ const SYSTEM_GLOBAL_AUDIT_ACTION_LABELS_EN: Record<string, string> = {
 const KB_ACTIVITY_ACTION_LABELS_EN: Record<string, string> = {
   'kb.created': 'Knowledge base created',
   'kb.updated': 'Knowledge base updated',
+  'kb.member_access_changed': 'Knowledge base member permissions changed',
+  'kb.transfer_recovered': 'Knowledge base transfer recovery confirmed',
   'kb.deleted': 'Knowledge base deleted',
   'kb.duplicated': 'Knowledge base duplicated',
   'kb.clone_started': 'Clone started',

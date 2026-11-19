@@ -6163,6 +6163,8 @@ export default {
       actions: {
         'kb.created': 'База знаний создана',
         'kb.updated': 'База знаний обновлена',
+        'kb.member_access_changed': 'Права участников базы знаний изменены',
+        'kb.transfer_recovered': 'Восстановление переноса базы знаний подтверждено',
         'kb.deleted': 'База знаний удалена',
         'kb.duplicated': 'База знаний скопирована',
         'kb.clone_started': 'Клонирование начато',
@@ -8652,6 +8654,7 @@ export default {
     }
   },
   knowledgeBase: {
+    memberAccess: 'Права доступа',
     tagAddAction: 'Добавить теги',
     documentCount: 'Документов: {count}',
     filters: 'Фильтры',

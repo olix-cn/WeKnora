@@ -114,6 +114,16 @@ func ResolveKB(ctx context.Context, request KBRequest, kb *types.KnowledgeBase, 
 			EffectiveTenantID: kb.TenantID, Permission: permission, operationPermission: required,
 		}, nil
 	}
+	permission, handled, err := checkKBMemberAccess(ctx, MemberLookup(shares), kb.ID, kb.TenantID, request.Caller)
+	if err != nil {
+		return nil, err
+	}
+	if handled {
+		if !permission.IsValid() || !required.IsValid() || !permission.HasPermission(required) {
+			return nil, ErrForbidden
+		}
+		return grant(permission)
+	}
 	if kb.TenantID == request.Caller.TenantID {
 		return grant(types.OrgRoleAdmin)
 	}

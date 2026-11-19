@@ -38,6 +38,11 @@ func (s *Service) authorizeOutboundResource(
 	if owner == 0 {
 		return access.ErrForbidden
 	}
+	if guard, ok := s.resourceCatalog.(interfaces.ResourceMemberAccessGuard); ok {
+		if err := guard.AuthorizeResourceMemberAccess(ctx, owner, reference, false); err != nil {
+			return err
+		}
+	}
 	if owner == tenant.ID {
 		return secutils.ValidateStoragePathTenant(physical, owner)
 	}

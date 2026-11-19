@@ -114,6 +114,9 @@ func (s *sessionService) KnowledgeQA(
 	if err != nil {
 		return fmt.Errorf("build search targets: %w", err)
 	}
+	if err := s.registerTurnKnowledgeSources(ctx, req, searchTargets); err != nil {
+		return fmt.Errorf("record admitted knowledge sources: %w", err)
+	}
 
 	// Create chat management object with session settings
 	logger.Infof(
@@ -453,7 +456,6 @@ func (s *sessionService) buildSearchTargets(
 	knowledgeIDs []string,
 	tagScopes []types.TagScope,
 ) (types.SearchTargets, error) {
-	caller := types.CallerFromContext(ctx)
 	var targets types.SearchTargets
 	tagIDsByKB := mergeTagScopesByKB(tagScopes)
 
@@ -488,7 +490,9 @@ func (s *sessionService) buildSearchTargets(
 			return kbTenantMap[kbID]
 		}
 		kb := kbByID[kbID]
-		kbTenantMap[kbID] = caller.TenantID
+		// A missing row or failed batch lookup does not establish access to
+		// a member-restricted KB in the caller's own workspace.
+		kbTenantMap[kbID] = 0
 		if kb != nil {
 			kbTenantMap[kbID] = 0
 			if allowed, err := permissions.Check(kbID, kb.TenantID, types.OrgRoleViewer); err == nil && allowed {

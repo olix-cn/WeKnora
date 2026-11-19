@@ -70,14 +70,14 @@ func RegisterKnowledgeRoutes(r *gin.RouterGroup, handler *handler.KnowledgeHandl
 	kb := g.apiKeyGroup(r.Group("/knowledge-bases/:id/knowledge"), apiKeyIngest(apiKeyFullAccess()))
 	kbRead := kb.With(apiKeyRetrieve(apiKeyFullAccess()))
 	{
-		kb.POST("/file", g.OwnedKBOrAdmin(), g.KBAccessWrite("id"), handler.CreateKnowledgeFromFile)
-		kb.POST("/url", g.OwnedKBOrAdmin(), g.KBAccessWrite("id"), handler.CreateKnowledgeFromURL)
-		kb.POST("/manual", g.OwnedKBOrAdmin(), g.KBAccessWrite("id"), handler.CreateManualKnowledge)
+		kb.POST("/file", g.OwnedKBContentOrAdmin(), g.KBAccessWrite("id"), handler.CreateKnowledgeFromFile)
+		kb.POST("/url", g.OwnedKBContentOrAdmin(), g.KBAccessWrite("id"), handler.CreateKnowledgeFromURL)
+		kb.POST("/manual", g.OwnedKBContentOrAdmin(), g.KBAccessWrite("id"), handler.CreateManualKnowledge)
 		kbRead.GET("", g.Viewer(), g.KBAccessRead("id"), handler.ListKnowledge)
 		// 原始文件下载沿用单文件下载的 Contributor + Editor 权限边界。
 		kbRead.POST("/batch-download", g.Contributor(), g.KBAccessWrite("id"), handler.BatchDownloadKnowledge)
 		kbRead.GET("/folders", g.Viewer(), g.KBAccessRead("id"), handler.ListKnowledgeFolders)
-		kb.PUT("/folders", g.OwnedKBOrAdmin(), g.KBAccessWrite("id"), handler.RenameKnowledgeFolder)
+		kb.PUT("/folders", g.OwnedKBContentOrAdmin(), g.KBAccessWrite("id"), handler.RenameKnowledgeFolder)
 		// Clearing all contents under a KB is a destructive op; gate
 		// behind Admin instead of Contributor.
 		kb.With(apiKeyFullAccess()).DELETE("", g.Admin(), g.KBAccessWrite("id"), handler.ClearKnowledgeBaseContents)
@@ -107,7 +107,8 @@ func RegisterKnowledgeRoutes(r *gin.RouterGroup, handler *handler.KnowledgeHandl
 	// may call it; JWT callers need Contributor+ with KB write access, and
 	// the handler re-validates ownership before enqueueing.
 	kbRebuild := g.apiKeyGroup(r.Group("/knowledge-bases/:id"), apiKeyIngest(apiKeyFullAccess()))
-	kbRebuild.POST("/rebuild-index", g.OwnedKBOrAdmin(), g.KBAccessWrite("id"), handler.RebuildKnowledgeBaseIndex)
+	kbRebuild.POST("/rebuild-index", g.OwnedKBContentOrAdmin(), g.KBAccessWrite("id"),
+		handler.RebuildKnowledgeBaseIndex)
 
 	// 知识路由组（URL :id is a knowledge id; the guard walks it to the parent KB）
 	kgrp := r.Group("/knowledge")
@@ -183,20 +184,22 @@ func RegisterFAQRoutes(r *gin.RouterGroup, handler *handler.FAQHandler, g *rbacG
 		faqRead.GET("/entries", g.Viewer(), g.KBAccessRead("id"), handler.ListEntries)
 		faqRead.GET("/entries/export", g.Viewer(), g.KBAccessRead("id"), handler.ExportEntries)
 		faqRead.GET("/entries/:entry_id", g.Viewer(), g.KBAccessRead("id"), handler.GetEntry)
-		faq.POST("/entries", g.OwnedKBOrAdmin(), g.KBAccessWrite("id"), handler.UpsertEntries)
-		faq.PATCH("/entries", g.OwnedKBOrAdmin(), g.KBAccessWrite("id"), handler.PatchEntriesBatch)
-		faq.POST("/entry", g.OwnedKBOrAdmin(), g.KBAccessWrite("id"), handler.CreateEntry)
-		faq.PUT("/entries/:entry_id", g.OwnedKBOrAdmin(), g.KBAccessWrite("id"), handler.UpdateEntry)
-		faq.POST("/entries/:entry_id/similar-questions", g.OwnedKBOrAdmin(), g.KBAccessWrite("id"), handler.AddSimilarQuestions)
+		faq.POST("/entries", g.OwnedKBContentOrAdmin(), g.KBAccessWrite("id"), handler.UpsertEntries)
+		faq.PATCH("/entries", g.OwnedKBContentOrAdmin(), g.KBAccessWrite("id"), handler.PatchEntriesBatch)
+		faq.POST("/entry", g.OwnedKBContentOrAdmin(), g.KBAccessWrite("id"), handler.CreateEntry)
+		faq.PUT("/entries/:entry_id", g.OwnedKBContentOrAdmin(), g.KBAccessWrite("id"), handler.UpdateEntry)
+		faq.POST("/entries/:entry_id/similar-questions", g.OwnedKBContentOrAdmin(), g.KBAccessWrite("id"),
+			handler.AddSimilarQuestions)
 		// Unified batch update API - supports is_enabled, is_recommended, tag_id
-		faq.PUT("/entries/fields", g.OwnedKBOrAdmin(), g.KBAccessWrite("id"), handler.UpdateEntryFieldsBatch)
-		faq.PUT("/entries/tags", g.OwnedKBOrAdmin(), g.KBAccessWrite("id"), handler.UpdateEntryTagBatch)
-		faq.DELETE("/entries", g.OwnedKBOrAdmin(), g.KBAccessWrite("id"), handler.DeleteEntries)
+		faq.PUT("/entries/fields", g.OwnedKBContentOrAdmin(), g.KBAccessWrite("id"), handler.UpdateEntryFieldsBatch)
+		faq.PUT("/entries/tags", g.OwnedKBContentOrAdmin(), g.KBAccessWrite("id"), handler.UpdateEntryTagBatch)
+		faq.DELETE("/entries", g.OwnedKBContentOrAdmin(), g.KBAccessWrite("id"), handler.DeleteEntries)
 		// Search is a read route: scoped API keys may call it with retrieve
 		// even though POST is otherwise an unsafe method.
 		faqRead.POST("/search", g.Viewer(), g.KBAccessRead("id"), handler.SearchFAQ)
 		// FAQ import result display status
-		faq.PUT("/import/last-result/display", g.OwnedKBOrAdmin(), g.KBAccessWrite("id"), handler.UpdateLastImportResultDisplayStatus)
+		faq.PUT("/import/last-result/display", g.OwnedKBContentOrAdmin(), g.KBAccessWrite("id"),
+			handler.UpdateLastImportResultDisplayStatus)
 	}
 	// FAQ import progress route (outside of knowledge-base scope) — Viewer+.
 	// Scoped API keys that can ingest (they start the import) or retrieve may
@@ -335,9 +338,9 @@ func RegisterKnowledgeTagRoutes(r *gin.RouterGroup, tagHandler *handler.TagHandl
 		// for the duration of the handler — so the handler no longer
 		// needs its own effectiveCtxForKB helper.
 		kbTagsRead.GET("", g.Viewer(), g.KBAccessRead("id"), tagHandler.ListTags)
-		kbTags.POST("", g.OwnedKBOrAdmin(), g.KBAccessWrite("id"), tagHandler.CreateTag)
-		kbTags.PUT("/:tag_id", g.OwnedKBOrAdmin(), g.KBAccessWrite("id"), tagHandler.UpdateTag)
-		kbTags.DELETE("/:tag_id", g.OwnedKBOrAdmin(), g.KBAccessWrite("id"), tagHandler.DeleteTag)
+		kbTags.POST("", g.OwnedKBContentOrAdmin(), g.KBAccessWrite("id"), tagHandler.CreateTag)
+		kbTags.PUT("/:tag_id", g.OwnedKBContentOrAdmin(), g.KBAccessWrite("id"), tagHandler.UpdateTag)
+		kbTags.DELETE("/:tag_id", g.OwnedKBContentOrAdmin(), g.KBAccessWrite("id"), tagHandler.DeleteTag)
 	}
 }
 

@@ -6163,6 +6163,8 @@ export default {
       actions: {
         'kb.created': '지식 베이스 생성',
         'kb.updated': '지식 베이스 업데이트',
+        'kb.member_access_changed': '지식 베이스 구성원 권한 변경',
+        'kb.transfer_recovered': '지식 베이스 전송 복구 확인',
         'kb.deleted': '지식 베이스 삭제',
         'kb.duplicated': '지식 베이스 복제',
         'kb.clone_started': '복제 시작',
@@ -8652,6 +8654,7 @@ export default {
     }
   },
   knowledgeBase: {
+    memberAccess: '접근 권한',
     tagAddAction: '태그 추가',
     documentCount: '문서 {count}개',
     filters: '필터',

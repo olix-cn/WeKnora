@@ -12,6 +12,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 
+	"github.com/Tencent/WeKnora/internal/application/access"
 	"github.com/Tencent/WeKnora/internal/errors"
 	"github.com/Tencent/WeKnora/internal/logger"
 	"github.com/Tencent/WeKnora/internal/storageurl"
@@ -217,6 +218,10 @@ func (h *MessageHandler) LoadMessages(c *gin.Context) {
 		logger.Infof(ctx, "Getting recent messages for session, session ID: %s, limit: %d", sessionID, limitInt)
 		messages, err := h.MessageService.GetRecentMessagesBySession(ctx, sessionID, limitInt)
 		if err != nil {
+			if stderrors.Is(err, access.ErrForbidden) {
+				_ = c.Error(errors.NewForbiddenError("conversation knowledge access has been revoked"))
+				return
+			}
 			if stderrors.Is(err, errors.ErrSessionNotFound) {
 				// PR #1309 plumbed user-scope into the message service's
 				// session existence check; non-owner / wrong-tenant lookups
@@ -261,6 +266,10 @@ func (h *MessageHandler) LoadMessages(c *gin.Context) {
 		sessionID, beforeTime.Format(time.RFC3339Nano), limitInt)
 	messages, err := h.MessageService.GetMessagesBySessionBeforeTime(ctx, sessionID, beforeTime, limitInt)
 	if err != nil {
+		if stderrors.Is(err, access.ErrForbidden) {
+			_ = c.Error(errors.NewForbiddenError("conversation knowledge access has been revoked"))
+			return
+		}
 		if stderrors.Is(err, errors.ErrSessionNotFound) {
 			// See note on the GetRecentMessagesBySession path above.
 			logger.Warnf(ctx, "Session not found, ID: %s", sessionID)

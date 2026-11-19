@@ -1848,7 +1848,7 @@ const docTemplate = `{
         },
         "/auth/login": {
             "post": {
-                "description": "用户登录并获取访问令牌",
+                "description": "使用用户名或邮箱及密码登录并获取访问令牌",
                 "consumes": [
                     "application/json"
                 ],
@@ -6074,6 +6074,96 @@ const docTemplate = `{
                 }
             }
         },
+        "/knowledge-base-transfers": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "知识库成员权限"
+                ],
+                "summary": "查看本空间未解决的转存尝试",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "最大 100",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/knowledge-base-transfers/recover": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "知识库成员权限"
+                ],
+                "summary": "确认恢复已停止且核对完成的失败转存尝试",
+                "parameters": [
+                    {
+                        "description": "精确任务坐标与人工核对确认",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Tencent_WeKnora_internal_types.KBTransferRecovery"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/knowledge-bases": {
             "get": {
                 "security": [
@@ -8992,6 +9082,194 @@ const docTemplate = `{
                     "target": "knowledge_base.get"
                 },
                 "x-agent-hint": "Imports a user-provided public web page or file URL as a source document; ingests asynchronously. Check knowledge.get_parse_progress."
+            }
+        },
+        "/knowledge-bases/{id}/member-access": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "知识库成员权限"
+                ],
+                "summary": "获取知识库成员访问策略",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "知识库 ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/internal_handler.DataResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/github_com_Tencent_WeKnora_internal_types.KBAccessPolicyView"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "知识库成员权限"
+                ],
+                "summary": "原子替换知识库成员访问策略",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "知识库 ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "完整名单与 expected_version",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Tencent_WeKnora_internal_types.KBAccessPolicyUpdate"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/internal_handler.DataResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/github_com_Tencent_WeKnora_internal_types.KBAccessPolicyView"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/knowledge-bases/{id}/member-access/candidates": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "知识库成员权限"
+                ],
+                "summary": "搜索可授权的有效空间成员",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "知识库 ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "用户名搜索",
+                        "name": "q",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "页码",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页 1–100",
+                        "name": "page_size",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
             }
         },
         "/knowledge-bases/{id}/move-targets": {
@@ -22306,23 +22584,9 @@ const docTemplate = `{
                 "x-agent-hint": "Lists platform users across workspaces, including account enabled state and system administrator flag. Follow has_more using offset + limit. tenant_id is the home workspace, not a list of memberships. No search or role filter is supported: paginate before drawing conclusions."
             }
         },
-        "/system/admin/users/workspaces": {
-            "get": {
-                "tags": ["System Admin"],
-                "summary": "List workspace choices for administrator user creation",
-                "parameters": [
-                    {"name": "keyword", "in": "query", "type": "string"},
-                    {"name": "page", "in": "query", "type": "integer"}
-                ],
-                "responses": {
-                    "200": {"description": "Workspace ID and name choices (100 per page)", "schema": {"type": "object", "additionalProperties": true}},
-                    "403": {"description": "System administrator required"}
-                }
-            }
-        },
         "/system/admin/users/create": {
             "post": {
-                "description": "Provision a new local user account (SystemAdmin only).\nWhen ` + "`" + `password` + "`" + ` is omitted or null, a cryptographically random\npassword is generated (OIDC-style crypto/rand + base64url)\nand returned once in the response body. Any provided value,\nincluding empty string, is policy-checked. Tenant provisioning\nfollows the shared auth.default_tenant_mode policy.",
+                "description": "Provision a new local user account (SystemAdmin only).\nWhen ` + "`" + `password` + "`" + ` is omitted or null, a cryptographically random\npassword is generated (OIDC-style crypto/rand + base64url)\nand returned once in the response body. Any provided value,\nincluding empty string, is policy-checked. Tenant provisioning\nuses default_tenant_id and role when supplied, atomically creating active membership without invitation.\nLegacy requests without these fields follow auth.default_tenant_mode.",
                 "consumes": [
                     "application/json"
                 ],
@@ -22483,6 +22747,47 @@ const docTemplate = `{
                     },
                     "404": {
                         "description": "User not found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/system/admin/users/workspaces": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "System Admin"
+                ],
+                "summary": "List workspace choices for administrator user creation",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Workspace name search",
+                        "name": "keyword",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Page (100 entries per page)",
+                        "name": "page",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
                         "schema": {
                             "type": "object",
                             "additionalProperties": true
@@ -26393,7 +26698,8 @@ const docTemplate = `{
                 2103,
                 2200,
                 2201,
-                2300
+                2300,
+                2400
             ],
             "x-enum-varnames": [
                 "ErrBadRequest",
@@ -26419,7 +26725,8 @@ const docTemplate = `{
                 "ErrAgentInvalidTemperature",
                 "ErrVectorStoreBindingInvalid",
                 "ErrVectorStoreUnavailable",
-                "ErrModelInUse"
+                "ErrModelInUse",
+                "ErrImportPrerequisiteMissing"
             ]
         },
         "github_com_Tencent_WeKnora_internal_handler_dto.CredentialFieldMetadata": {
@@ -27541,19 +27848,17 @@ const docTemplate = `{
             ],
             "properties": {
                 "default_tenant_id": {
-                    "description": "Existing active default workspace; must be supplied together with role.",
+                    "description": "Optional for legacy clients. When present, create directly in an existing workspace.",
                     "type": "integer"
-                },
-                "role": {
-                    "description": "Workspace role only; does not grant system administration.",
-                    "type": "string",
-                    "enum": ["viewer", "contributor", "admin", "owner"]
                 },
                 "email": {
                     "type": "string"
                 },
                 "password": {
                     "type": "string"
+                },
+                "role": {
+                    "$ref": "#/definitions/github_com_Tencent_WeKnora_internal_types.TenantRole"
                 },
                 "username": {
                     "type": "string",
@@ -27778,6 +28083,9 @@ const docTemplate = `{
                     "type": "string",
                     "x-agent": true
                 },
+                "partial": {
+                    "type": "boolean"
+                },
                 "session_id": {
                     "type": "string",
                     "x-agent": true
@@ -27787,6 +28095,12 @@ const docTemplate = `{
                     "x-agent": true
                 },
                 "source_path": {
+                    "type": "string"
+                },
+                "task_id": {
+                    "type": "string"
+                },
+                "template_id": {
                     "type": "string"
                 },
                 "version_count": {
@@ -27949,6 +28263,7 @@ const docTemplate = `{
                 "system.admin_revoked",
                 "system.user_password_reset",
                 "system.user_created",
+                "system.user_already_exists",
                 "system.api_key_created",
                 "system.api_key_revoked",
                 "system.queue_task_retried",
@@ -27958,6 +28273,8 @@ const docTemplate = `{
                 "system.queue_archived_purged",
                 "kb.created",
                 "kb.updated",
+                "kb.member_access_changed",
+                "kb.transfer_recovered",
                 "kb.deleted",
                 "kb.duplicated",
                 "kb.clone_started",
@@ -28019,6 +28336,7 @@ const docTemplate = `{
                 "AuditActionSystemAdminRevoked",
                 "AuditActionSystemUserPasswordReset",
                 "AuditActionSystemUserCreated",
+                "AuditActionSystemUserAlreadyExists",
                 "AuditActionSystemAPIKeyCreated",
                 "AuditActionSystemAPIKeyRevoked",
                 "AuditActionSystemQueueTaskRetried",
@@ -28028,6 +28346,8 @@ const docTemplate = `{
                 "AuditActionSystemQueueArchivedPurged",
                 "AuditActionKBCreated",
                 "AuditActionKBUpdated",
+                "AuditActionKBMemberAccessChanged",
+                "AuditActionKBTransferRecovered",
                 "AuditActionKBDeleted",
                 "AuditActionKBDuplicated",
                 "AuditActionKBCloneStarted",
@@ -31029,7 +31349,7 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "attrs": {
-                    "description": "Attrs is the observed attribute map (e.g. contain.text, contain.data_visual)\nproduced by the attribute pipeline. Absent keys mean \"not observed\".",
+                    "description": "Attrs 包含模型观察属性和解析器的 source.* 来源位置；缺少来源键表示未知。",
                     "type": "object",
                     "additionalProperties": {}
                 },
@@ -31398,6 +31718,54 @@ const docTemplate = `{
                 "JoinRequestTypeUpgrade"
             ]
         },
+        "github_com_Tencent_WeKnora_internal_types.KBAccessMode": {
+            "type": "string",
+            "enum": [
+                "inherit",
+                "restricted"
+            ],
+            "x-enum-varnames": [
+                "KBAccessInherit",
+                "KBAccessRestricted"
+            ]
+        },
+        "github_com_Tencent_WeKnora_internal_types.KBAccessPolicyUpdate": {
+            "type": "object",
+            "properties": {
+                "expected_version": {
+                    "type": "integer"
+                },
+                "members": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/github_com_Tencent_WeKnora_internal_types.KBMemberGrantInput"
+                    }
+                },
+                "mode": {
+                    "$ref": "#/definitions/github_com_Tencent_WeKnora_internal_types.KBAccessMode"
+                }
+            }
+        },
+        "github_com_Tencent_WeKnora_internal_types.KBAccessPolicyView": {
+            "type": "object",
+            "properties": {
+                "members": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/github_com_Tencent_WeKnora_internal_types.KBMemberGrantInput"
+                    }
+                },
+                "mode": {
+                    "$ref": "#/definitions/github_com_Tencent_WeKnora_internal_types.KBAccessMode"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "version": {
+                    "type": "integer"
+                }
+            }
+        },
         "github_com_Tencent_WeKnora_internal_types.KBCapabilities": {
             "type": "object",
             "properties": {
@@ -31495,6 +31863,43 @@ const docTemplate = `{
                 "KBCloneStatusCompleted",
                 "KBCloneStatusFailed"
             ]
+        },
+        "github_com_Tencent_WeKnora_internal_types.KBMemberGrantInput": {
+            "type": "object",
+            "properties": {
+                "permission": {
+                    "$ref": "#/definitions/github_com_Tencent_WeKnora_internal_types.OrgMemberRole"
+                },
+                "user_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_Tencent_WeKnora_internal_types.KBTransferRecovery": {
+            "type": "object",
+            "properties": {
+                "fence_id": {
+                    "type": "string"
+                },
+                "outcome_reconciled": {
+                    "type": "boolean"
+                },
+                "reason": {
+                    "type": "string"
+                },
+                "source_id": {
+                    "type": "string"
+                },
+                "target_id": {
+                    "type": "string"
+                },
+                "task_id": {
+                    "type": "string"
+                },
+                "worker_stopped": {
+                    "type": "boolean"
+                }
+            }
         },
         "github_com_Tencent_WeKnora_internal_types.KS3EngineConfig": {
             "type": "object",
@@ -32679,7 +33084,7 @@ const docTemplate = `{
             ],
             "properties": {
                 "email": {
-                    "description": "Email address or username. The JSON key is retained for compatibility.",
+                    "description": "Email accepts an email address or username; the JSON key is kept for older clients.",
                     "type": "string"
                 },
                 "password": {
@@ -40486,7 +40891,18 @@ const docTemplate = `{
             ],
             "properties": {
                 "asr_config": {
-                    "$ref": "#/definitions/github_com_Tencent_WeKnora_internal_types.ASRConfig"
+                    "type": "object",
+                    "properties": {
+                        "enabled": {
+                            "type": "boolean"
+                        },
+                        "language": {
+                            "type": "string"
+                        },
+                        "model_id": {
+                            "type": "string"
+                        }
+                    }
                 },
                 "documentSplitting": {
                     "description": "文档分块配置",
@@ -40612,7 +41028,33 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "vlm_config": {
-                    "$ref": "#/definitions/github_com_Tencent_WeKnora_internal_types.VLMConfig"
+                    "type": "object",
+                    "properties": {
+                        "api_key": {
+                            "type": "string"
+                        },
+                        "base_url": {
+                            "type": "string"
+                        },
+                        "custom_instructions": {
+                            "type": "string"
+                        },
+                        "description_language": {
+                            "type": "string"
+                        },
+                        "enabled": {
+                            "type": "boolean"
+                        },
+                        "interface_type": {
+                            "type": "string"
+                        },
+                        "model_id": {
+                            "type": "string"
+                        },
+                        "model_name": {
+                            "type": "string"
+                        }
+                    }
                 }
             }
         },
@@ -42413,7 +42855,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "user_id": {
-                    "description": "Target user ID. Supply this or the legacy email field.",
                     "type": "string"
                 }
             }

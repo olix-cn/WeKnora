@@ -7,6 +7,7 @@ import (
 	"github.com/Tencent/WeKnora/internal/types"
 	"github.com/Tencent/WeKnora/internal/types/interfaces"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 // ErrCustomAgentNotFound is returned when a custom agent is not found
@@ -53,7 +54,19 @@ func (r *customAgentRepository) ListAgentsByTenantID(ctx context.Context, tenant
 
 // UpdateAgent updates an agent
 func (r *customAgentRepository) UpdateAgent(ctx context.Context, agent *types.CustomAgent) error {
-	return r.db.WithContext(ctx).Save(agent).Error
+	return withKBSharingLock(ctx, r.db, agent.TenantID, func(tx *gorm.DB) error {
+		var count int64
+		if err := tx.Model(&types.AgentShare{}).Where("agent_id = ? AND source_tenant_id = ?",
+			agent.ID, agent.TenantID).Count(&count).Error; err != nil {
+			return err
+		}
+		if count > 0 {
+			if err := requirePublicAgentScope(tx, agent); err != nil {
+				return err
+			}
+		}
+		return tx.Omit(clause.Associations).Save(agent).Error
+	})
 }
 
 // DeleteAgent deletes an agent (soft delete)

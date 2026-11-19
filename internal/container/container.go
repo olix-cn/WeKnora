@@ -170,6 +170,10 @@ func BuildContainer(container *dig.Container) *dig.Container {
 	must(container.Provide(repository.NewTenantInvitationRepository))
 	must(container.Provide(repository.NewAuditLogRepository))
 	must(container.Provide(repository.NewKnowledgeBaseRepository))
+	must(container.Provide(repository.NewKnowledgeBaseAccessRepository))
+	must(container.Provide(func(store *repository.KnowledgeBaseAccessRepository) *service.KnowledgeBaseMemberService {
+		return service.NewKnowledgeBaseMemberService(store)
+	}))
 	must(container.Provide(repository.NewKnowledgeRepository))
 	must(container.Provide(repository.NewKnowledgeSpanRepository))
 	must(container.Provide(repository.NewChunkRepository))
@@ -693,6 +697,9 @@ func BuildContainer(container *dig.Container) *dig.Container {
 	must(container.Provide(handler.NewTenantInvitationHandler))
 	must(container.Provide(handler.NewAuditLogHandler))
 	must(container.Provide(handler.NewKnowledgeBaseHandler))
+	must(container.Provide(func(s *service.KnowledgeBaseMemberService) *handler.KnowledgeBaseMemberHandler {
+		return handler.NewKnowledgeBaseMemberHandler(s)
+	}))
 	must(container.Provide(handler.NewGraphSearchHandler))
 	must(container.Provide(handler.NewKnowledgeHandler))
 	must(container.Provide(handler.NewChunkHandler))

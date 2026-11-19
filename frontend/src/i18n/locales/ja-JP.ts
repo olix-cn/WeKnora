@@ -943,6 +943,7 @@ export default {
     sharedTooltip: '共有スペース経由で外部ワークスペースからアクセス'
   },
   knowledgeBase: {
+    memberAccess: 'アクセス権限',
     tagAddAction: 'タグを追加',
     documentCount: '{count} 件のドキュメント',
     filters: '絞り込み',
@@ -3783,6 +3784,8 @@ export default {
       actions: {
         'kb.created': 'ナレッジベースを作成',
         'kb.updated': 'ナレッジベースを更新',
+        'kb.member_access_changed': 'ナレッジベースのメンバー権限を変更',
+        'kb.transfer_recovered': 'ナレッジベース転送の復旧を確認',
         'kb.deleted': 'ナレッジベースを削除',
         'kb.duplicated': 'ナレッジベースを複製',
         'kb.clone_started': '複製を開始',

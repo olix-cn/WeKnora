@@ -141,6 +141,9 @@ func (s *knowledgeService) planKnowledgeMove(
 	if err := access.RequireKBTransfer(ctx, source, target, access.KBTransferMove); err != nil {
 		return nil, err
 	}
+	if err := access.CheckKBTransferPolicy(ctx, s.kbShareService, source); err != nil {
+		return nil, err
+	}
 	tenant, _ := ctx.Value(types.TenantInfoContextKey).(*types.Tenant)
 	if err := access.ValidateKBTransferCompatibility(source, target, access.KBTransferMove, mode, tenant); err != nil {
 		return nil, err

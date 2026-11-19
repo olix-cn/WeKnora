@@ -395,6 +395,10 @@ func (s *knowledgeBaseService) ListKnowledgeBases(ctx context.Context) ([]*types
 		return nil, err
 	}
 
+	kbs, err = filterMemberKnowledgeBases(ctx, access.MemberLookup(s.kbShareService), kbs)
+	if err != nil {
+		return nil, err
+	}
 	// Query knowledge count and chunk count for each knowledge base
 	for _, kb := range kbs {
 		kb.EnsureDefaults()
@@ -450,6 +454,10 @@ func (s *knowledgeBaseService) ListKnowledgeBasesByTenantID(ctx context.Context,
 		logger.ErrorWithFields(ctx, err, map[string]interface{}{
 			"tenant_id": tenantID,
 		})
+		return nil, err
+	}
+	kbs, err = filterMemberKnowledgeBases(ctx, access.MemberLookup(s.kbShareService), kbs)
+	if err != nil {
 		return nil, err
 	}
 	for _, kb := range kbs {
@@ -1450,6 +1458,9 @@ func (s *knowledgeBaseService) CopyKnowledgeBase(ctx context.Context,
 	}
 	if sourceKB == nil || sourceKB.ID != srcKB || sourceKB.TenantID != tenantID {
 		return nil, nil, access.ErrForbidden
+	}
+	if err := access.CheckKBTransferPolicy(ctx, s.kbShareService, sourceKB); err != nil {
+		return nil, nil, err
 	}
 	sourceCopy := *sourceKB
 	sourceKB = &sourceCopy

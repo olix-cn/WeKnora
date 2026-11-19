@@ -231,6 +231,13 @@ func (s *SessionForkService) Fork(
 	if userID == "" || source.UserID != userID {
 		return nil, ErrForkSessionNotFound
 	}
+	if guard, ok := s.sessions.(interface {
+		CheckSessionKBMemberAccess(context.Context, string, types.Caller) error
+	}); ok {
+		if err := guard.CheckSessionKBMemberAccess(ctx, sourceSessionID, types.CallerFromContext(ctx)); err != nil {
+			return nil, err
+		}
+	}
 
 	forkPoint, err := s.messages.GetMessage(ctx, sourceSessionID, messageID)
 	if err != nil {
