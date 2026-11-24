@@ -47,7 +47,18 @@ type AuthHandler struct {
 	// (POST /auth/register-by-invite). When nil — e.g. legacy test
 	// fixtures — the share-link endpoints respond 503 rather than
 	// blocking the rest of the auth surface.
-	invitationSvc interfaces.TenantInvitationService
+	invitationSvc    interfaces.TenantInvitationService
+	departmentLookup currentUserDepartmentLookup
+}
+
+type currentUserDepartmentLookup interface {
+	DepartmentNameForUser(context.Context, string) (string, error)
+}
+
+// WithDepartmentLookup adds the optional personal directory label to /auth/me.
+func (h *AuthHandler) WithDepartmentLookup(lookup currentUserDepartmentLookup) *AuthHandler {
+	h.departmentLookup = lookup
+	return h
 }
 
 // NewAuthHandler creates a new auth handler instance with the provided services
@@ -686,10 +697,12 @@ func (h *AuthHandler) GetCurrentUser(c *gin.Context) {
 		resolveTenantSelfServiceCreationEnabled(ctx, h.configInfo, h.systemSettingSvc)
 	autoAcceptInvitation := h.systemSettingSvc != nil &&
 		h.systemSettingSvc.GetBool(ctx, "tenant.auto_accept_invitation", "WEKNORA_TENANT_AUTO_ACCEPT_INVITATION", false)
+	departmentName := h.currentUserDepartment(ctx, user.ID)
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
 		"data": gin.H{
 			"user":                userInfo,
+			"department_name":     departmentName,
 			"preference_defaults": gin.H{"browser_search_instructions": types.DefaultBrowserSearchInstructions},
 			"tenant":              dto.NewTenantResponse(ctx, tenant),
 			"memberships":         memberships,
@@ -700,6 +713,26 @@ func (h *AuthHandler) GetCurrentUser(c *gin.Context) {
 			},
 		},
 	})
+}
+
+func (h *AuthHandler) currentUserDepartment(ctx context.Context, userID string) string {
+	if h.departmentLookup == nil || userID == "" || types.IsSyntheticUserID(userID) {
+		return ""
+	}
+	if _, machine := types.TenantAPIKeyScopeFromContext(ctx); machine {
+		return ""
+	}
+	principal, ok := types.PrincipalFromContext(ctx)
+	if !ok || principal.Type != types.PrincipalWebUser || principal.ID != userID {
+		return ""
+	}
+	name, err := h.departmentLookup.DepartmentNameForUser(ctx, userID)
+	if err != nil {
+		// Directory metadata is optional; don't break authentication on lookup failure.
+		logger.Warnf(ctx, "Failed to load current user's department: %v", err)
+		return ""
+	}
+	return name
 }
 
 // updateMyPreferencesRequest is the body for PUT /auth/me/preferences.

@@ -8,8 +8,9 @@
         <span v-else class="avatar-placeholder">{{ userInitial }}</span>
       </div>
       <div v-if="!uiStore.sidebarCollapsed" class="user-info">
-          <!-- 多空间 / superuser：首行空间名，次行 username · 角色。单空间：昵称 + 邮箱。 -->
-          <template v-if="showTenantIdentityLine">
+          <!-- 普通用户显示账号与组织部门，不显示空间角色。 -->
+          <div v-if="showDepartmentIdentity" class="user-name" :title="memberIdentity">{{ memberIdentity }}</div>
+          <template v-else-if="showTenantIdentityLine">
             <div class="user-tenant-name" :title="activeTenantName">{{ activeTenantName }}</div>
             <div class="user-tenant-meta">
               <span v-if="userName && userName !== activeTenantName" class="user-tenant-meta-name">{{ userName }}</span>
@@ -59,8 +60,8 @@
           </div>
           <div class="dropdown-user-meta">
             <div class="dropdown-user-name-row">
-              <span class="dropdown-user-name">{{ userName }}</span>
-              <t-tooltip :content="$t('newUserGuide.reopen')" placement="top">
+              <span class="dropdown-user-name">{{ showDepartmentIdentity ? memberIdentity : userName }}</span>
+              <t-tooltip v-if="authStore.hasManagementNavigation" :content="$t('newUserGuide.reopen')" placement="top">
                 <button type="button" class="dropdown-guide-btn" :aria-label="$t('newUserGuide.reopen')"
                   @click.stop="reopenGuide">
                   <t-icon name="help-circle" size="14px" />
@@ -71,7 +72,7 @@
           </div>
         </div>
 
-        <div v-if="userName && !authStore.isLiteMode" ref="tenantMenuItemRef" class="dropdown-tenant-panel" :class="{
+        <div v-if="userName && !authStore.isLiteMode && (authStore.hasManagementNavigation || showTenantSwitcher)" ref="tenantMenuItemRef" class="dropdown-tenant-panel" :class="{
           'is-open': tenantSubmenuOpen,
           'is-clickable': showTenantSwitcher,
         }" @mouseenter="showTenantSwitcher && showTenantSubmenu()"
@@ -81,7 +82,7 @@
             <span class="dropdown-tenant-panel-name" :title="activeTenantName || userName">
               {{ activeTenantName || userName }}
             </span>
-            <div v-if="currentRoleLabel" class="dropdown-tenant-panel-role">
+            <div v-if="authStore.hasManagementNavigation && currentRoleLabel" class="dropdown-tenant-panel-role">
               <t-icon v-if="currentRoleIcon" :name="currentRoleIcon" size="12px"
                 class="dropdown-tenant-panel-role-icon" />
               <span>{{ currentRoleLabel }}</span>
@@ -96,7 +97,7 @@
           <t-icon name="user" class="menu-icon" />
           <span>{{ $t('general.personalSettings') }}</span>
         </div>
-        <div v-if="!authStore.isLiteMode" class="menu-item" @click="handleQuickNav('tenant')">
+        <div v-if="authStore.hasManagementNavigation && !authStore.isLiteMode" class="menu-item" @click="handleQuickNav('tenant')">
           <t-icon name="user-circle" class="menu-icon" />
           <span>{{ $t('settings.workspaceSettings') }}</span>
         </div>
@@ -110,8 +111,8 @@
           <t-icon name="control-platform" class="menu-icon" />
           <span>{{ $t('settings.modelManagement') }}</span>
         </div>
-        <div class="menu-divider"></div>
-        <div class="menu-item" @click="handleSettings">
+        <div v-if="authStore.hasManagementNavigation" class="menu-divider"></div>
+        <div v-if="authStore.hasManagementNavigation" class="menu-item" @click="handleSettings">
           <t-icon name="setting" class="menu-icon" />
           <span>{{ $t('general.allSettings') }}</span>
         </div>
@@ -139,7 +140,7 @@
          as the IM submenu. Data comes from authStore.memberships, kept fresh via
          GET /auth/me when the submenu opens (throttled) and after invite/create. -->
     <Teleport to="body">
-      <div v-if="tenantSubmenuOpen" class="tenant-submenu-floating" :style="tenantSubmenuStyle"
+      <div v-if="tenantSubmenuOpen && showTenantSwitcher" class="tenant-submenu-floating" :style="tenantSubmenuStyle"
         @mouseenter="showTenantSubmenu" @mouseleave="scheduleHideTenantSubmenu">
         <div class="tenant-submenu-header">
           {{ $t('tenant.switcher.menuLabel') }}
@@ -180,7 +181,7 @@
           </div>
         </div>
         <!-- 自助创建入口与 /auth/me 返回的后端能力保持一致。 -->
-        <div v-if="authStore.canCreateTenant" class="tenant-submenu-create" @click="openCreateTenantDialog">
+        <div v-if="canCreateWorkspace" class="tenant-submenu-create" @click="openCreateTenantDialog">
           <t-icon name="add" class="tenant-submenu-create-icon" />
           <span class="tenant-submenu-create-label">{{ $t('tenant.create.action') }}</span>
         </div>
@@ -197,6 +198,7 @@ import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUIStore } from '@/stores/ui'
 import { useAuthStore } from '@/stores/auth'
+import { useDeploymentCapabilitiesStore } from '@/stores/deploymentCapabilities'
 import { MessagePlugin } from 'tdesign-vue-next'
 import { logout as logoutApi } from '@/api/auth'
 import { useI18n } from 'vue-i18n'
@@ -217,6 +219,7 @@ const { t } = useI18n()
 const router = useRouter()
 const uiStore = useUIStore()
 const authStore = useAuthStore()
+const deploymentCapabilities = useDeploymentCapabilitiesStore()
 const { formatRole, roleIcon } = useRoleLabel()
 const { homeTenantId, isHomeTenantActive, isHomeTenant } = useHomeTenant()
 
@@ -263,13 +266,15 @@ let tenantSubmenuHideTimer: ReturnType<typeof setTimeout> | null = null
 // 这里不再各自拉一份，避免首屏两次 /auth/me。
 const userInfo = computed(() => ({
   username: authStore.user?.username || t('common.defaultUser'),
-  email: authStore.user?.email || 'user@example.com',
+  email: authStore.user?.email || '',
   avatar: authStore.user?.avatar || '',
 }))
 
 const userName = computed(() => userInfo.value.username)
 const userEmail = computed(() => userInfo.value.email)
 const userAvatar = computed(() => userInfo.value.avatar)
+const showDepartmentIdentity = computed(() => !authStore.isLiteMode && !authStore.hasManagementNavigation)
+const memberIdentity = computed(() => `${userName.value} · ${authStore.departmentName || t('corporateDirectory.unassigned')}`)
 
 // 用户名首字母（用于无头像时显示）
 const userInitial = computed(() => {
@@ -312,15 +317,16 @@ const closeAll = () => {
 }
 
 // ---------- Create new tenant ----------
-// 普通用户在空间子菜单底部点 "+ 创建新工作区" → 弹 CreateTenantDialog →
+// 管理员在空间子菜单底部点 "+ 创建新工作区" → 弹 CreateTenantDialog →
 // 后端写一行 owner 的 tenant_members → 直接切到新空间。复用 switchToTenant
 // 同款的 setSelectedTenant + navigateAfterTenantSwitch 链路，避免 token
 // 依然指向旧空间带来的 SSE / store 不一致。
 const createTenantDialogVisible = ref(false)
+const canCreateWorkspace = computed(() => authStore.hasManagementNavigation && authStore.canCreateTenant)
 
 const openCreateTenantDialog = () => {
   closeAll()
-  if (!authStore.canCreateTenant) {
+  if (!canCreateWorkspace.value) {
     MessagePlugin.info(t('tenant.create.disabled'))
     return
   }
@@ -357,15 +363,11 @@ const switchableMemberships = computed<Membership[]>(() => {
   return authStore.memberships ?? []
 })
 
-// Rendered whenever the user has at least one membership — even single-
-// tenant users need this submenu to discover the "create new workspace"
-// entry at the bottom. Multi-tenant users additionally use it to switch
-// between memberships. Cross-tenant superusers keep using the sidebar
-// TenantSelector for the "any tenant in the system" case, so we don't
-// double-show that here.
-const showTenantSwitcher = computed(() => {
-  return switchableMemberships.value.length >= 1
-})
+// Ordinary members must opt in via the administrator's global menu policy.
+const showTenantSwitcher = computed(() => !authStore.isLiteMode && (
+  canCreateWorkspace.value || (switchableMemberships.value.length > 1
+    && (authStore.hasManagementNavigation || deploymentCapabilities.isSupported('navigation.workspace_switcher')))
+))
 
 const isCurrentTenant = (id: number) => {
   const active = authStore.effectiveTenantId
@@ -381,6 +383,7 @@ const tenantInitial = (m: Membership) => {
 }
 
 const switchToTenant = (m: Membership) => {
+  if (!showTenantSwitcher.value) return
   if (isCurrentTenant(m.tenant_id)) {
     closeAll()
     return
@@ -398,8 +401,8 @@ const switchToTenant = (m: Membership) => {
   // Toast 在 reload 后由 App.vue 弹出（直接在这里弹会被 hard reload 干掉）。
   stashTenantSwitchToast({
     name: tenantDisplayName(m),
-    role: formatRole(m.role) || undefined,
-    roleEnum: m.role || undefined,
+    role: authStore.hasManagementNavigation ? formatRole(m.role) || undefined : undefined,
+    roleEnum: authStore.hasManagementNavigation ? m.role || undefined : undefined,
   })
   // Persist "last active tenant" preference (switching to home clears
   // it). Hard reload so every cached store / open SSE stream / in-flight
@@ -416,6 +419,7 @@ let lastTenantSubmenuMembershipRefresh = 0
 const TENANT_SUBMENU_MEMBERSHIP_REFRESH_MS = 2000
 
 const showTenantSubmenu = () => {
+  if (!showTenantSwitcher.value) return
   if (tenantSubmenuHideTimer) {
     clearTimeout(tenantSubmenuHideTimer)
     tenantSubmenuHideTimer = null

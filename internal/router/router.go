@@ -31,6 +31,8 @@ import (
 type RouterParams struct {
 	dig.In
 
+	PlatformKBHandler *handler.PlatformKBPermissionHandler `optional:"true"`
+
 	Config                       *config.Config
 	FileService                  interfaces.FileService
 	UserService                  interfaces.UserService
@@ -45,6 +47,7 @@ type RouterParams struct {
 	AgentShareService            interfaces.AgentShareService
 	KBHandler                    *handler.KnowledgeBaseHandler
 	KBMemberHandler              *handler.KnowledgeBaseMemberHandler `optional:"true"`
+	DirectoryHandler             *handler.CorporateDirectoryHandler  `optional:"true"`
 	GraphSearchHandler           *handler.GraphSearchHandler
 	KnowledgeHandler             *handler.KnowledgeHandler
 	TenantHandler                *handler.TenantHandler
@@ -268,6 +271,8 @@ func NewRouter(params RouterParams) *gin.Engine {
 		RegisterMyInvitationRoutes(v1, params.TenantInvitationHandler)
 		RegisterKnowledgeBaseRoutes(v1, params.KBHandler, rbacGuards)
 		RegisterKnowledgeBaseMemberRoutes(v1, params.KBMemberHandler, rbacGuards)
+		RegisterCorporateDirectoryRoutes(v1, params.DirectoryHandler, rbacGuards)
+		RegisterPlatformKBPermissionRoutes(v1, params.PlatformKBHandler, rbacGuards)
 		RegisterImageAttrRoutes(v1, params.KBHandler, rbacGuards)
 		RegisterKnowledgeBaseActivityRoutes(v1, params.AuditLogHandler, rbacGuards)
 		// KB-scoped image proxy: lets tenants render images embedded in

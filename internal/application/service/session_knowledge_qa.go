@@ -1136,7 +1136,7 @@ func buildFallbackMessages(chatManage *types.ChatManage, promptContent string) [
 		messages = append(messages, chat.Message{
 			Role: "system",
 			Content: promptContent + "\n\n" + types.SourceDataBoundaryPrompt +
-				"\n\n" + types.SourcedAnswerOutputPrompt,
+				"\n\n" + types.SourcedAnswerOutputPrompt + "\n\n" + types.AssistantBrandPrompt,
 		})
 	}
 
@@ -1166,7 +1166,7 @@ func (s *sessionService) renderFallbackPrompt(ctx context.Context, chatManage *t
 
 	kbDocuments := s.buildKBDocumentListing(ctx, chatManage)
 
-	result := types.RenderPromptPlaceholders(chatManage.FallbackPrompt, types.PlaceholderValues{
+	result := types.RenderPromptPlaceholders(types.RefreshLegacyPromptIdentity(chatManage.FallbackPrompt), types.PlaceholderValues{
 		"query":        query,
 		"language":     chatManage.Language,
 		"kb_documents": kbDocuments,

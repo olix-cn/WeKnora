@@ -57,6 +57,9 @@ var versionedSQLiteTables = []string{
 	"session_knowledge_revisions",
 	"session_knowledge_sources",
 	"session_knowledge_evidence",
+	"corporate_directories",
+	"corporate_departments",
+	"corporate_personnel",
 }
 
 // versionedSQLiteColumns maps each existing table to the columns that the
@@ -98,7 +101,7 @@ var versionedSQLiteColumns = map[string][]string{
 	}, // 000028
 }
 
-const expectedSQLiteMigrationVersion = 57
+const expectedSQLiteMigrationVersion = 58
 
 func TestSQLiteMigrationsCreateVersionedSchema(t *testing.T) {
 	repoRoot := sqliteRepoRoot(t)

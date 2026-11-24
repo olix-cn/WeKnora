@@ -4567,6 +4567,12 @@ export default {
           'system.admin_revoked': '回收系统管理员',
           'system.user_password_reset': '重置用户密码',
           'system.user_created': '创建用户',
+          'directory.department_created': '新增部门',
+          'directory.department_updated': '修改部门',
+          'directory.department_deleted': '删除部门',
+          'directory.personnel_updated': '修改人员信息',
+          'directory.personnel_created': '建立人员归属',
+          'directory.members_moved': '调整成员部门',
           'system.user_already_exists': '账号已存在（未创建）',
           'system.queue_task_retried': '重新执行失败任务',
           'system.queue_task_deleted': '清除失败任务记录',
@@ -4737,7 +4743,8 @@ export default {
       keyDescriptions: {
         ui: { navigation: {
           automations_visible: '向所有用户显示首页自动化菜单。默认隐藏，仅控制入口，不停用已有任务；其他用户刷新页面后生效。',
-          toolbox_visible: '向所有用户显示首页工具箱菜单。默认隐藏，不删除工具配置、不改变后端权限；其他用户刷新页面后生效。',
+          toolbox_visible: '仅控制普通用户的首页工具箱菜单，默认隐藏。管理员始终可见；不改变工具配置或访问权限。其他用户刷新页面后生效。',
+          workspace_switcher_visible: '默认隐藏普通用户左下角的空间切换。开启后，仅可切换管理员已分配的空间；不改变空间或知识库权限。',
         } },
         model: {
           max_concurrency: '后台任务（文档入库/富化）对单个模型的默认并发上限，按模型 ID 全副本共享。每次调用实时读取，修改后立即生效、无需重启。0 或负数表示关闭默认限制（各模型仍会尊重自身在模型管理里配置的上限）。仅影响后台任务，不影响交互式对话。'
@@ -4773,7 +4780,8 @@ export default {
       keyLabels: {
         ui: { navigation: {
           automations_visible: '显示自动化菜单',
-          toolbox_visible: '显示工具箱菜单',
+          toolbox_visible: '向普通用户显示工具箱菜单',
+          workspace_switcher_visible: '允许普通用户切换空间',
         } },
         model: {
           max_concurrency: '模型默认并发上限'

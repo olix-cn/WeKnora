@@ -277,8 +277,9 @@ const allCommands = computed(() => {
   })
   return cmds.filter((command) => {
     if (command.id === 'open-agents') {
-      return authStore.hasRole('contributor') && deploymentCapabilities.isSupported('agents')
+      return authStore.hasManagementNavigation && authStore.hasRole('contributor') && deploymentCapabilities.isSupported('agents')
     }
+    if (command.id === 'open-product-tour') return authStore.hasManagementNavigation
     if (command.id === 'open-organizations') {
       return authStore.hasRole('admin') && deploymentCapabilities.isSupported('organizations')
     }

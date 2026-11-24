@@ -632,7 +632,7 @@ func BuildSystemPromptSections(
 		webSearchEnabled = slices.Contains(options.SelectedTools, "web_search")
 	}
 	sections := []SystemPromptSection{
-		{"base", renderPromptPlaceholdersWithStatus(template, knowledgeBases, webSearchEnabled, currentTime, language)},
+		{"base", renderPromptPlaceholdersWithStatus(types.RefreshLegacyPromptIdentity(template), knowledgeBases, webSearchEnabled, currentTime, language)},
 		{"steering", steerGuidance},
 		{"runtime_contract", runtimePromptContract},
 	}
@@ -660,7 +660,7 @@ func BuildSystemPromptSections(
 	}
 	sections = append(sections, SystemPromptSection{"sources", sources},
 		SystemPromptSection{"tools", formatToolGuidanceWithDesktop(names, skillInstallMode, layout, desktop)},
-		SystemPromptSection{"output", types.SourcedAnswerOutputPrompt})
+		SystemPromptSection{"output", types.SourcedAnswerOutputPrompt + "\n\n" + types.AssistantBrandPrompt})
 	if options != nil {
 		if !skillInstallMode && slices.Contains(names, "read_file") && len(options.SkillsMetadata) > 0 {
 			sections = append(sections, SystemPromptSection{

@@ -89,7 +89,7 @@ Workflow:
   and reconsider current evidence. If the person is operating/holding the page, call
   cooperate action:wait, then sync only after ready:true; never replay an uncertain
   action. Failed expect checks require reconsidering the changed fact, not waiting.
-  An explicit stop, user_aborted or WeKnora pause still requires user intervention.
+  An explicit stop, user_aborted or a YHSJ pause still requires user intervention.
   If the BrowserSkill overlay was stopped/held, the user must first return control
   with Resume in the browser, then Continue operation in the conversation preview.
   Optional control_policy:strict on the first sync uses one action per context;

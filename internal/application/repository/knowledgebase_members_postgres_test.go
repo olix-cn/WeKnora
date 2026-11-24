@@ -414,3 +414,21 @@ func TestKBMemberPostgresConcurrentSourceRefreshCannotMarkNewWritesClean(t *test
 	require.NoError(t, db.First(&revision, "session_id = ?", "session").Error)
 	require.Equal(t, revision.Revision, revision.IndexedRevision)
 }
+
+func TestKBMemberPostgresPlatformAdministrationDoesNotRequireWorkspaceMembership(t *testing.T) {
+	db, repo, _ := kbMemberPostgresFixture(t)
+	require.NoError(t, db.Create(&types.User{
+		ID: "platform", Username: "platform", TenantID: 7, IsSystemAdmin: true,
+	}).Error)
+	ctx := context.WithValue(context.Background(), types.UserIDContextKey, "platform")
+	ctx = types.WithCaller(ctx, types.Caller{TenantID: 99, UserID: "platform"})
+	_, err := repo.ReadPlatformPolicy(ctx, "kb")
+	require.NoError(t, err)
+	_, err = repo.ReplacePlatformPolicy(ctx, "kb", types.KBAccessPolicyUpdate{Mode: types.KBAccessRestricted})
+	require.NoError(t, err)
+	var audit types.AuditLog
+	require.NoError(t, db.Where("action = ?", types.AuditActionKBMemberAccessChanged).First(&audit).Error)
+	require.Equal(t, "system_admin", audit.ActorRole)
+	require.Equal(t, "platform", audit.ActorUserID)
+	require.EqualValues(t, 7, audit.TenantID)
+}

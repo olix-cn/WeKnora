@@ -391,6 +391,7 @@ export async function resetUserPassword(req: ResetUserPasswordRequest): Promise<
 }
 
 export interface CreateSystemUserRequest {
+  directory_profile?: { display_name: string; department_id: string | null }
   default_tenant_id?: number
   role?: 'viewer' | 'contributor' | 'admin' | 'owner'
   /** 2-50 characters. */

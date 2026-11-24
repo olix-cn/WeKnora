@@ -326,7 +326,7 @@ const { entries: sessionActivityEntries, unread: sessionUnread } = storeToRefs(s
 let sessionActivityTimer: ReturnType<typeof setInterval> | undefined;
 const authStore = useAuthStore();
 const deploymentCapabilities = useDeploymentCapabilitiesStore();
-const toolboxPreview = computed(() => !deploymentCapabilities.isSupported('navigation.toolbox') ? [] : TOOLBOX_ITEMS.filter((item) => canAccessToolboxSection(item.key, {
+const toolboxPreview = computed(() => !usemenuStore.showToolboxMenu ? [] : TOOLBOX_ITEMS.filter((item) => canAccessToolboxSection(item.key, {
     currentTenantRole: authStore.currentTenantRole,
     canAccessAllTenants: authStore.canAccessAllTenants,
     hasRole: (role) => authStore.hasRole(role),

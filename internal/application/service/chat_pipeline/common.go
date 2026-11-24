@@ -74,12 +74,12 @@ func prepareMessagesWithHistory(chatManage *types.ChatManage) []chat.Message {
 	if chatManage.SystemPromptOverride != "" {
 		base = chatManage.SystemPromptOverride
 	}
-	systemPrompt := types.RenderPromptPlaceholders(base, types.PlaceholderValues{
+	systemPrompt := types.RenderPromptPlaceholders(types.RefreshLegacyPromptIdentity(base), types.PlaceholderValues{
 		"query":    chatManage.Query,
 		"language": chatManage.Language,
 		"contexts": chatManage.RenderedContexts,
 	})
-	systemPrompt += "\n\n" + types.SourceDataBoundaryPrompt + "\n\n" + types.SourcedAnswerOutputPrompt
+	systemPrompt += "\n\n" + types.SourceDataBoundaryPrompt + "\n\n" + types.SourcedAnswerOutputPrompt + "\n\n" + types.AssistantBrandPrompt
 	// Memory goes at the end of the system prompt, after the retrieved-context
 	// placeholders have been rendered, so a remembered sentence can never be
 	// substituted into prompt structure.

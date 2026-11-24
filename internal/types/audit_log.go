@@ -11,6 +11,19 @@ import (
 type AuditAction string
 
 const (
+	// AuditActionDepartmentCreated records a department creation without resource grants.
+	AuditActionDepartmentCreated AuditAction = "directory.department_created"
+	// AuditActionDepartmentUpdated records a department edit.
+	AuditActionDepartmentUpdated AuditAction = "directory.department_updated"
+	// AuditActionDepartmentDeleted records deletion of an empty department.
+	AuditActionDepartmentDeleted AuditAction = "directory.department_deleted"
+	// AuditActionPersonnelUpdated records a personnel display profile edit.
+	AuditActionPersonnelUpdated AuditAction = "directory.personnel_updated"
+	// AuditActionPersonnelCreated records personnel affiliation creation.
+	AuditActionPersonnelCreated AuditAction = "directory.personnel_created"
+	// AuditActionPersonnelMoved records a versioned personnel department batch.
+	AuditActionPersonnelMoved AuditAction = "directory.members_moved"
+
 	// AuditActionMemorySubjectsListed 记录管理员分页查看租户主体摘要，仅包含分页和数量。
 	AuditActionMemorySubjectsListed AuditAction = "memory.subjects_listed"
 	// AuditActionMemorySubjectInspected 记录管理员查看目标主体记忆列表，不包含正文。

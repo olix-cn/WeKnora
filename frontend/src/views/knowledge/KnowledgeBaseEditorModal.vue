@@ -566,9 +566,7 @@
       </div>
 
       <!-- 共享设置（仅编辑模式） -->
-      <div v-if="editorMode === 'edit' && activeKbId && currentSection === 'share'" class="section">
-        <KBShareSettings :kb-id="activeKbId" :can-share="canShareKB" />
-      </div>
+
 
       <!-- 活动记录（仅编辑模式，KB 所属租户内 Owner/Admin） -->
       <div v-if="editorMode === 'edit' && activeKbId && canViewActivity && currentSection === 'activity'" class="section">
@@ -666,7 +664,7 @@ import KBVectorStoreSettings from './settings/KBVectorStoreSettings.vue'
 import KBAdvancedSettings from './settings/KBAdvancedSettings.vue'
 import ModelSelector from '@/components/ModelSelector.vue'
 import GraphSettings from './settings/GraphSettings.vue'
-import KBShareSettings from './settings/KBShareSettings.vue'
+
 import DataSourceSettings from './settings/DataSourceSettings.vue'
 import KnowledgeBaseActivitySettings from './settings/KnowledgeBaseActivitySettings.vue'
 import ImagePipelineSettings from './ImagePipelineSettings.vue'
@@ -845,9 +843,7 @@ const navItems = computed(() => {
       items.push({ key: 'datasource', icon: 'cloud-download', label: t('knowledgeEditor.sidebar.datasource'), badge: dsCount.value || undefined })
     }
   }
-  if (editorMode.value === 'edit' && activeKbId.value && !authStore.isLiteMode) {
-    items.push({ key: 'share', icon: 'share', label: t('knowledgeEditor.sidebar.share') })
-  }
+
   if (canViewActivity.value) {
     items.push({ key: 'activity', icon: 'history', label: t('knowledgeEditor.sidebar.activity') })
   }

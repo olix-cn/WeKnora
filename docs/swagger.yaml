@@ -1442,6 +1442,8 @@ definitions:
         description: Optional for legacy clients. When present, create directly in
           an existing workspace.
         type: integer
+      directory_profile:
+        $ref: '#/definitions/github_com_Tencent_WeKnora_internal_types.DirectoryProfileInput'
       email:
         type: string
       password:
@@ -1749,6 +1751,12 @@ definitions:
     type: object
   github_com_Tencent_WeKnora_internal_types.AuditAction:
     enum:
+    - directory.department_created
+    - directory.department_updated
+    - directory.department_deleted
+    - directory.personnel_updated
+    - directory.personnel_created
+    - directory.members_moved
     - memory.subjects_listed
     - memory.subject_inspected
     - memory.item_confirmed
@@ -1822,6 +1830,12 @@ definitions:
     - faq.import_failed
     type: string
     x-enum-varnames:
+    - AuditActionDepartmentCreated
+    - AuditActionDepartmentUpdated
+    - AuditActionDepartmentDeleted
+    - AuditActionPersonnelUpdated
+    - AuditActionPersonnelCreated
+    - AuditActionPersonnelMoved
     - AuditActionMemorySubjectsListed
     - AuditActionMemorySubjectInspected
     - AuditActionMemoryItemConfirmed
@@ -3363,6 +3377,51 @@ definitions:
           model.
         type: string
     type: object
+  github_com_Tencent_WeKnora_internal_types.Department:
+    properties:
+      code:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: string
+      leader_id:
+        type: string
+      member_count:
+        type: integer
+      name:
+        type: string
+      parent_id:
+        type: string
+      sort_order:
+        type: integer
+      updated_at:
+        type: string
+      version:
+        type: integer
+    type: object
+  github_com_Tencent_WeKnora_internal_types.DepartmentUpdate:
+    properties:
+      code:
+        type: string
+      expected_version:
+        type: integer
+      leader_id:
+        type: string
+      name:
+        type: string
+      parent_id:
+        type: string
+      sort_order:
+        type: integer
+    type: object
+  github_com_Tencent_WeKnora_internal_types.DirectoryProfileInput:
+    properties:
+      department_id:
+        type: string
+      display_name:
+        type: string
+    type: object
   github_com_Tencent_WeKnora_internal_types.DockerSandboxConfig:
     properties:
       cpu_limit:
@@ -4596,6 +4655,15 @@ definitions:
     x-enum-varnames:
     - JoinRequestTypeJoin
     - JoinRequestTypeUpgrade
+  github_com_Tencent_WeKnora_internal_types.KBAccessMemberCandidate:
+    properties:
+      role:
+        $ref: '#/definitions/github_com_Tencent_WeKnora_internal_types.TenantRole'
+      user_id:
+        type: string
+      username:
+        type: string
+    type: object
   github_com_Tencent_WeKnora_internal_types.KBAccessMode:
     enum:
     - inherit
@@ -4617,6 +4685,10 @@ definitions:
     type: object
   github_com_Tencent_WeKnora_internal_types.KBAccessPolicyView:
     properties:
+      member_details:
+        items:
+          $ref: '#/definitions/github_com_Tencent_WeKnora_internal_types.KBAccessMemberCandidate'
+        type: array
       members:
         items:
           $ref: '#/definitions/github_com_Tencent_WeKnora_internal_types.KBMemberGrantInput'
@@ -11317,6 +11389,8 @@ definitions:
     properties:
       capabilities:
         $ref: '#/definitions/internal_handler.CurrentUserCapabilities'
+      department_name:
+        type: string
       memberships:
         items:
           $ref: '#/definitions/github_com_Tencent_WeKnora_internal_types.Membership'
@@ -28778,6 +28852,303 @@ paths:
       summary: 获取平台审计日志
       tags:
       - 审计日志
+  /system/admin/directory:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Read corporate directory and department tree
+      tags:
+      - System Admin
+  /system/admin/directory/departments:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Complete department input
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_Tencent_WeKnora_internal_types.DepartmentUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_Tencent_WeKnora_internal_types.Department'
+      summary: Create or update corporate department
+      tags:
+      - System Admin
+  /system/admin/directory/departments/{department_id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: Department ID
+        in: path
+        name: department_id
+        required: true
+        type: string
+      - description: expected_version required
+        in: body
+        name: body
+        required: true
+        schema:
+          additionalProperties: true
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Delete empty department
+      tags:
+      - System Admin
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Department ID for update
+        in: path
+        name: department_id
+        type: string
+      - description: Complete department input
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_Tencent_WeKnora_internal_types.DepartmentUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_Tencent_WeKnora_internal_types.Department'
+      summary: Create or update corporate department
+      tags:
+      - System Admin
+  /system/admin/directory/members:
+    get:
+      parameters:
+      - description: Username, email or display name
+        in: query
+        name: keyword
+        type: string
+      - description: Department ID; unassigned or omitted
+        in: query
+        name: department_id
+        type: string
+      - description: Include children
+        in: query
+        name: include_descendants
+        type: boolean
+      - description: active or inactive
+        in: query
+        name: status
+        type: string
+      - description: Offset
+        in: query
+        name: offset
+        type: integer
+      - description: Page size 1-100
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Search corporate personnel
+      tags:
+      - System Admin
+  /system/admin/directory/members/{user_id}:
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: User ID
+        in: path
+        name: user_id
+        required: true
+        type: string
+      - description: display_name, expected_version
+        in: body
+        name: body
+        required: true
+        schema:
+          additionalProperties: true
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Edit personnel display name
+      tags:
+      - System Admin
+  /system/admin/directory/members/department:
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: department_id (nullable), members with expected_version
+        in: body
+        name: body
+        required: true
+        schema:
+          additionalProperties: true
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Move personnel to a department
+      tags:
+      - System Admin
+  /system/admin/knowledge-base-permissions:
+    get:
+      parameters:
+      - description: Knowledge-base or workspace name
+        in: query
+        name: q
+        type: string
+      - description: Optional workspace filter
+        in: query
+        name: tenant_id
+        type: integer
+      - description: Offset
+        in: query
+        name: offset
+        type: integer
+      - description: Page size 1-100
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - Bearer: []
+      summary: List knowledge-base permission metadata across all workspaces
+      tags:
+      - System Admin
+  /system/admin/knowledge-base-permissions/{id}:
+    get:
+      parameters:
+      - description: Knowledge-base ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/internal_handler.DataResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/github_com_Tencent_WeKnora_internal_types.KBAccessPolicyView'
+              type: object
+      security:
+      - Bearer: []
+      summary: Get a knowledge-base policy as a current system administrator
+      tags:
+      - System Admin
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Knowledge-base ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Complete policy with expected_version
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_Tencent_WeKnora_internal_types.KBAccessPolicyUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/internal_handler.DataResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/github_com_Tencent_WeKnora_internal_types.KBAccessPolicyView'
+              type: object
+      security:
+      - Bearer: []
+      summary: Replace knowledge-base permissions as a current system administrator
+      tags:
+      - System Admin
+  /system/admin/knowledge-base-permissions/{id}/candidates:
+    get:
+      parameters:
+      - description: Knowledge-base ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Username search
+        in: query
+        name: q
+        type: string
+      - description: Page
+        in: query
+        name: page
+        type: integer
+      - description: Page size 1-100
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - Bearer: []
+      summary: Search grant candidates in the target knowledge-base workspace
+      tags:
+      - System Admin
   /system/admin/list:
     get:
       description: |-

@@ -109,6 +109,10 @@ var registry = map[string]settingSpec{
 		Type: "bool", Default: false, Category: "ui",
 		Description: "是否向所有用户显示首页工具箱菜单。默认隐藏；不删除工具配置，不改变后端访问权限。",
 	},
+	"ui.navigation.workspace_switcher_visible": {
+		Type: "bool", Default: false, Category: "ui",
+		Description: "是否允许普通用户从左下角切换已分配的空间。默认隐藏；不改变任何空间成员关系或资源权限。",
+	},
 	// NOTE: file.max_size_mb is intentionally NOT registered. Although
 	// the Go upload handlers accept a runtime override via
 	// systemSettingSvc.GetInt, the actual upload limit is gated end-to-end

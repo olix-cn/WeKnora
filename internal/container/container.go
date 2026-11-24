@@ -184,6 +184,9 @@ func BuildContainer(container *dig.Container) *dig.Container {
 	must(container.Provide(repository.NewMessageSuggestionRepository))
 	must(container.Provide(repository.NewModelRepository))
 	must(container.Provide(repository.NewUserRepository))
+	must(container.Provide(repository.NewCorporateDirectoryRepository))
+	must(container.Provide(handler.NewCorporateDirectoryHandler))
+	must(container.Provide(handler.NewPlatformKBPermissionHandler))
 	must(container.Provide(repository.NewAuthTokenRepository))
 	must(container.Provide(repository.NewSystemSettingRepository))
 	must(container.Provide(repository.NewModelCatalogRepository))
@@ -718,7 +721,12 @@ func BuildContainer(container *dig.Container) *dig.Container {
 	must(container.Provide(handler.NewMeEnvVarHandler))
 	must(container.Provide(handler.NewEvaluationHandler))
 	must(container.Provide(handler.NewInitializationHandler))
-	must(container.Provide(handler.NewAuthHandler))
+	must(container.Provide(func(cfg *config.Config, users interfaces.UserService, tenants interfaces.TenantService,
+		settings interfaces.SystemSettingService, invitations interfaces.TenantInvitationService,
+		directory *repository.CorporateDirectoryRepository,
+	) *handler.AuthHandler {
+		return handler.NewAuthHandler(cfg, users, tenants, settings, invitations).WithDepartmentLookup(directory)
+	}))
 	must(container.Provide(service.NewDocumentProgressService))
 	must(container.Provide(handler.NewSystemHandler))
 	// Dig resolves exact types; adapt the registered service to the handler's

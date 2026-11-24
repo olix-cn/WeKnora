@@ -19,7 +19,7 @@
         <!-- 知识库文件上传进度浮层：上传队列放在 store 里，切换页面不中断 -->
         <UploadTasksPanel />
         <!-- 带遮罩层的新手引导：首次进入自动开启，可从用户菜单顶部昵称旁帮助按钮重新打开 -->
-        <NewUserGuide />
+        <NewUserGuide v-if="authStore.hasManagementNavigation" />
     </div>
 </template>
 <script setup lang="ts">
@@ -36,6 +36,7 @@ import UploadTasksPanel from '@/components/upload-tasks/UploadTasksPanel.vue'
 import NewUserGuide from '@/components/NewUserGuide.vue'
 import { useCommandPaletteStore } from '@/stores/commandPalette'
 import { useChatResourcesStore } from '@/stores/chatResources'
+import { useAuthStore } from '@/stores/auth'
 import { useUIStore } from '@/stores/ui'
 import { getKnowledgeBaseById } from '@/api/knowledge-base/index'
 import { MessagePlugin } from 'tdesign-vue-next'
@@ -46,6 +47,7 @@ const route = useRoute();
 const router = useRouter();
 const commandPaletteStore = useCommandPaletteStore();
 const uiStore = useUIStore();
+const authStore = useAuthStore();
 let ismask = ref(false)
 const { t } = useI18n();
 

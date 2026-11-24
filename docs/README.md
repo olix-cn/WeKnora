@@ -23,3 +23,7 @@
 - [测试部署与回退清单](knowledge-base-member-access-deployment.md)
 - [转存异常恢复](knowledge-base-transfer-recovery.md)
 - [会话来源与撤权边界](session-knowledge-provenance.md)
+
+## 组织管理工程记录
+
+- [组织管理与部门设计、迁移及验证范围](design/corporate-directory.md)

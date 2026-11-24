@@ -234,9 +234,10 @@ type RegisterRequest struct {
 // random one and returns it exactly once. Any provided value, the
 // empty string included, is subject to the password policy.
 type AdminCreateUserRequest struct {
-	Username string  `json:"username" binding:"required,min=2,max=50"`
-	Email    string  `json:"email"    binding:"omitempty,email"`
-	Password *string `json:"password"`
+	DirectoryProfile *DirectoryProfileInput `json:"directory_profile,omitempty"`
+	Username         string                 `json:"username" binding:"required,min=2,max=50"`
+	Email            string                 `json:"email"    binding:"omitempty,email"`
+	Password         *string                `json:"password"`
 	// Optional for legacy clients. When present, create directly in an existing workspace.
 	DefaultTenantID uint64     `json:"default_tenant_id"`
 	Role            TenantRole `json:"role"`

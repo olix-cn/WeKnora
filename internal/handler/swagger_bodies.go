@@ -322,6 +322,7 @@ type CurrentUserCapabilities struct {
 // CurrentUserData is the data object of GET /auth/me.
 type CurrentUserData struct {
 	User               types.UserInfo          `json:"user"`
+	DepartmentName     string                  `json:"department_name"`
 	PreferenceDefaults PreferenceDefaults      `json:"preference_defaults"`
 	Tenant             *dto.TenantResponse     `json:"tenant"`
 	Memberships        []types.Membership      `json:"memberships"`

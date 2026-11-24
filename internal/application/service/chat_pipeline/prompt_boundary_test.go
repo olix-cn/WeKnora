@@ -30,3 +30,23 @@ func TestSourceBoundarySurvivesNormalAndIntentCustomPrompts(t *testing.T) {
 		require.Equal(t, "User request", messages[1].Content)
 	}
 }
+
+func TestAnswerPromptRefreshesBrandBeforeAddingUserAndSourceData(t *testing.T) {
+	const saved = "You are WeKnora, a professional intelligent assistant developed by Tencent.\n{{contexts}}"
+	for _, override := range []string{"", saved} {
+		cm := &types.ChatManage{}
+		cm.SummaryConfig.Prompt = saved
+		cm.SystemPromptOverride = override
+		cm.RenderedContexts = "Source: 腾讯 publishes WeKnora."
+		cm.History = []*types.History{{Query: "Who are you?", Answer: "I am WeKnora."}}
+		cm.UserContent = "What does the source say about 腾讯?"
+
+		messages := prepareMessagesWithHistory(cm)
+		require.Len(t, messages, 4)
+		require.True(t, strings.HasPrefix(messages[0].Content, "You are YHSJ, a professional intelligent assistant."))
+		require.Contains(t, messages[0].Content, types.AssistantBrandPrompt)
+		require.Contains(t, messages[0].Content, cm.RenderedContexts)
+		require.Equal(t, cm.History[0].Answer, messages[2].Content)
+		require.Equal(t, cm.UserContent, messages[3].Content)
+	}
+}

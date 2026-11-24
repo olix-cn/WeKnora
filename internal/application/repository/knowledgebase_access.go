@@ -20,10 +20,11 @@ var (
 
 // KBAccessState contains persisted authorization facts, never a client's role.
 type KBAccessState struct {
-	KB      *types.KnowledgeBase
-	Policy  *types.KnowledgeBaseAccessPolicy
-	Actor   *types.TenantMember
-	Members []types.KnowledgeBaseMemberGrant
+	MemberDetails []types.KBAccessMemberCandidate
+	KB            *types.KnowledgeBase
+	Policy        *types.KnowledgeBaseAccessPolicy
+	Actor         *types.TenantMember
+	Members       []types.KnowledgeBaseMemberGrant
 }
 
 // KnowledgeBaseAccessRepository persists member policies for management and

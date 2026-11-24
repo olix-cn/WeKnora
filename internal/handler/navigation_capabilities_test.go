@@ -40,7 +40,7 @@ func TestNavigationCapabilitiesDefaultOffAndFollowLiveSettings(t *testing.T) {
 		require.NoError(t, json.Unmarshal(recorder.Body.Bytes(), &body))
 		return body.Data
 	}
-	for _, key := range []string{"navigation.automations", "navigation.toolbox"} {
+	for _, key := range []string{"navigation.automations", "navigation.toolbox", "navigation.workspace_switcher"} {
 		require.False(t, read().Capabilities[key].Supported)
 	}
 	settings.values["ui.navigation.automations_visible"] = true
@@ -48,6 +48,10 @@ func TestNavigationCapabilitiesDefaultOffAndFollowLiveSettings(t *testing.T) {
 	require.False(t, read().Capabilities["navigation.toolbox"].Supported)
 	settings.values["ui.navigation.toolbox_visible"] = true
 	require.True(t, read().Capabilities["navigation.toolbox"].Supported)
+	settings.values["ui.navigation.workspace_switcher_visible"] = true
+	require.True(t, read().Capabilities["navigation.workspace_switcher"].Supported)
+	settings.values["ui.navigation.workspace_switcher_visible"] = false
+	require.False(t, read().Capabilities["navigation.workspace_switcher"].Supported)
 	settings.values["ui.navigation.automations_visible"] = false
 	require.False(t, read().Capabilities["navigation.automations"].Supported)
 	// The shared startup snapshot must never be mutated by per-request overlays.
@@ -66,4 +70,5 @@ func TestNavigationCapabilitiesWithoutSettingServiceStayHidden(t *testing.T) {
 	require.NoError(t, json.Unmarshal(recorder.Body.Bytes(), &body))
 	require.False(t, body.Data.Capabilities["navigation.toolbox"].Supported)
 	require.False(t, body.Data.Capabilities["navigation.automations"].Supported)
+	require.False(t, body.Data.Capabilities["navigation.workspace_switcher"].Supported)
 }

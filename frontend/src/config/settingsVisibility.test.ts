@@ -24,7 +24,7 @@ test('hidden integration panels are not imported or mounted, even during capabil
   const source = readFileSync(new URL('../views/settings/Settings.vue', import.meta.url), 'utf8')
   assert.doesNotMatch(source, /IntegrationSettingsSection|INTEGRATION_PREVIEW_ITEMS|integrations\.title/)
   assert.match(source, /if \(isHiddenSettingsSection\(key\)\) return false/)
-  assert.match(source, /const normalizedSection = visibleSettingsSection\(/)
+  assert.match(source, /const normalizedSection = normalizeSettingsSection\(/)
   const editor = readFileSync(new URL('../views/agent/AgentEditorModal.vue', import.meta.url), 'utf8')
   assert.doesNotMatch(editor, /gotoIntegrations|loadAgentIntegrationCounts|integrations.agentEditor.label/)
 })

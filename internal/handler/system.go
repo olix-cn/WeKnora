@@ -1788,6 +1788,10 @@ func (h *SystemHandler) CreateSystemUser(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Username must be 2-50 characters"})
 		return
 	}
+	if req.DirectoryProfile != nil && (req.DefaultTenantID == 0 || len(req.DirectoryProfile.DisplayName) > 300) {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid directory profile"})
+		return
+	}
 	if (req.DefaultTenantID == 0 && req.Role != "") || (req.DefaultTenantID != 0 && !req.Role.IsValid()) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": service.ErrAdminUserWorkspace.Error()})
 		return
@@ -1812,7 +1816,8 @@ func (h *SystemHandler) CreateSystemUser(c *gin.Context) {
 				"workspace_role":     req.Role,
 			})
 			c.JSON(http.StatusOK, CreateSystemUserResponse{User: user.ToUserInfo()})
-		case service.IsPasswordPolicyError(err), errors.Is(err, service.ErrAdminUserWorkspace):
+		case service.IsPasswordPolicyError(err), errors.Is(err, service.ErrAdminUserWorkspace),
+			errors.Is(err, repository.ErrDirectoryInvalid):
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		case errors.Is(err, service.ErrUserIdentityConflict):
 			c.JSON(http.StatusConflict, gin.H{"error": err.Error()})

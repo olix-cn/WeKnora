@@ -24,6 +24,13 @@ const TENANT_MEMBER_AUDIT_ACTION_LABELS_EN: Record<string, string> = {
 }
 
 const SYSTEM_GLOBAL_AUDIT_ACTION_LABELS_EN: Record<string, string> = {
+  'directory.department_created': 'Department created',
+  'directory.department_updated': 'Department updated',
+  'directory.department_deleted': 'Department deleted',
+  'directory.personnel_updated': 'Personnel profile updated',
+  'directory.personnel_created': 'Personnel affiliation created',
+  'directory.members_moved': 'Members moved to department',
+
   'system.setting_changed': 'System setting changed',
   'system.admin_promoted': 'System admin granted',
   'system.api_key_created': 'Platform API key created',

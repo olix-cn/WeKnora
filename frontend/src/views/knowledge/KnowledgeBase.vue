@@ -16,8 +16,6 @@ import { permissionCanEditKB, permissionCanManageKB } from '@/utils/kbPermission
 import { useChatResourcesStore } from '@/stores/chatResources';
 import { useEditorResourcesStore } from '@/stores/editorResources';
 import KnowledgeBaseEditorModal from './KnowledgeBaseEditorModal.vue';
-import KBMemberAccessPanel from './components/KBMemberAccessPanel.vue';
-const memberAccessVisible = ref(false);
 const uiStore = useUIStore();
 const orgStore = useOrganizationStore();
 const authStore = useAuthStore();
@@ -2497,8 +2495,7 @@ const handleKBEditorSuccess = (kbIdValue: string) => {
             </h2>
             <!-- 标题行右侧的动作锚点：聚拢"信息"和"设置"两个圆形按钮。 -->
             <div class="kb-title-actions">
-              <t-button v-if="canManage && kbInfo?.tenant_id === authStore.effectiveTenantId" variant="outline"
-                @click="memberAccessVisible = true">{{ $t('knowledgeBase.memberAccess') }}</t-button>
+
               <KBInfoPopover v-if="kbInfo && !authStore.isLiteMode" :kb-info="kbInfo"
                 :supported-file-types="[...supportedFileTypes]" />
               <t-tooltip v-if="canManage" :content="$t('knowledgeBase.settings')" placement="top">
@@ -2525,11 +2522,7 @@ const handleKBEditorSuccess = (kbIdValue: string) => {
         </div>
       </div>
 
-      <t-dialog v-model:visible="memberAccessVisible" :header="$t('knowledgeBase.memberAccess')" width="720px"
-        :footer="false" destroy-on-close>
-        <KBMemberAccessPanel v-if="memberAccessVisible && kbInfo" :kb-id="kbId" :creator-id="kbInfo.creator_id"
-          @saved="memberAccessVisible = false; loadKnowledgeBaseInfo(kbId, true)" />
-      </t-dialog>
+
       <!-- Wiki Browser / Graph (shown when wiki or graph tab is active) -->
       <div v-if="isWiki && (activeKbTab === 'wiki' || activeKbTab === 'graph')" class="wiki-main-area">
         <WikiBrowser v-if="kbId" :knowledge-base-id="kbId" :view="activeKbTab === 'graph' ? 'graph' : 'browser'"

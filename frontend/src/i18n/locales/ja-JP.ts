@@ -5209,7 +5209,8 @@ export default {
       keyLabels: {
         ui: { navigation: {
           automations_visible: '自動化メニューを表示',
-          toolbox_visible: 'ツールボックスメニューを表示',
+          toolbox_visible: '一般メンバーにツールボックスメニューを表示',
+          workspace_switcher_visible: '一般メンバーのワークスペース切り替えを許可',
         } },
         auth: {
           registration_mode: '登録モード',
@@ -5245,7 +5246,8 @@ export default {
       keyDescriptions: {
         ui: { navigation: {
           automations_visible: '全ユーザーに自動化メニューを表示します。既定では非表示。既存のタスクは停止しません。他のユーザーはページを更新してください。',
-          toolbox_visible: '全ユーザーにツールボックスメニューを表示します。既定では非表示。ツール設定や権限は変更しません。他のユーザーはページを更新してください。',
+          toolbox_visible: '一般メンバーのツールボックスメニューの表示を切り替えます。既定では非表示で、管理者には常に表示されます。設定や権限は変わりません。他のユーザーはページを更新してください。',
+          workspace_switcher_visible: '既定では一般メンバーに非表示です。有効にすると割り当て済みのワークスペースのみ切り替えられます。権限は変わりません。',
         } },
         auth: {
           registration_mode: '登録モード。公開登録では誰でもアカウントを作成できます。招待登録には有効な招待リンクが必要です。登録禁止でも既存アカウントは招待を承諾できます。保存後すぐに反映されます。',
@@ -5456,6 +5458,12 @@ export default {
           'system.admin_revoked': 'システム管理者の解除',
           'system.user_password_reset': 'ユーザパスワードのリセット',
           'system.user_created': 'ユーザの作成',
+          'directory.department_created': 'Department created',
+          'directory.department_updated': 'Department updated',
+          'directory.department_deleted': 'Department deleted',
+          'directory.personnel_updated': 'Personnel profile updated',
+          'directory.personnel_created': 'Personnel affiliation created',
+          'directory.members_moved': 'Members moved to department',
           'system.user_already_exists': 'アカウントは既存（作成なし）',
           'system.queue_task_retried': '失敗タスクの再実行',
           'system.queue_task_deleted': '失敗タスクのレコード削除',

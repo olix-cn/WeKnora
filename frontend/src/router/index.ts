@@ -216,7 +216,7 @@ const router = createRouter({
         {
           path: "system/admins",
           name: "systemAdmins",
-          redirect: { path: "/platform/settings", query: { section: "system-global" } },
+          redirect: { path: "/platform/settings", query: { section: "organization-management" } },
           meta: { requiresInit: true, requiresAuth: true, requiresSystemAdmin: true },
         },
         {

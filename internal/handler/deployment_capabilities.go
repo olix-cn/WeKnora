@@ -15,6 +15,7 @@ var DeploymentCapabilityKeys = []string{
 	"agents",
 	"navigation.automations",
 	"navigation.toolbox",
+	"navigation.workspace_switcher",
 	"integrations.im",
 	"integrations.embed",
 	"integrations.api",
@@ -74,7 +75,7 @@ func BuildDeploymentCapabilities(
 	available DeploymentFeatureAvailability,
 ) DeploymentCapabilitiesData {
 	isLite := strings.EqualFold(strings.TrimSpace(edition), "lite")
-	organizations := supportedDeploymentCapability(available.Organizations && !isLite)
+	organizations := DeploymentCapability{Supported: false, Reason: "hidden_by_product_policy"}
 	if isLite {
 		organizations.Reason = "not_supported_in_lite"
 	}
@@ -122,6 +123,7 @@ func BuildDeploymentCapabilities(
 			"agents":                           supportedDeploymentCapability(available.Agents),
 			"navigation.automations":           {Supported: false, Reason: "hidden_by_default"},
 			"navigation.toolbox":               {Supported: false, Reason: "hidden_by_default"},
+			"navigation.workspace_switcher":    {Supported: false, Reason: "hidden_by_default"},
 			"integrations.im":                  supportedDeploymentCapability(available.IM),
 			"integrations.embed":               supportedDeploymentCapability(available.Embed),
 			"integrations.api":                 supportedDeploymentCapability(available.API),
@@ -156,6 +158,7 @@ func (h *SystemHandler) GetDeploymentCapabilities(c *gin.Context) {
 	for _, item := range []struct{ capability, setting string }{
 		{"navigation.automations", "ui.navigation.automations_visible"},
 		{"navigation.toolbox", "ui.navigation.toolbox_visible"},
+		{"navigation.workspace_switcher", "ui.navigation.workspace_switcher_visible"},
 	} {
 		enabled := h.systemSettingSvc != nil && h.systemSettingSvc.GetBool(c.Request.Context(), item.setting, "", false)
 		capability := DeploymentCapability{Supported: enabled}

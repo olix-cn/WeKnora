@@ -1,6 +1,7 @@
 package service
 
 import (
+	"context"
 	"testing"
 
 	"github.com/Tencent/WeKnora/internal/types"
@@ -115,4 +116,17 @@ func TestPrepareFallbackMessagesSuppressesCitationsWhenDisabled(t *testing.T) {
 	require.Contains(t, messages[0].Content, "Source citations are disabled")
 	require.Equal(t, `Previous <ref id="chunk://1"/>`, messages[2].Content)
 	require.Equal(t, "answer ", refs.DecodeOutputText(`answer <ref id="chunk://1"/>`))
+}
+
+func TestModelFallbackRefreshesSavedBrandWithoutRewritingQuestion(t *testing.T) {
+	cm := &types.ChatManage{}
+	cm.FallbackPrompt = "You are WeKnora, a professional and friendly AI assistant developed by Tencent.\n{{query}}"
+	cm.Query = "Who publishes WeKnora?"
+	prompt, err := (&sessionService{}).renderFallbackPrompt(context.Background(), cm)
+	require.NoError(t, err)
+	messages, _ := prepareFallbackMessages(cm, prompt)
+	require.Contains(t, messages[0].Content, "You are YHSJ, a professional and friendly AI assistant.")
+	require.Contains(t, messages[0].Content, types.AssistantBrandPrompt)
+	require.NotContains(t, messages[0].Content, "developed by Tencent")
+	require.Equal(t, cm.Query, messages[len(messages)-1].Content)
 }

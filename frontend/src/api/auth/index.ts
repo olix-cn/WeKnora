@@ -352,10 +352,20 @@ export interface AuthCapabilities {
   auto_accept_invitation: boolean
 }
 
-export async function getCurrentUser(): Promise<{ success: boolean; data?: { user: UserInfo; tenant?: TenantInfo | null; memberships?: MembershipInfo[]; tenant_required?: boolean; capabilities?: AuthCapabilities; preference_defaults?: { browser_search_instructions: string } }; message?: string }> {
+export interface CurrentUserData {
+  user: UserInfo
+  department_name?: string
+  tenant?: TenantInfo | null
+  memberships?: MembershipInfo[]
+  tenant_required?: boolean
+  capabilities?: AuthCapabilities
+  preference_defaults?: { browser_search_instructions: string }
+}
+
+export async function getCurrentUser(): Promise<{ success: boolean; data?: CurrentUserData; message?: string }> {
   try {
     const response = await get('/api/v1/auth/me')
-    return response as unknown as { success: boolean; data?: { user: UserInfo; tenant?: TenantInfo | null; memberships?: MembershipInfo[]; tenant_required?: boolean; capabilities?: AuthCapabilities; preference_defaults?: { browser_search_instructions: string } }; message?: string }
+    return response as unknown as { success: boolean; data?: CurrentUserData; message?: string }
   } catch (error: any) {
     return {
       success: false,

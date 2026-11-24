@@ -12,6 +12,7 @@ function setup(t: TestContext, created = true) {
   const { vm, close } = f.component(new URL('./CreateUserDialog.vue', import.meta.url), {
     'vue-i18n': { useI18n: () => ({ t: (key: string) => key }) },
     'tdesign-vue-next': { MessagePlugin: { success() { notices.push('success') }, warning() {}, error() {}, info() { notices.push('info') } } },
+    '@/api/system/directory': { getDirectory: async () => ({ directory: { name: 'Synthetic' }, departments: [] }) },
     '@/api/auth': { getAuthConfig: async () => ({ success: true, complex_password_enabled: false }) },
     '@/api/system': {
       listUserCreationWorkspaces: (keyword: string) => new Promise((resolve, reject) => loads.push({ keyword, resolve, reject })),
@@ -81,4 +82,17 @@ test('workspace search keeps the selected option and exposes retry after failure
   await failed
   assert.equal(vm.workspaceError, true)
   assert.equal(vm.workspaceLoading, false)
+})
+
+
+test('creating a user includes department affiliation in the same request', async t => {
+  const { vm, requests } = setup(t)
+  vm.directoryAvailable = true
+  vm.form.username = 'new-member'; vm.form.defaultTenantId = 42
+  vm.form.departmentId = 'department'; vm.form.displayName = 'Synthetic member'
+  vm.formRef = { validate: async () => true }
+  await vm.submit()
+  assert.deepEqual(JSON.parse(JSON.stringify(requests[0].directory_profile)), {
+    department_id: 'department', display_name: 'Synthetic member',
+  })
 })

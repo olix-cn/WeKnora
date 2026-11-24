@@ -8,15 +8,16 @@ import zhTW from './locales/zh-TW.ts'
 import { BUILT_IN_DEFAULT, resolveDefaultLocale } from './resolveDefaultLocale.ts'
 import { pluralRules } from './pluralizationRules.ts'
 import { brandMessages } from '../config/branding'
+import { corporateDirectoryMessages } from './corporateDirectory'
 import { documentCenterMessages } from './documentCenter'
 
 const messages = brandMessages({
-  'zh-CN': { ...zhCN, documentCenter: documentCenterMessages['zh-CN'] },
-  'zh-TW': { ...zhTW, documentCenter: documentCenterMessages['zh-TW'] },
-  'en-US': { ...enUS, documentCenter: documentCenterMessages['en-US'] },
-  'ru-RU': { ...ruRU, documentCenter: documentCenterMessages['ru-RU'] },
-  'ko-KR': { ...koKR, documentCenter: documentCenterMessages['ko-KR'] },
-  'ja-JP': { ...jaJP, documentCenter: documentCenterMessages['ja-JP'] }
+  'zh-CN': { ...zhCN, corporateDirectory: corporateDirectoryMessages['zh-CN'], documentCenter: documentCenterMessages['zh-CN'] },
+  'zh-TW': { ...zhTW, corporateDirectory: corporateDirectoryMessages['zh-TW'], documentCenter: documentCenterMessages['zh-TW'] },
+  'en-US': { ...enUS, corporateDirectory: corporateDirectoryMessages['en-US'], documentCenter: documentCenterMessages['en-US'] },
+  'ru-RU': { ...ruRU, corporateDirectory: corporateDirectoryMessages['ru-RU'], documentCenter: documentCenterMessages['ru-RU'] },
+  'ko-KR': { ...koKR, corporateDirectory: corporateDirectoryMessages['ko-KR'], documentCenter: documentCenterMessages['ko-KR'] },
+  'ja-JP': { ...jaJP, corporateDirectory: corporateDirectoryMessages['ja-JP'], documentCenter: documentCenterMessages['ja-JP'] }
 })
 
 // User's explicit past choice wins; otherwise use the deployment default.

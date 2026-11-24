@@ -31,6 +31,13 @@ export const TENANT_MEMBER_AUDIT_ACTIONS = [
 
 /** Platform control-plane audit events (system settings → audit tab). */
 export const SYSTEM_GLOBAL_AUDIT_ACTIONS = [
+  'directory.department_created',
+  'directory.department_updated',
+  'directory.department_deleted',
+  'directory.personnel_updated',
+  'directory.personnel_created',
+  'directory.members_moved',
+
   'system.setting_changed',
   'system.admin_promoted',
   'system.api_key_created',

@@ -1,6 +1,7 @@
-"""Opt-in WebKit loop for TestKBMemberRoutesRealRepository.
+"""Opt-in compatibility WebKit loop for TestKBMemberRoutesRealRepository.
 
-Member policy APIs use the real httptest router/service/SQLite migration. Other
+The new system-center UI is adapted to the legacy real member-policy transport;
+this checks the shared editor, not authorization of the new platform routes. Other
 page dependencies are synthetic fixtures; this is not a full server/login E2E.
 Requires existing Playwright/WebKit and frontend/dist, installs nothing.
 """
@@ -41,15 +42,18 @@ try:
 
         def api(route):
             path = urlparse(route.request.url).path
-            if '/member-access' in path or '/knowledge-base-transfers' in path:
-                response = route.fetch(url=BACKEND + path + ('?' + urlparse(route.request.url).query if urlparse(route.request.url).query else ''), headers={**route.request.headers, 'X-Test-User': 'owner'})
+            if '/member-access' in path or '/knowledge-base-transfers' in path or '/knowledge-base-permissions/kb' in path:
+                backend_path = path.replace('/system/admin/knowledge-base-permissions/kb/candidates', '/knowledge-bases/kb/member-access/candidates').replace('/system/admin/knowledge-base-permissions/kb', '/knowledge-bases/kb/member-access')
+                response = route.fetch(url=BACKEND + backend_path + ('?' + urlparse(route.request.url).query if urlparse(route.request.url).query else ''), headers={**route.request.headers, 'X-Test-User': 'owner'})
                 if route.request.method == 'PUT':
                     saves.append((response.status, route.request.post_data_json))
                 route.fulfill(response=response)
                 return
             data = {'success': True, 'data': [], 'total': 0}
-            if path.endswith('/auth/me'):
-                data['data'] = {'user': {'id': 'owner', 'username': 'Synthetic owner'},
+            if path.endswith('/system/admin/knowledge-base-permissions'):
+                data = {'data': [{'id': 'kb', 'name': 'Synthetic KB', 'tenant_id': 7, 'tenant_name': 'Synthetic workspace', 'creator_id': 'owner', 'mode': 'restricted', 'version': 1, 'member_count': 1}], 'total': 1}
+            elif path.endswith('/auth/me'):
+                data['data'] = {'user': {'id': 'owner', 'username': 'Synthetic owner', 'is_system_admin': True},
                                 'tenant': {'id': 7, 'name': 'Synthetic workspace'},
                                 'memberships': [{'tenant_id': 7, 'role': 'owner'}]}
             elif path.endswith('/knowledge-bases/kb'):
@@ -64,8 +68,8 @@ try:
           localStorage.setItem('weknora:new-user-guide-done:v1','1');
           localStorage.setItem('weknora:contextual-guide-kb-detail:v1','1');
           localStorage.setItem('weknora:assistant-entry-guide-done:v0.9.0','1');""")
-        page.goto(f'http://127.0.0.1:{server.server_port}/platform/knowledge-bases/kb')
-        page.get_by_role('button', name='访问权限', exact=True).click()
+        page.goto(f'http://127.0.0.1:{server.server_port}/platform/settings?section=knowledge-base-permissions')
+        page.get_by_role('button', name='配置权限', exact=True).click()
         panel = page.locator('.kb-member-access')
         panel.wait_for()
         panel.get_by_text('delegate', exact=True).wait_for()
@@ -75,7 +79,7 @@ try:
         panel.wait_for(state='hidden')
         assert len(saves) == 1 and saves[0][0] == 200, saves
         assert saves[0][1] == {'mode': 'restricted', 'expected_version': 1, 'members': []}, saves
-        page.get_by_role('button', name='访问权限', exact=True).click()
+        page.get_by_role('button', name='配置权限', exact=True).click()
         panel.get_by_text('当前仅空间所有者和管理员可以访问。', exact=True).wait_for()
         assert not errors, errors
         print(json.dumps({'real_policy_http_save_reload': True, 'runtime_errors': errors}))

@@ -220,3 +220,12 @@ func fmtBool(value bool) string {
 	}
 	return "off"
 }
+
+func TestAgentPromptRefreshesSavedBrandWithoutChangingRole(t *testing.T) {
+	const saved = "You are WeKnora, an assistant developed by Tencent, specializing in questions and work involving the user's knowledge bases.\nAlways cite the supplied source."
+	prompt := BuildSystemPromptWithOptions(nil, false, nil, saved)
+	require.Contains(t, prompt, "You are YHSJ, an assistant, specializing")
+	require.Contains(t, prompt, "Always cite the supplied source.")
+	require.Contains(t, prompt, types.AssistantBrandPrompt)
+	require.NotContains(t, prompt, "developed by Tencent")
+}

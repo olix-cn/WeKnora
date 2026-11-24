@@ -34,6 +34,18 @@ func (s *userService) adminCreateInWorkspace(ctx context.Context, req *types.Adm
 		if membership == nil || membership.Status != types.TenantMemberStatusActive || membership.Role != req.Role {
 			return nil, ErrUserIdentityConflict
 		}
+		if req.DirectoryProfile != nil {
+			matcher, ok := s.userRepo.(interface {
+				MatchUserDirectory(context.Context, string, types.DirectoryProfileInput) (bool, error)
+			})
+			if !ok {
+				return nil, ErrUserIdentityConflict
+			}
+			matches, err := matcher.MatchUserDirectory(ctx, user.ID, *req.DirectoryProfile)
+			if err != nil || !matches {
+				return nil, ErrUserIdentityConflict
+			}
+		}
 		return user, ErrUserUsernameExists
 	}
 	existing, err := s.userRepo.GetUserByUsername(ctx, username)
@@ -60,10 +72,26 @@ func (s *userService) adminCreateInWorkspace(ctx context.Context, req *types.Adm
 	if err != nil {
 		return nil, err
 	}
-	user := &types.User{ID: uuid.NewString(), Username: username, Email: email, PasswordHash: string(hash),
-		TenantID: req.DefaultTenantID, IsActive: true, CreatedAt: time.Now(), UpdatedAt: time.Now()}
+	user := &types.User{
+		ID: uuid.NewString(), Username: username, Email: email, PasswordHash: string(hash),
+		TenantID: req.DefaultTenantID, IsActive: true, CreatedAt: time.Now(), UpdatedAt: time.Now(),
+	}
 	actor, _ := types.UserIDFromContext(ctx)
-	if err := repo.CreateUserWithMembership(ctx, user, req.Role, actor); err != nil {
+	var createErr error
+	if req.DirectoryProfile != nil {
+		directory, ok := s.userRepo.(interface {
+			CreateUserWithDirectory(
+				context.Context, *types.User, types.TenantRole, string, types.DirectoryProfileInput,
+			) error
+		})
+		if !ok {
+			return nil, errors.New("atomic directory provisioning is unavailable")
+		}
+		createErr = directory.CreateUserWithDirectory(ctx, user, req.Role, actor, *req.DirectoryProfile)
+	} else {
+		createErr = repo.CreateUserWithMembership(ctx, user, req.Role, actor)
+	}
+	if err := createErr; err != nil {
 		if errors.Is(err, apprepo.ErrProvisioningTenantUnavailable) {
 			return nil, ErrAdminUserWorkspace
 		}

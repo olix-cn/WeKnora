@@ -156,8 +156,7 @@
                           <img src="@/assets/img/organization-green.svg" class="detail-icon-img" alt="" aria-hidden="true" />
                           <span class="detail-label">{{ $t('mentionDetail.belongsToOrg') }}</span>
                           <span
-                            class="detail-value clickable"
-                            @click.stop="handleOrgClick(detailCache[item.id].data.org_name || item.orgName)"
+                            class="detail-value"
                           >
                             {{ detailCache[item.id].data.org_name || item.orgName }}
                           </span>
@@ -197,8 +196,7 @@
                           <img src="@/assets/img/organization-green.svg" class="detail-icon-img" alt="" aria-hidden="true" />
                           <span class="detail-label">{{ $t('mentionDetail.belongsToOrg') }}</span>
                           <span
-                            class="detail-value clickable"
-                            @click.stop="handleOrgClick(item.orgName)"
+                            class="detail-value"
                           >
                             {{ item.orgName }}
                           </span>
@@ -627,12 +625,6 @@ async function fetchFileDetail(item: { id: string }) {
 function handleKbClick(kbId: string | undefined) {
   if (!kbId) return;
   router.push(`/platform/knowledge-bases/${kbId}`);
-}
-
-function handleOrgClick(orgName: string | undefined) {
-  if (!orgName) return;
-  // 目前组织详情页可能不存在，统一跳转到组织列表页
-  router.push('/platform/organizations');
 }
 
 const onScroll = (e: Event) => {

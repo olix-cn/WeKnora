@@ -116,3 +116,13 @@ test('changing a member search ignores the previous query response', async t => 
   await pending
   assert.equal(f.vm.candidates.length, 0)
 })
+
+test('server-provided member names resolve grants before directory search', async t => {
+  const f = setup(t, { getKBAccessPolicy: async () => ({ data: {
+    mode: 'restricted', version: 2, members: [{ user_id: 'reader', permission: 'viewer' }],
+    member_details: [{ user_id: 'reader', username: 'Readable name', role: 'viewer' }],
+  } }) })
+  await flush()
+  assert.equal(f.vm.names.reader.username, 'Readable name')
+  assert.equal(f.vm.permissionOptions('reader').find((p: any) => p.value === 'admin').disabled, true)
+})

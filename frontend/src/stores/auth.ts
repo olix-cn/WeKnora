@@ -55,6 +55,7 @@ export const useAuthStore = defineStore('auth', () => {
   // (vs SSE) is fine — the count is checked rarely and a 1-2 minute
   // staleness window is acceptable for an inbox indicator.
   const pendingInvitationCount = ref<number>(0)
+  const departmentName = ref('')
   // Authoritative deployment capability returned by /auth/me. Defaults to
   // false (fail-closed): we hide the "create workspace" affordance until
   // /auth/me confirms the deployment allows it, so an invitation-only
@@ -183,6 +184,12 @@ export const useAuthStore = defineStore('auth', () => {
     return (ROLE_LEVEL[currentTenantRole.value] ?? 0) >= ROLE_LEVEL[min]
   }
 
+  // Presentation only: administrators keep the full navigation. Lite has no
+  // centrally provisioned member experience.
+  const hasManagementNavigation = computed(() =>
+    isLiteMode.value || isSystemAdmin.value || canAccessAllTenants.value || hasRole('admin'),
+  )
+
   const effectiveTenantId = computed(() => {
     // 如果选择了其他空间，使用选择的空间ID，否则使用用户默认空间ID
     return selectedTenantId.value || (tenant.value?.id ? Number(tenant.value.id) : null)
@@ -195,6 +202,7 @@ export const useAuthStore = defineStore('auth', () => {
     // 保存到localStorage
     localStorage.setItem('weknora_user', JSON.stringify(userData))
     if (previousId !== userData.id) {
+      departmentName.value = ''
       reloadUserPreferences()
     }
   }
@@ -379,6 +387,7 @@ export const useAuthStore = defineStore('auth', () => {
     if (!response.success || !u) return false
 
     setUser(userInfoFromApi(u, response.data?.tenant?.id))
+    departmentName.value = response.data?.department_name?.trim() || ''
 
     const tenantSnapshot = response.data?.tenant
     if (tenantSnapshot) {
@@ -463,6 +472,7 @@ export const useAuthStore = defineStore('auth', () => {
     allTenants.value = []
     memberships.value = []
     pendingInvitationCount.value = 0
+    departmentName.value = ''
     canCreateTenant.value = false
     autoAcceptInvitation.value = false
     authMeSynced = false
@@ -603,6 +613,8 @@ export const useAuthStore = defineStore('auth', () => {
     isSystemAdmin,
     currentTenantRole,
     hasRole,
+    hasManagementNavigation,
+    departmentName,
     effectiveTenantId,
     isLiteMode,
 

@@ -72,6 +72,12 @@
               <t-input v-model="form.email" type="text" clearable autocomplete="off" :disabled="submitting"
                 :placeholder="t('auth.emailOptionalPlaceholder')" />
             </t-form-item>
+            <t-alert v-if="directoryError" theme="error" :message="t('corporateDirectory.errors.failed')" />
+            <t-button v-if="directoryError" variant="text" @click="loadDepartments">{{ t('tenant.retry') }}</t-button>
+            <template v-if="directoryAvailable">
+              <t-form-item :label="t('corporateDirectory.displayName')"><t-input v-model="form.displayName" :maxlength="100" :disabled="submitting" /></t-form-item>
+              <t-form-item :label="t('corporateDirectory.department')"><t-select v-model="form.departmentId" :options="departmentOptions" :disabled="submitting" /></t-form-item>
+            </template>
             <t-form-item name="autoGenerate">
               <t-checkbox v-model="form.autoGenerate" :disabled="submitting">
                 {{ t('system.globalSettings.createUser.autoGenerateLabel') }}
@@ -109,7 +115,7 @@
             <t-button variant="outline" :disabled="submitting" @click="emit('update:visible', false)">
               {{ t('system.globalSettings.confirm.cancelBtn') }}
             </t-button>
-            <t-button theme="primary" :loading="submitting" @click="submit">
+            <t-button theme="primary" :loading="submitting" :disabled="directoryLoading || directoryError" @click="submit">
               {{ t('system.globalSettings.createUser.confirmBtn') }}
             </t-button>
           </div>
@@ -125,6 +131,7 @@ import { MessagePlugin } from 'tdesign-vue-next'
 import type { FormInstanceFunctions, FormRule } from 'tdesign-vue-next'
 import { useI18n } from 'vue-i18n'
 import { createSystemUser, listUserCreationWorkspaces, type CreateSystemUserRequest } from '@/api/system'
+import { getDirectory } from '@/api/system/directory'
 import { getAuthConfig } from '@/api/auth'
 import { copyWithToast } from '@/utils/clipboard'
 import { newPasswordRules } from '@/utils/passwordPolicy'
@@ -152,6 +159,8 @@ const formRef = ref<FormInstanceFunctions>()
 const form = reactive({
   username: '',
   email: '',
+  displayName: '',
+  departmentId: '',
   defaultTenantId: undefined as number | undefined,
   role: 'viewer' as NonNullable<CreateSystemUserRequest['role']>,
   autoGenerate: true,
@@ -161,6 +170,22 @@ const form = reactive({
 const createUserSuccess = ref<CreateUserReveal | null>(null)
 const locked = computed(() => submitting.value || createUserSuccess.value !== null)
 const complexPasswordEnabled = ref(false)
+const departmentOptions = ref<Array<{label:string;value:string}>>([])
+const directoryAvailable = ref(false)
+const directoryLoading = ref(false)
+const directoryError = ref(false)
+let directorySequence = 0
+async function loadDepartments() {
+  const generation = ++directorySequence
+  directoryLoading.value = true; directoryError.value = false
+  try {
+    const data = await getDirectory()
+    if (generation !== directorySequence || !props.visible) return
+    departmentOptions.value = [{ label: t('corporateDirectory.unassigned'), value: '' }, ...data.departments.map(d => ({ label: d.name, value: d.id }))]
+    directoryAvailable.value = true
+  } catch { if (generation === directorySequence && props.visible) { directoryAvailable.value = false; directoryError.value = true } }
+  finally { if (generation === directorySequence) directoryLoading.value = false }
+}
 const workspaceOptions = ref<Array<{ label: string; value: number }>>([])
 const workspaceLoading = ref(false)
 const workspaceError = ref(false)
@@ -222,6 +247,7 @@ const rules = computed<Record<string, FormRule[]>>(() => ({
 
 watch(() => props.visible, async (visible) => {
   if (!visible) {
+    ++directorySequence
     ++workspaceGeneration
     clearTimeout(searchTimer)
     createUserSuccess.value = null
@@ -233,6 +259,7 @@ watch(() => props.visible, async (visible) => {
   createUserSuccess.value = null
   resetFormFields()
   void loadWorkspaces('')
+  void loadDepartments()
   try { await loadAuthConfig() } catch { MessagePlugin.warning(t('system.globalSettings.messages.loadFailed')) }
   await nextTick()
   formRef.value?.clearValidate?.()
@@ -252,6 +279,7 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
+  ++directorySequence
   ++workspaceGeneration
   clearTimeout(searchTimer)
   window.removeEventListener('keydown', onWindowEscCapture, true)
@@ -260,6 +288,7 @@ onUnmounted(() => {
 function resetFormFields() {
   form.username = ''
   form.email = ''
+  form.displayName = ''; form.departmentId = ''; directoryAvailable.value = false
   form.defaultTenantId = undefined
   form.role = 'viewer'
   workspaceOptions.value = []
@@ -281,6 +310,7 @@ function announce(msg: string, kind: 'success' | 'error' | 'info' = 'success') {
 }
 
 async function submit() {
+  if (directoryLoading.value || directoryError.value) return
   if (!shouldAcceptCreateUserSubmit(submitting.value, createUserSuccess.value !== null)) return
   submitting.value = true
   try {
@@ -293,6 +323,7 @@ async function submit() {
       default_tenant_id: form.defaultTenantId,
       role: form.role,
     }
+    if (directoryAvailable.value) payload.directory_profile = { display_name: form.displayName.trim(), department_id: form.departmentId || null }
     if (!form.autoGenerate) {
       payload.password = form.newPassword
     }

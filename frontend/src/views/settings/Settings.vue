@@ -1,5 +1,5 @@
 <template>
-  <SettingsModalShell :visible="visible" :title="$t('general.settings')" overlay-class="all-settings-overlay"
+  <SettingsModalShell :visible="visible" :title="$t('general.settings')" :overlay-class="['organization-management', 'knowledge-base-permissions'].includes(currentSection) ? 'all-settings-overlay management-settings-overlay' : 'all-settings-overlay'"
     @close="modalShell.requestClose">
     <template #nav>
       <template v-for="group in navGroups" :key="group.key">
@@ -147,6 +147,10 @@
           <SystemInfo />
         </div>
 
+        <div v-if="currentSection === 'organization-management' && authStore.isSystemAdmin" class="section"><OrganizationManagement /></div>
+
+        <div v-if="currentSection === 'knowledge-base-permissions' && authStore.isSystemAdmin" class="section"><KnowledgeBasePermissions @dirty="policyDirty = $event" @saving="policySaving = $event" /></div>
+
         <!-- 系统管理员可见的全局运行时设置 -->
         <div v-if="currentSection === 'system-global'" class="section">
           <SystemSettings />
@@ -224,10 +228,13 @@ import StorageBackendSettings from './StorageBackendSettings.vue'
 import SandboxSettings from './SandboxSettings.vue'
 import TenantMembers from './TenantMembers.vue'
 import SystemSettings from '@/views/system/SystemSettings.vue'
+import OrganizationManagement from '@/views/system/OrganizationManagement.vue'
+import KnowledgeBasePermissions from '@/views/system/KnowledgeBasePermissions.vue'
 import RuntimeQueues from '@/views/system/RuntimeQueues.vue'
 import PlatformAPIKeys from '@/views/system/PlatformAPIKeys.vue'
 import SystemAuditLog from '@/views/system/SystemAuditLog.vue'
 import {
+  MEMBER_SETTINGS_SECTIONS,
   SETTINGS_SECTION_MIN_ROLE,
   SYSTEM_ADMIN_SETTINGS_SECTIONS,
 } from '@/config/settingsAccess'
@@ -256,6 +263,7 @@ function envNavLabel(): string {
   return t('envVarSettings.title')
 }
 
+const policyDirty = ref(false), policySaving = ref(false)
 const currentSection = ref<string>('general')
 const currentSubSection = ref<string>('')
 const expandedMenus = ref<string[]>([])
@@ -274,25 +282,18 @@ type NavGroup = {
   items: NavItem[]
 }
 
-// 设置二级导航的最低可见角色来自 settingsAccess.ts，和
-// internal/router/router.go 的守卫矩阵对齐。
-// 以「页面里至少有 1 个有意义的写操作所要求的最低角色」为基准，把基础设
-// 施配置（models 写、ollama 下载、websearch 写、parser/storage/vector/mcp
-// CRUD、sandbox 连接、skills 安装、chat-history 配置）统一收到 admin；只读类（general / system info /
-// tenant-info / members 名册）保留 viewer 可见；最高敏感的 reset api
-// key 是 owner-only。改这张表前请在 router.go 里复核对应路由组。
-//
-// 特别说明：
-// - chathistory 页面唯一的「启用消息索引」开关 PUT /tenants/kv/chat-history-config
-//   后端走 g.Admin()。给 viewer/contributor 看到入口、点开开关、保存时
-//   403，体验很差，所以入口本身归 admin。
-// - models 列表 viewer 可读，页面内的「+ 添加模型 / 编辑 / 删除」按钮在
-//   ModelSettings.vue 里另用 hasRole('admin') 自己 gate，所以入口保留
-//   viewer 是合理的（contributor 也能浏览模型列表）。
+// The managed-member UI exposes only personal settings. Administrator
+// panels still use their original role checks; navigation grants no access.
 const SYSTEM_ADMIN_SECTIONS = SYSTEM_ADMIN_SETTINGS_SECTIONS
 
 const normalizeSettingsSection = (section: string) => {
-  return visibleSettingsSection(section, route.query.tab as string | undefined)
+  if (section === 'system-global' && route.query.panel === 'users') section = 'organization-management'
+  const normalized = visibleSettingsSection(section, route.query.tab as string | undefined)
+  // Old links to management panels land on the member's personal settings.
+  // Legacy tool links remain separate: their own role/capability checks apply.
+  if (!authStore.hasManagementNavigation && !isToolboxSection(normalized)
+    && !MEMBER_SETTINGS_SECTIONS.has(normalized)) return 'general'
+  return normalized
 }
 
 const syncSettingsRoute = (sectionKey: string) => {
@@ -318,6 +319,7 @@ const canSeeSection = (key: string): boolean => {
   if (SYSTEM_ADMIN_SECTIONS.has(key)) {
     return authStore.isSystemAdmin
   }
+  if (!authStore.hasManagementNavigation) return MEMBER_SETTINGS_SECTIONS.has(key)
   const min = SETTINGS_SECTION_MIN_ROLE[key] ?? 'viewer'
   // canAccessAllTenants（superuser）和路由层一样必须 bypass，否则 cross-tenant
   // 管理员看不到自己有权操作的入口（参考 TenantMembers.vue 的 canManage）。
@@ -326,9 +328,6 @@ const canSeeSection = (key: string): boolean => {
 }
 
 const navItems = computed(() => {
-  // 一律走 SETTINGS_SECTION_MIN_ROLE 表，避免 ad-hoc isAdmin/isOwner 散落在多处。
-  // 服务端在每条路由上仍以 g.Viewer/Admin/Owner 为准，这里只决定 UI 是
-  // 否露入口；改动入口规则请同步更新 settingsAccess.ts 和对应后端路由。
   const all: NavItem[] = [
     { key: 'general', icon: 'setting', label: t('general.title') },
     { key: 'ollama', icon: 'server', label: 'Ollama' },
@@ -342,6 +341,8 @@ const navItems = computed(() => {
     { key: 'storage', icon: 'cloud', label: t('settings.storageEngine') },
     { key: 'sandbox', icon: 'code', label: t('settings.sandbox.title') },
     { key: 'system', icon: 'info-circle', label: t('settings.versionInfo') },
+    { key: 'knowledge-base-permissions', icon: 'secured', label: t('corporateDirectory.kbPermissions') },
+    { key: 'organization-management', icon: 'usergroup', label: t('corporateDirectory.title') },
     { key: 'system-global', icon: 'server', label: t('settings.system') },
     { key: 'model-catalog', icon: 'control-platform', label: t('modelCatalog.title') },
     { key: 'runtime-queues', icon: 'queue', label: t('settings.taskQueue') },
@@ -355,12 +356,6 @@ const navItems = computed(() => {
     { key: 'tenant', icon: 'user-circle', label: t('settings.tenantInfo') },
     { key: 'members', icon: 'usergroup', label: t('tenantMember.title') },
   ]
-  // currentTenantRole 为空表示「membership 还没加载」—— 比起渲染整套
-  // viewer 入口然后角色一返回又消失，先卡住不渲染更稳，跟原先 members
-  // 入口的策略一致。
-  if (!authStore.currentTenantRole && !authStore.canAccessAllTenants) {
-    return [] as NavItem[]
-  }
   return all.filter((it) => canSeeSection(it.key) && isSectionSupported(it.key))
 })
 
@@ -401,7 +396,7 @@ const navGroups = computed<NavGroup[]>(() => {
     {
       key: 'system_administration',
       label: t('settings.navGroups.systemAdministration'),
-      items: pickItems(['system-global', 'model-catalog', 'runtime-queues', 'platform-api-keys', 'system-audit-log']),
+      items: pickItems(['organization-management', 'knowledge-base-permissions', 'system-global', 'model-catalog', 'runtime-queues', 'platform-api-keys', 'system-audit-log']),
     },
     {
       key: 'platform',
@@ -413,6 +408,8 @@ const navGroups = computed<NavGroup[]>(() => {
 
 // 导航项点击处理
 const handleNavClick = (item: any) => {
+  if (policySaving.value) return
+  if (policyDirty.value && !window.confirm(t('common.unsavedChanges.body'))) return
   if (item.children && item.children.length > 0) {
     // 有子菜单，切换展开状态
     const index = expandedMenus.value.indexOf(item.key)
@@ -470,7 +467,7 @@ const handleClose = () => {
   // Only go back when Vue Router knows the previous route is inside the app.
   if (route.path === '/platform/settings') {
     const sec = route.query.section
-    if (sec === 'model-catalog' || sec === 'system-global' || sec === 'runtime-queues' || sec === 'platform-api-keys' || sec === 'system-audit-log') {
+    if (sec === 'knowledge-base-permissions' || sec === 'organization-management' || sec === 'model-catalog' || sec === 'system-global' || sec === 'runtime-queues' || sec === 'platform-api-keys' || sec === 'system-audit-log') {
       router.push('/platform/knowledge-bases')
     } else {
       const back = router.options.history.state.back
@@ -526,17 +523,14 @@ watch(() => uiStore.settingsInitialSection, (section) => {
 }, { immediate: true })
 
 watch(
-  () => [visible.value, route.path, route.query.section, deploymentCapabilities.loaded] as const,
+  () => [visible.value, route.path, route.query.section, deploymentCapabilities.loaded, route.query.panel] as const,
   ([isVisible, path, section, capabilitiesLoaded]) => {
     if (!isVisible || path !== '/platform/settings') return
     if (typeof section !== 'string') {
       syncSettingsRoute(currentSection.value || 'general')
       return
     }
-    const normalizedSection = visibleSettingsSection(
-      section,
-      typeof route.query.tab === 'string' ? route.query.tab : undefined,
-    )
+    const normalizedSection = normalizeSettingsSection(section)
     if (capabilitiesLoaded && !isSectionSupported(normalizedSection)) {
       MessagePlugin.warning(t('settings.capabilityUnavailable'))
       const fallback = navItems.value[0]?.key || 'general'
@@ -566,7 +560,9 @@ watch(navItems, (items) => {
 // Esc / 遮罩点击关闭（与其他设置类弹窗共用同一壳层交互）
 const modalShell = useModalShell({
   visible: () => visible.value,
-  close: handleClose,
+  close: () => { if (!policySaving.value) handleClose() },
+  snapshot: () => policyDirty.value,
+  ignoreEscape: () => policySaving.value,
 })
 
 // 处理快捷导航事件
@@ -615,6 +611,12 @@ onUnmounted(() => {
   max-width: 1280px;
   height: 900px;
 }
+.settings-modal-shell.all-settings-overlay.management-settings-overlay > .settings-modal {
+  max-width: 1560px;
+  width: calc(100vw - 32px);
+  height: calc(100vh - 32px);
+}
+.management-settings-overlay .content-wrapper.content-wrapper--full { padding: 24px; }
 </style>
 
 <style lang="less" scoped>

@@ -47,7 +47,11 @@ export const SETTINGS_MANAGEMENT_SHORTCUT_MIN_ROLE = {
   models: 'admin',
 } as const satisfies Record<string, SettingsRoleKey>
 
+export const MEMBER_SETTINGS_SECTIONS: ReadonlySet<string> = new Set(['general', 'userprofile'])
+
 export const SYSTEM_ADMIN_SETTINGS_SECTIONS = new Set([
+  'organization-management',
+  'knowledge-base-permissions',
   'system-global',
   'model-catalog',
   'runtime-queues',

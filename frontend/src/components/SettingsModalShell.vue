@@ -412,3 +412,11 @@ function showBadge(item: SettingsModalNavItem): boolean {
   }
 }
 </style>
+
+<style lang="less">
+.management-settings-overlay.settings-modal-shell {
+  padding: 16px;
+  .settings-modal { max-width: 1560px; width: calc(100vw - 32px); height: calc(100vh - 32px); }
+  .settings-sidebar { width: 200px; flex-basis: 200px; }
+}
+</style>

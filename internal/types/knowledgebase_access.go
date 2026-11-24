@@ -59,10 +59,11 @@ type KBAccessPolicyUpdate struct {
 // KBAccessPolicyView is the management response. It deliberately excludes the
 // knowledge-base configuration, user model and internal membership identifiers.
 type KBAccessPolicyView struct {
-	Mode      KBAccessMode         `json:"mode"`
-	Version   uint64               `json:"version"`
-	Members   []KBMemberGrantInput `json:"members"`
-	UpdatedAt *time.Time           `json:"updated_at,omitempty"`
+	MemberDetails []KBAccessMemberCandidate `json:"member_details,omitempty"`
+	Mode          KBAccessMode              `json:"mode"`
+	Version       uint64                    `json:"version"`
+	Members       []KBMemberGrantInput      `json:"members"`
+	UpdatedAt     *time.Time                `json:"updated_at,omitempty"`
 }
 
 // KBAccessMemberCandidate is the minimal member-selector projection. Emails,

@@ -875,6 +875,9 @@ func (s *userService) AdminCreateUser(
 	if req == nil || strings.TrimSpace(req.Username) == "" {
 		return nil, "", errors.New("username is required")
 	}
+	if req.DirectoryProfile != nil && req.DefaultTenantID == 0 {
+		return nil, "", ErrAdminUserWorkspace
+	}
 	if (req.DefaultTenantID == 0 && req.Role != "") || (req.DefaultTenantID != 0 && !req.Role.IsValid()) {
 		return nil, "", ErrAdminUserWorkspace
 	}

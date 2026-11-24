@@ -6,6 +6,9 @@ import ts from 'typescript'
 import { computed } from 'vue'
 import { INTEGRATION_PREVIEW_ITEMS } from '../../config/integrations'
 import { integrationSectionKey } from '../../config/settingsRoute'
+import { MEMBER_SETTINGS_SECTIONS, SETTINGS_SECTION_MIN_ROLE, SYSTEM_ADMIN_SETTINGS_SECTIONS } from '../../config/settingsAccess'
+import { isHiddenSettingsSection, visibleSettingsSection } from '../../config/settingsVisibility'
+import { isToolboxSection } from '../../config/toolbox'
 
 // Exercise the actual sidebar grouping without mounting the settings panels.
 const source = readFileSync(new URL('./Settings.vue', import.meta.url), 'utf8')
@@ -98,4 +101,36 @@ test('closing system settings retains its explicit knowledge-base destination', 
 
 test('closing an overlaid settings panel leaves the underlying route alone', () => {
   assert.deepEqual(closeSettings(null, 'general', '/platform/chat/session-123'), ['blur', 'close'])
+})
+
+function getDeclaration(name: string): string {
+  const node = ast.statements.find(statement => ts.isVariableStatement(statement)
+    && statement.declarationList.declarations.some(declaration => ts.isIdentifier(declaration.name) && declaration.name.text === name))
+  assert.ok(node, name)
+  return ts.transpileModule(node.getText(ast), { compilerOptions: { target: ts.ScriptTarget.ES2022 } }).outputText
+}
+
+test('member settings expose only general preferences and profile, including when role is loading', () => {
+  const context = {
+    isHiddenSettingsSection, visibleSettingsSection, isToolboxSection, MEMBER_SETTINGS_SECTIONS,
+    SETTINGS_SECTION_MIN_ROLE, SYSTEM_ADMIN_SECTIONS: SYSTEM_ADMIN_SETTINGS_SECTIONS,
+    route: { query: {} },
+    authStore: { hasManagementNavigation: false, isSystemAdmin: false, canAccessAllTenants: false, hasRole: () => false },
+  }
+  const navigation = runInNewContext(`${getDeclaration('canSeeSection')}\n${getDeclaration('normalizeSettingsSection')}\n({canSeeSection, normalizeSettingsSection})`, context)
+  for (const key of ['general', 'userprofile']) {
+    assert.equal(navigation.canSeeSection(key), true)
+    assert.equal(navigation.normalizeSettingsSection(key), key)
+  }
+  for (const key of ['models', 'defaults', 'tenant', 'members', 'envvars', 'credentialvault', 'assistant', 'mymemory', 'system', ...SYSTEM_ADMIN_SETTINGS_SECTIONS]) {
+    assert.equal(navigation.canSeeSection(key), false)
+    assert.equal(navigation.normalizeSettingsSection(key), 'general')
+  }
+  assert.equal(navigation.normalizeSettingsSection('browserconnection'), 'browserconnection', 'toolbox links retain their own checks')
+  context.authStore.hasManagementNavigation = true
+  context.authStore.hasRole = () => true
+  assert.equal(navigation.canSeeSection('models'), true)
+  assert.equal(navigation.canSeeSection('organization-management'), false)
+  context.authStore.isSystemAdmin = true
+  assert.equal(navigation.canSeeSection('organization-management'), true)
 })

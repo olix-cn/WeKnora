@@ -67,6 +67,9 @@ export function buildSettingsRouteQuery(
   } else {
     delete query.panel
   }
+  if (sectionKey === 'system-global' && query.panel === 'users') {
+    sectionKey = 'organization-management'; delete query.panel
+  }
   query.section = sectionKey
   return query
 }

@@ -11,7 +11,7 @@
             <div class="header-actions" :class="{ 'header-actions-lite': authStore.isLiteMode }" style="--wails-draggable: no-drag">
               <ResourceListToolbar v-if="authStore.isLiteMode" hide-scopes v-model="spaceSelection" v-model:query="keyword" />
               <ResourceSortControl v-model="selectedResourceSort" />
-              <t-tooltip v-if="authStore.hasRole('contributor')" :content="$t('knowledgeList.create')" placement="bottom">
+              <t-tooltip v-if="showCreateKnowledgeBase" :content="$t('knowledgeList.create')" placement="bottom">
                  <t-button variant="text" theme="default" size="small" class="header-action-btn"
                    data-guide="kb-list-create" style="--wails-draggable: no-drag" @click="handleCreateKnowledgeBase">
                    <template #icon><t-icon name="folder-add" size="16px" /></template>
@@ -596,9 +596,9 @@
 
         <!-- 全部空状态：保留「新建知识库」CTA，因为是空间没有任何 KB 的真空场景 -->
         <EmptyState v-if="!keyword.trim() && spaceSelection === 'all' && filteredKnowledgeBases.length === 0 && !loading" :title="$t('knowledgeList.empty.title')"
-          :description="$t('knowledgeList.empty.description')">
+          :description="showCreateKnowledgeBase ? $t('knowledgeList.empty.description') : undefined">
           <template #icon><ResourceIcon type="knowledge" :size="32" /></template>
-          <t-button v-if="authStore.hasRole('contributor')" theme="primary" class="kb-create-btn"
+          <t-button v-if="showCreateKnowledgeBase" theme="primary" class="kb-create-btn"
             data-guide="kb-list-create" @click="handleCreateKnowledgeBase">
             <template #icon><t-icon name="folder-add" /></template>
             {{ $t('knowledgeList.create') }}
@@ -616,9 +616,9 @@
 
         <!-- 我的知识库空状态 -->
         <EmptyState v-if="!keyword.trim() && spaceSelection === 'mine' && kbs.length === 0 && !loading" :title="$t('knowledgeList.empty.title')"
-          :description="$t('knowledgeList.empty.description')">
+          :description="showCreateKnowledgeBase ? $t('knowledgeList.empty.description') : undefined">
           <template #icon><ResourceIcon type="knowledge" :size="32" /></template>
-          <t-button v-if="authStore.hasRole('contributor')" theme="primary" class="kb-create-btn"
+          <t-button v-if="showCreateKnowledgeBase" theme="primary" class="kb-create-btn"
             data-guide="kb-list-create" @click="handleCreateKnowledgeBase">
             <template #icon><t-icon name="folder-add" /></template>
             {{ $t('knowledgeList.create') }}
@@ -752,6 +752,7 @@ const router = useRouter()
 const route = useRoute()
 const uiStore = useUIStore()
 const authStore = useAuthStore()
+const showCreateKnowledgeBase = computed(() => authStore.hasManagementNavigation && authStore.hasRole('contributor'))
 const { loaded: modelsReadyLoaded, isReadyForDocumentKb } = useTenantModelReadiness()
 const orgStore = useOrganizationStore()
 const chatResources = useChatResourcesStore()
@@ -759,15 +760,13 @@ const { t } = useI18n()
 const selectedResourceSort = ref<ResourceSortValue>(DEFAULT_RESOURCE_SORT)
 
 // 左侧空间选择：默认根据当前角色决定。
-// Viewer 在该空间里通常 0 KB owned，"我的"会显示空状态、又把共享 KB 藏起来，
-// 体验非常误导；所以 Viewer 默认落到 "all"（我的 + 共享给我都显示）。
-// Contributor 及以上一进来主要管理自己创建的 KB，仍默认 "mine"。
+// Members land on all authorized libraries rather than a management view.
 //
 // State lives in `?scope=` so links are shareable/bookmarkable; the
 // composable handles two-way sync with the URL. We keep "mine" as the
 // stored value (not "workspace") for back-compat with any external link
 // that might point at the old query; ResourceListToolbar labels it as the current workspace.
-const defaultScope: 'all' | 'mine' = authStore.hasRole('contributor') ? 'mine' : 'all'
+const defaultScope: 'all' | 'mine' = showCreateKnowledgeBase.value ? 'mine' : 'all'
 const { scope: spaceSelection, creator: creatorFilter, query: keyword } = useListUrlState({
   defaultScope,
   defaultCreator: 'all',
@@ -1118,7 +1117,7 @@ const filteredKnowledgeBases = computed(() => unsearchedFilteredKnowledgeBases.v
 
 const showKbListEmpty = computed(() => {
   if (loading.value || keyword.value.trim()) return false
-  if (!authStore.hasRole('contributor')) return false
+  if (!showCreateKnowledgeBase.value) return false
   if (spaceSelection.value === 'all' && filteredKnowledgeBases.value.length === 0) return true
   if (spaceSelection.value === 'mine' && kbs.value.length === 0) return true
   return false
@@ -1515,6 +1514,7 @@ const goSettings = (id: string) => {
 
 // 创建知识库
 const handleCreateKnowledgeBase = () => {
+  if (!showCreateKnowledgeBase.value) return
   markContextualGuideDone('kbList')
   // 无模型时仍打开创建向导，并定位到模型配置页；用户可在向导内添加模型，无需先跳转系统设置
   const initialSection =

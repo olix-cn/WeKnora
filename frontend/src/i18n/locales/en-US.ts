@@ -5209,7 +5209,8 @@ export default {
       keyLabels: {
         ui: { navigation: {
           automations_visible: 'Show Automations menu',
-          toolbox_visible: 'Show Toolbox menu',
+          toolbox_visible: 'Show Toolbox menu to members',
+          workspace_switcher_visible: 'Allow members to switch workspaces',
         } },
         auth: {
           registration_mode: 'Registration mode',
@@ -5245,7 +5246,8 @@ export default {
       keyDescriptions: {
         ui: { navigation: {
           automations_visible: 'Show the home Automations menu for all users. Hidden by default; existing jobs keep running. Other users see changes after refreshing.',
-          toolbox_visible: 'Show the home Toolbox menu for all users. Hidden by default; tool configuration and backend permissions are unchanged. Other users must refresh.',
+          toolbox_visible: 'Show the Toolbox menu to ordinary members. It is hidden by default for members and always visible to administrators. Tool settings and permissions are unchanged; other users must refresh.',
+          workspace_switcher_visible: 'The workspace switcher is hidden for ordinary members by default. When enabled, they can only switch between assigned workspaces. Permissions are unchanged.',
         } },
         auth: {
           registration_mode: 'Registration mode. Open registration allows anyone to create an account; invitation registration requires a valid invitation link; disabled registration prevents account creation while existing accounts can still accept invitations. Changes take effect immediately.',
@@ -5456,6 +5458,12 @@ export default {
           'system.admin_revoked': 'System admin revoked',
           'system.user_password_reset': 'User password reset',
           'system.user_created': 'User created',
+          'directory.department_created': 'Department created',
+          'directory.department_updated': 'Department updated',
+          'directory.department_deleted': 'Department deleted',
+          'directory.personnel_updated': 'Personnel profile updated',
+          'directory.personnel_created': 'Personnel affiliation created',
+          'directory.members_moved': 'Members moved to department',
           'system.user_already_exists': 'Account already exists (not created)',
           'system.queue_task_retried': 'Failed task run again',
           'system.queue_task_deleted': 'Failed task record cleared',

@@ -9,7 +9,7 @@ import {
 } from './deploymentCapabilities'
 
 test('capability filtering is fail-open unless backend explicitly disables a feature', () => {
-  assert.equal(isDeploymentCapabilitySupported({}, 'organizations'), true)
+  assert.equal(isDeploymentCapabilitySupported({}, 'organizations'), false)
 
   const capabilities: DeploymentCapabilityMap = {
     organizations: { supported: false, reason: 'not_supported_in_lite' },
@@ -20,7 +20,7 @@ test('capability filtering is fail-open unless backend explicitly disables a fea
 })
 
 test('optional home menus default to hidden and only explicit true enables them', () => {
-  for (const key of ['navigation.automations', 'navigation.toolbox'] as const) {
+  for (const key of ['navigation.automations', 'navigation.toolbox', 'navigation.workspace_switcher'] as const) {
     assert.equal(isDeploymentCapabilitySupported({}, key), false)
     assert.equal(isDeploymentCapabilitySupported({ [key]: { supported: false } }, key), false)
     assert.equal(isDeploymentCapabilitySupported({ [key]: { supported: true } }, key), true)

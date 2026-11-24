@@ -9,7 +9,7 @@ import (
 )
 
 func TestNavigationSettingsAreDefaultOffAndBooleanOnly(t *testing.T) {
-	for _, key := range []string{"ui.navigation.automations_visible", "ui.navigation.toolbox_visible"} {
+	for _, key := range []string{"ui.navigation.automations_visible", "ui.navigation.toolbox_visible", "ui.navigation.workspace_switcher_visible"} {
 		t.Run(key, func(t *testing.T) {
 			spec, ok := registry[key]
 			require.True(t, ok)

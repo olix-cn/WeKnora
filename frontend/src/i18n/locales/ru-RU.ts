@@ -4565,6 +4565,12 @@ export default {
           'system.admin_revoked': 'Отозван системный администратор',
           'system.user_password_reset': 'Сброшен пароль пользователя',
           'system.user_created': 'Создан пользователь',
+          'directory.department_created': 'Department created',
+          'directory.department_updated': 'Department updated',
+          'directory.department_deleted': 'Department deleted',
+          'directory.personnel_updated': 'Personnel profile updated',
+          'directory.personnel_created': 'Personnel affiliation created',
+          'directory.members_moved': 'Members moved to department',
           'system.user_already_exists': 'Аккаунт уже существует (не создан)',
           'system.queue_task_retried': 'Повторно запущена сбойная задача',
           'system.queue_task_deleted': 'Удалена запись о сбойной задаче',
@@ -4735,7 +4741,8 @@ export default {
       keyDescriptions: {
         ui: { navigation: {
           automations_visible: 'Показывать меню автоматизации всем пользователям. По умолчанию скрыто; существующие задания продолжают работу. Другим пользователям нужно обновить страницу.',
-          toolbox_visible: 'Показывать меню инструментов всем пользователям. По умолчанию скрыто; настройки и права доступа не меняются. Другим пользователям нужно обновить страницу.',
+          toolbox_visible: 'Настройка действует только для обычных участников: по умолчанию меню скрыто. Администраторы видят его всегда. Настройки инструментов и права не меняются; другим пользователям нужно обновить страницу.',
+          workspace_switcher_visible: 'По умолчанию переключатель скрыт для обычных участников. При включении доступны только назначенные рабочие пространства. Права доступа не меняются.',
         } },
         model: {
           max_concurrency: 'Лимит по умолчанию на количество одновременных фоновых вызовов (индексация/обогащение) к одной модели, привязанный к ID модели и общий для всех реплик. Читается при каждом вызове и применяется сразу без перезапуска. 0 или отрицательное значение отключает лимит по умолчанию (каждая модель всё равно соблюдает собственный лимит, заданный в управлении моделями). Влияет только на фоновые задачи, не на интерактивный чат.'
@@ -4771,7 +4778,8 @@ export default {
       keyLabels: {
         ui: { navigation: {
           automations_visible: 'Показывать меню автоматизации',
-          toolbox_visible: 'Показывать меню инструментов',
+          toolbox_visible: 'Показывать меню инструментов обычным участникам',
+          workspace_switcher_visible: 'Разрешить участникам переключать рабочие пространства',
         } },
         model: {
           max_concurrency: 'Лимит параллелизма модели по умолчанию'

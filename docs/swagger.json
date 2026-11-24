@@ -21555,6 +21555,476 @@
                 }
             }
         },
+        "/system/admin/directory": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "System Admin"
+                ],
+                "summary": "Read corporate directory and department tree",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/system/admin/directory/departments": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "System Admin"
+                ],
+                "summary": "Create or update corporate department",
+                "parameters": [
+                    {
+                        "description": "Complete department input",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Tencent_WeKnora_internal_types.DepartmentUpdate"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Tencent_WeKnora_internal_types.Department"
+                        }
+                    }
+                }
+            }
+        },
+        "/system/admin/directory/departments/{department_id}": {
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "System Admin"
+                ],
+                "summary": "Create or update corporate department",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Department ID for update",
+                        "name": "department_id",
+                        "in": "path"
+                    },
+                    {
+                        "description": "Complete department input",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Tencent_WeKnora_internal_types.DepartmentUpdate"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Tencent_WeKnora_internal_types.Department"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "System Admin"
+                ],
+                "summary": "Delete empty department",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Department ID",
+                        "name": "department_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "expected_version required",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/system/admin/directory/members": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "System Admin"
+                ],
+                "summary": "Search corporate personnel",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Username, email or display name",
+                        "name": "keyword",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Department ID; unassigned or omitted",
+                        "name": "department_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "Include children",
+                        "name": "include_descendants",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "active or inactive",
+                        "name": "status",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Offset",
+                        "name": "offset",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Page size 1-100",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/system/admin/directory/members/department": {
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "System Admin"
+                ],
+                "summary": "Move personnel to a department",
+                "parameters": [
+                    {
+                        "description": "department_id (nullable), members with expected_version",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/system/admin/directory/members/{user_id}": {
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "System Admin"
+                ],
+                "summary": "Edit personnel display name",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "user_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "display_name, expected_version",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/system/admin/knowledge-base-permissions": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "System Admin"
+                ],
+                "summary": "List knowledge-base permission metadata across all workspaces",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Knowledge-base or workspace name",
+                        "name": "q",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Optional workspace filter",
+                        "name": "tenant_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Offset",
+                        "name": "offset",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Page size 1-100",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/system/admin/knowledge-base-permissions/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "System Admin"
+                ],
+                "summary": "Get a knowledge-base policy as a current system administrator",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Knowledge-base ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/internal_handler.DataResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/github_com_Tencent_WeKnora_internal_types.KBAccessPolicyView"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "System Admin"
+                ],
+                "summary": "Replace knowledge-base permissions as a current system administrator",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Knowledge-base ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Complete policy with expected_version",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Tencent_WeKnora_internal_types.KBAccessPolicyUpdate"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/internal_handler.DataResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/github_com_Tencent_WeKnora_internal_types.KBAccessPolicyView"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/system/admin/knowledge-base-permissions/{id}/candidates": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "System Admin"
+                ],
+                "summary": "Search grant candidates in the target knowledge-base workspace",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Knowledge-base ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Username search",
+                        "name": "q",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Page",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Page size 1-100",
+                        "name": "page_size",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
         "/system/admin/list": {
             "get": {
                 "description": "Retrieve a paginated list of users with system administrator\nprivileges (SystemAdmin only). Supports `offset` (default 0)\nand `limit` (default 50, max 200) query parameters. Walks the\npartial-friendly idx_users_is_system_admin index.",
@@ -27844,6 +28314,9 @@
                     "description": "Optional for legacy clients. When present, create directly in an existing workspace.",
                     "type": "integer"
                 },
+                "directory_profile": {
+                    "$ref": "#/definitions/github_com_Tencent_WeKnora_internal_types.DirectoryProfileInput"
+                },
                 "email": {
                     "type": "string"
                 },
@@ -28229,6 +28702,12 @@
         "github_com_Tencent_WeKnora_internal_types.AuditAction": {
             "type": "string",
             "enum": [
+                "directory.department_created",
+                "directory.department_updated",
+                "directory.department_deleted",
+                "directory.personnel_updated",
+                "directory.personnel_created",
+                "directory.members_moved",
                 "memory.subjects_listed",
                 "memory.subject_inspected",
                 "memory.item_confirmed",
@@ -28302,6 +28781,12 @@
                 "faq.import_failed"
             ],
             "x-enum-varnames": [
+                "AuditActionDepartmentCreated",
+                "AuditActionDepartmentUpdated",
+                "AuditActionDepartmentDeleted",
+                "AuditActionPersonnelUpdated",
+                "AuditActionPersonnelCreated",
+                "AuditActionPersonnelMoved",
                 "AuditActionMemorySubjectsListed",
                 "AuditActionMemorySubjectInspected",
                 "AuditActionMemoryItemConfirmed",
@@ -30095,6 +30580,75 @@
                 }
             }
         },
+        "github_com_Tencent_WeKnora_internal_types.Department": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "leader_id": {
+                    "type": "string"
+                },
+                "member_count": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "parent_id": {
+                    "type": "string"
+                },
+                "sort_order": {
+                    "type": "integer"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "version": {
+                    "type": "integer"
+                }
+            }
+        },
+        "github_com_Tencent_WeKnora_internal_types.DepartmentUpdate": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "expected_version": {
+                    "type": "integer"
+                },
+                "leader_id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "parent_id": {
+                    "type": "string"
+                },
+                "sort_order": {
+                    "type": "integer"
+                }
+            }
+        },
+        "github_com_Tencent_WeKnora_internal_types.DirectoryProfileInput": {
+            "type": "object",
+            "properties": {
+                "department_id": {
+                    "type": "string"
+                },
+                "display_name": {
+                    "type": "string"
+                }
+            }
+        },
         "github_com_Tencent_WeKnora_internal_types.DockerSandboxConfig": {
             "type": "object",
             "properties": {
@@ -31711,6 +32265,20 @@
                 "JoinRequestTypeUpgrade"
             ]
         },
+        "github_com_Tencent_WeKnora_internal_types.KBAccessMemberCandidate": {
+            "type": "object",
+            "properties": {
+                "role": {
+                    "$ref": "#/definitions/github_com_Tencent_WeKnora_internal_types.TenantRole"
+                },
+                "user_id": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
         "github_com_Tencent_WeKnora_internal_types.KBAccessMode": {
             "type": "string",
             "enum": [
@@ -31742,6 +32310,12 @@
         "github_com_Tencent_WeKnora_internal_types.KBAccessPolicyView": {
             "type": "object",
             "properties": {
+                "member_details": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/github_com_Tencent_WeKnora_internal_types.KBAccessMemberCandidate"
+                    }
+                },
                 "members": {
                     "type": "array",
                     "items": {
@@ -40205,6 +40779,9 @@
             "properties": {
                 "capabilities": {
                     "$ref": "#/definitions/internal_handler.CurrentUserCapabilities"
+                },
+                "department_name": {
+                    "type": "string"
                 },
                 "memberships": {
                     "type": "array",

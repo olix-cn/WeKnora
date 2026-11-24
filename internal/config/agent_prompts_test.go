@@ -91,3 +91,61 @@ func TestDefaultRewritePreservesActionAndOutputConstraints(t *testing.T) {
 	require.NotContains(t, prompt.Content, "must also be a question")
 	require.NotContains(t, prompt.Content, "within 30 words")
 }
+
+func TestBundledAnswerTemplatesUseYHSJBrand(t *testing.T) {
+	templates, err := loadPromptTemplates("../../config")
+	require.NoError(t, err)
+	require.NotNil(t, templates)
+	for name, list := range map[string][]PromptTemplate{
+		"qa": templates.SystemPrompt, "agent": templates.AgentSystemPrompt,
+		"intent": templates.IntentPrompts, "fallback": templates.Fallback,
+	} {
+		t.Run(name, func(t *testing.T) {
+			require.NotEmpty(t, list)
+			for _, template := range list {
+				t.Run(template.ID, func(t *testing.T) {
+					oldBrand := `(?i)\b(weknora|tencent)\b|腾讯|騰訊`
+					// The skill installer still needs the literal on-disk path.
+					content := strings.ReplaceAll(template.Content, "`.weknora/requirements.json`", "")
+					require.NotRegexp(t, oldBrand, content)
+					require.NotRegexp(t, oldBrand, template.Name+" "+template.Description)
+					for _, label := range template.I18n {
+						require.NotRegexp(t, oldBrand, label.Name+" "+label.Description)
+					}
+					if name != "fallback" || template.Mode == "model" {
+						require.Contains(t, content, "YHSJ")
+					}
+				})
+			}
+		})
+	}
+	workspace := FindTemplateByID(templates, "weknora_assistant")
+	require.NotNil(t, workspace)
+	require.Contains(t, workspace.Content, "search_weknora_docs")
+	require.Contains(t, workspace.Content, "read_weknora_doc")
+	installer := FindTemplateByID(templates, "skill_installer")
+	require.NotNil(t, installer)
+	require.Contains(t, installer.Content, "`.weknora/requirements.json`")
+}
+
+func TestBundledAssistantLabelKeepsIDAndUsesYHSJBrand(t *testing.T) {
+	data, err := os.ReadFile("../../config/builtin_agents.yaml")
+	require.NoError(t, err)
+	var file struct {
+		BuiltinAgents []types.BuiltinAgentEntry `yaml:"builtin_agents"`
+	}
+	require.NoError(t, yaml.Unmarshal(data, &file))
+	for _, entry := range file.BuiltinAgents {
+		if entry.ID != types.BuiltinWeKnoraAssistantID {
+			continue
+		}
+		require.Equal(t, "weknora_assistant", entry.Config.SystemPromptID)
+		require.NotEmpty(t, entry.I18n)
+		for _, label := range entry.I18n {
+			require.Contains(t, label.Name, "YHSJ")
+			require.Contains(t, label.Description, "YHSJ")
+		}
+		return
+	}
+	t.Fatal("built-in workspace assistant missing")
+}

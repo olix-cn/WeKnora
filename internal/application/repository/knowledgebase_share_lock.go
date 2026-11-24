@@ -106,6 +106,13 @@ func (r *KnowledgeBaseAccessRepository) ReplaceManaged(
 	ctx context.Context, caller types.Caller, kbID string, update types.KBAccessPolicyUpdate,
 	authorize func(*KBAccessState) error,
 ) (*KBAccessState, error) {
+	return r.replaceManaged(ctx, caller, kbID, update, authorize, false)
+}
+
+func (r *KnowledgeBaseAccessRepository) replaceManaged(
+	ctx context.Context, caller types.Caller, kbID string, update types.KBAccessPolicyUpdate,
+	authorize func(*KBAccessState) error, platform bool,
+) (*KBAccessState, error) {
 	if authorize == nil {
 		return nil, errors.New("knowledge base policy authorizer is required")
 	}
@@ -114,7 +121,7 @@ func (r *KnowledgeBaseAccessRepository) ReplaceManaged(
 		var err error
 		state, err = NewKnowledgeBaseAccessRepository(tx).Replace(ctx, caller, kbID, update,
 			func(current *KBAccessState) error {
-				if current.Actor == nil {
+				if current.Actor == nil && !platform {
 					return ErrKBAccessMember
 				}
 				if err := authorize(current); err != nil {
@@ -145,8 +152,12 @@ func (r *KnowledgeBaseAccessRepository) ReplaceManaged(
 		if err != nil {
 			return err
 		}
+		actorRole := "system_admin"
+		if !platform {
+			actorRole = string(state.Actor.Role)
+		}
 		return tx.Create(&types.AuditLog{
-			TenantID: caller.TenantID, ActorUserID: caller.UserID, ActorRole: string(state.Actor.Role),
+			TenantID: caller.TenantID, ActorUserID: caller.UserID, ActorRole: actorRole,
 			Action: types.AuditActionKBMemberAccessChanged, ScopeType: "knowledge_base", ScopeID: kbID,
 			TargetType: "knowledge_base", TargetID: kbID, Outcome: types.AuditOutcomeSuccess,
 			Details: types.JSON(details), CreatedAt: time.Now().UTC(),

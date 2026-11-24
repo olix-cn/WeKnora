@@ -28,7 +28,7 @@ test('settings nav writes section, and keeps a system-settings panel only there'
   )
   assert.deepEqual(
     buildSettingsRouteQuery('system-global', { section: 'system-global', panel: 'users', tab: 'im' }),
-    { section: 'system-global', panel: 'users' },
+    { section: 'organization-management' },
   )
   assert.deepEqual(
     buildSettingsRouteQuery('models', { section: 'system-global', panel: 'users' }),
